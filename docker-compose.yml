@@ -6,21 +6,7 @@ services:
     ports:
     - "5432:5432"
     volumes:
-    - /Users/mel-hada/data/postgres:/data/postgres
-    env_file:
-    - docker.env
-    networks:
-    - postgres
- 
-  pgadmin:
-    links:
-    - postgres:postgres
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    ports:
-    - "8080:80"
-    volumes:
-    - /Users/mel-hada/data/pgadmin:/root/.pgadmin
+    - ./data/postgres:/data/postgres
     env_file:
     - docker.env
     networks:

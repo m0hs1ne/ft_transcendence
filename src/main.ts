@@ -12,6 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.use(session({
+    name: 'game',
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,

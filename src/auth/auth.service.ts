@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/typeorm/entities/User";
 import { UserDetails } from "src/utils/types";
 import { Repository } from "typeorm";
+import { JwtService } from "@nestjs/jwt";
 
 
 @Injectable()
