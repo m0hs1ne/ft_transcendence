@@ -10,6 +10,9 @@ config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    credentials: true,
+  });
   app.setGlobalPrefix('api');
   app.use(session({
     name: 'game',
@@ -17,7 +20,7 @@ async function bootstrap() {
     resave: false,
     saveUninitialized: false,
     cookie:{
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 1000 * 60 * 5,
 },
   }));
   app.use(passport.initialize());

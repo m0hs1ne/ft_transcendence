@@ -11,11 +11,12 @@ export class AuthService {
     constructor(
         @InjectRepository(User) private readonly userRepository:
         Repository<User>,
+        private readonly jwtService: JwtService,
     ){}
 
     async validateUser(details: UserDetails) {
         // console.log(details);
-        const user = await this.userRepository.findOneBy({username: details.username})
+        const user = await this.userRepository.findOneBy({email: details.email})
         if (user) return user;
         // console.log('Creating new user...');
         const newUser = this.userRepository.create(details);
@@ -24,5 +25,10 @@ export class AuthService {
 
     async findUser(id: number) {
         return await this.userRepository.findOneBy({id});
+    }
+
+    async login(user: any) {
+        const payload = { email: user.email, sub: user.id };
+        return this.jwtService.sign(payload);
     }
 }

@@ -1,10 +1,15 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { FortyTwoStrategy } from './utils/42Strategy';
-import { FortyTwoAuthGuard } from './utils/Guards';
-import { Request } from 'express';
+import { Controller, Get, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { FortyTwoAuthGuard, userAuthGuard } from './utils/Guards';
+import e, { Request } from 'express';
+import { AuthService } from './auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
+
+    constructor(private readonly authService: AuthService,
+        private readonly jwtService:JwtService
+        ) {}
 
     @Get('42/login')
     @UseGuards(FortyTwoAuthGuard)
@@ -14,15 +19,15 @@ export class AuthController {
 
     @Get('42/callback')
     @UseGuards(FortyTwoAuthGuard)
-    callback() {
-        return 'This action handles the callback';
+    async callback(@Req() req: Request, @Res() res) {
+        const payload = await this.authService.login(req.user);
+        res.cookie('jwt', payload, { httpOnly: true });
+        res.redirect('http://localhost:3000/api/auth/status');
     }
 
     @Get('status')
-    user(@Req() req: Request) {
-        if(req.user) {
-            return { msg: 'User is logged in' };
-        }
-        return { msg: 'User is not logged in' };
+    @UseGuards(userAuthGuard)
+    async user(@Req() req: Request) {
+        return 'Logged in';
     }
 }
