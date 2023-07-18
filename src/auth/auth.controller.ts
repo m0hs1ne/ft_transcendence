@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { FortyTwoAuthGuard, userAuthGuard } from './utils/Guards';
-import e, { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthController {
 
     constructor(private readonly authService: AuthService,
-        private readonly jwtService:JwtService
         ) {}
 
     @Get('42/login')
@@ -29,5 +28,13 @@ export class AuthController {
     @UseGuards(userAuthGuard)
     async user(@Req() req: Request) {
         return 'Logged in';
+    }
+
+    @Get('logout')
+    // @UseGuards(userAuthGuard)
+    logout(@Req() req: Request, @Res() res: Response) {
+        res.clearCookie('jwt');
+        res.clearCookie('game');
+        res.send('Logged out');
     }
 }
