@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { FortyTwoStrategy } from './utils/42Strategy';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/entities/User';
+import { User } from '../users/entities/user.entity';
 import { SessionSerializer } from './utils/Serializer';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './utils/jwtStrategy';

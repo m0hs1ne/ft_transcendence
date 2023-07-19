@@ -29,6 +29,7 @@ config();
     AchievementModule,
     UserChatModule,
     GameModule,
+    PassportModule.register({ session: true }),
   ],
   controllers: [AppController],
   providers: [AppService],
