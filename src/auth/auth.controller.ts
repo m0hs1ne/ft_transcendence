@@ -1,8 +1,9 @@
 import { Controller, Get, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { FortyTwoAuthGuard, userAuthGuard } from './utils/Guards';
+import { FortyTwoAuthGuard, googleAuthGuard, userAuthGuard } from './utils/Guards';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { googleStrategy } from './utils/googleStrategy';
 
 @Controller('auth')
 export class AuthController {
@@ -36,5 +37,18 @@ export class AuthController {
         res.clearCookie('jwt');
         res.clearCookie('game');
         res.send('Logged out');
+    }
+
+    @Get('google/login')
+    @UseGuards(googleAuthGuard)
+    googleLogin() {
+    }
+
+    @Get('google/callback')
+    @UseGuards(googleAuthGuard)
+    async googleCallback(@Req() req: Request, @Res() res: Response) {
+        const payload = await this.authService.login(req.user);
+        res.cookie('jwt', payload, { httpOnly: true });
+        res.redirect('http://localhost:3000/api/auth/status');
     }
 }

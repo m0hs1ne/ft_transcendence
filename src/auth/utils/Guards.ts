@@ -14,6 +14,16 @@ export class FortyTwoAuthGuard extends AuthGuard('42') {
 }
 
 @Injectable()
+export class googleAuthGuard extends AuthGuard('google') {
+    async canActivate(context: ExecutionContext) {
+        const activate = (await super.canActivate(context)) as boolean;
+        const request = context.switchToHttp().getRequest();
+        await super.logIn(request);
+        return activate;
+    }
+}
+
+@Injectable()
 export class userAuthGuard implements CanActivate {
 
     constructor(private readonly jwtService: JwtService) {}

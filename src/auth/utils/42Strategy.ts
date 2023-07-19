@@ -26,6 +26,16 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             username: profile._json.login,
             email: profile._json.email,
             avatar: profile._json.image.link,
+            level: 0,
+            wins: 0,
+            losses: 0,
+            statusOnline: true,
+            inGame: false,
+            is2fa: false,
+            friends: [],
+            blocked: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
         });
         return user || null;
     }

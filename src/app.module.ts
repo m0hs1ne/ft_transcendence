@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from "dotenv";
-import { User } from './typeorm/entities/User';
+import { User } from './typeorm/entities/typeof';
 import { PassportModule } from '@nestjs/passport';
 
 config();

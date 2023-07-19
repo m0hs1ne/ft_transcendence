@@ -3,11 +3,12 @@ import { AuthController } from './auth.controller';
 import { FortyTwoStrategy } from './utils/42Strategy';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/entities/User';
+import { User } from 'src/typeorm/entities/typeof';
 import { SessionSerializer } from './utils/Serializer';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './utils/jwtStrategy';
 import { config } from 'dotenv';
+import { googleStrategy } from './utils/googleStrategy';
 
 config();
 
@@ -16,7 +17,7 @@ config();
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       secret: process.env.SESSION_SECRET,
-      signOptions: { expiresIn: '10m' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
@@ -25,6 +26,6 @@ config();
     {
     provide: 'AUTH_SERVICE',
     useClass: AuthService,
-  }, AuthService,JwtStrategy],
+  }, AuthService,JwtStrategy, googleStrategy],
 })
 export class AuthModule { }
