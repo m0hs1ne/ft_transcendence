@@ -31,4 +31,9 @@ export class AuthService {
         const payload = { email: user.email, sub: user.id };
         return this.jwtService.sign(payload);
     }
+
+    async set2faSecret(id: number, secret: string) {
+        return this.userRepository.update(id, {tfaSecret: secret});
+    }
+
 }

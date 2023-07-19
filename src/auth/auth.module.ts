@@ -9,6 +9,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './utils/jwtStrategy';
 import { config } from 'dotenv';
 import { googleStrategy } from './utils/googleStrategy';
+import { TwoFactorAuthenticationController } from './utils/2fa.controller';
+import { TwoFactorAuthenticationService } from './utils/2fa.service';
 
 config();
 
@@ -20,12 +22,12 @@ config();
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, TwoFactorAuthenticationController],
   providers: [FortyTwoStrategy,
     SessionSerializer,
     {
     provide: 'AUTH_SERVICE',
     useClass: AuthService,
-  }, AuthService,JwtStrategy, googleStrategy],
+  }, AuthService,JwtStrategy, googleStrategy, TwoFactorAuthenticationService],
 })
 export class AuthModule { }

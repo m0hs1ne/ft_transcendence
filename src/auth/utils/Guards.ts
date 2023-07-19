@@ -34,7 +34,7 @@ export class userAuthGuard implements CanActivate {
         const cookies = req.headers.cookie;
         if(!cookies) 
             throw new UnauthorizedException();
-        const jwt = cookies.split(';')[0].split('=')[1];
+        const jwt = cookies.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
         const payload = this.jwtService.verify(jwt);
         if(!payload) return false;
         return true;

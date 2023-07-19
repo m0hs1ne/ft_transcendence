@@ -5,6 +5,9 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column({nullable: true})
+    tfaSecret: string;
+
     @Column({type: "varchar",unique: true, length: 50})
     email: string;
 

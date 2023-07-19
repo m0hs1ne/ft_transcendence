@@ -22,7 +22,9 @@ export class AuthController {
     async callback(@Req() req: Request, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:3000/api/auth/status');
+        res.send({
+            access_token: payload,
+        })
     }
 
     @Get('status')
