@@ -9,6 +9,8 @@ import { MessageModule } from './message/message.module';
 import { AchievementModule } from './achievement/achievement.module';
 import { UserChatModule } from './user_chat/user_chat.module';
 import { GameModule } from './game/game.module';
+import { PassportModule } from '@nestjs/passport';
+import { AuthModule } from './auth/auth.module';
 
 config();
 @Module({
@@ -29,6 +31,7 @@ config();
     AchievementModule,
     UserChatModule,
     GameModule,
+    AuthModule,
     PassportModule.register({ session: true }),
   ],
   controllers: [AppController],

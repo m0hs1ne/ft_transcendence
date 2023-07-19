@@ -31,14 +31,11 @@ export class UsersService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     const user = this.userRepository.findOneBy({id})
-    if (user)
-    {
-      this.userRepository.update({id}, {
-        username: updateUserDto.username,
-        avatar: updateUserDto.avatar,
-        is2fa: updateUserDto.is2fa
-      })
-    }
+    this.userRepository.update({id}, {
+      username: updateUserDto.username,
+      avatar: updateUserDto.avatar,
+      is2fa: updateUserDto.is2fa
+    })
     return `This action updates a #${id} user`;
   }
 

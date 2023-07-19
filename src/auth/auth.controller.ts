@@ -19,7 +19,7 @@ export class AuthController {
 
     @Get('42/callback')
     @UseGuards(FortyTwoAuthGuard)
-    async callback(@Req() req: Request, @Res() res) {
+    async callback(@Req() req, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
         res.redirect('http://localhost:3000/api/auth/status');
@@ -27,13 +27,13 @@ export class AuthController {
 
     @Get('status')
     @UseGuards(userAuthGuard)
-    async user(@Req() req: Request) {
+    async user(@Req() req) {
         return 'Logged in';
     }
 
     @Get('logout')
     // @UseGuards(userAuthGuard)
-    logout(@Req() req: Request, @Res() res: Response) {
+    logout(@Req() req, @Res() res: Response) {
         res.clearCookie('jwt');
         res.clearCookie('game');
         res.send('Logged out');
@@ -46,7 +46,7 @@ export class AuthController {
 
     @Get('google/callback')
     @UseGuards(googleAuthGuard)
-    async googleCallback(@Req() req: Request, @Res() res: Response) {
+    async googleCallback(@Req() req, @Res() res: Response) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
         res.redirect('http://localhost:3000/api/auth/status');

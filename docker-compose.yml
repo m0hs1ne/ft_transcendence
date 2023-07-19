@@ -5,22 +5,6 @@ services:
     image: postgres:latest
     ports:
     - "5432:5432"
-    volumes:
-    - ./data/postgres:/var/lib/postgresql/data
-    env_file:
-    - .env
-    networks:
-    - postgres
- 
-  pgadmin:
-    links:
-    - postgres:postgres
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    ports: 
-    - "8080:80"
-    volumes:
-    - ./data/pgadmin:/root/.pgadmin
     env_file:
     - .env
     networks:
