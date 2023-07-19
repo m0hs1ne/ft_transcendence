@@ -23,6 +23,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         // console.log(accessToken);
         // console.log(refreshToken);
         const user = await this.authService.validateUser({
+            tfSecret: '',
             username: profile._json.login,
             email: profile._json.email,
             avatar: profile._json.image.link,

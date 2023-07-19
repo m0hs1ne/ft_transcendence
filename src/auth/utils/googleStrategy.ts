@@ -22,6 +22,7 @@ export class googleStrategy extends PassportStrategy(Strategy,'google'){
 
     async validate(accessToken: string, refreshToken: string, profile: any, done: any){
         const user = await this.authService.validateUser({
+            tfSecret: '',
             username: profile._json.given_name,
             email: profile._json.email,
             avatar: profile._json.picture,

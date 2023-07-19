@@ -4,6 +4,12 @@ import { User } from "src/typeorm/entities/typeof";
 import { UserDetails } from "src/utils/types";
 import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
+import RequestWithUser from "src/utils/reqWithUser";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { config } from "dotenv";
+
+config();
 
 
 @Injectable()
@@ -24,7 +30,7 @@ export class AuthService {
     }
 
     async findUser(id: number) {
-        return await this.userRepository.findOneBy({id});
+        return await this.userRepository.findOneBy({id: id});
     }
 
     async login(user: any) {
@@ -36,4 +42,48 @@ export class AuthService {
         return this.userRepository.update(id, {tfaSecret: secret});
     }
 
+    async getUserFromJwt(req: RequestWithUser) {
+        try {
+        const jwt = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
+        const decoded = await this.jwtService.decode(jwt);
+        const id = decoded.sub;
+        const user = await this.findUser(id);
+        return user;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async turnOn2fa(id: number) {
+        return this.userRepository.update(id, {is2fa: true});
+    }
+
+    public async getCookiesWithJwtToken(userId: number, isSFA = true) {
+        const payload = { userId, isSFA };
+        const token = this.jwtService.sign(payload, 
+            {secret: process.env.SESSION_SECRET, expiresIn: '1d'});
+        return `jwt=${token}; HttpOnly; Path=/; Max-Age=${86400}`;
+
+    }
+
+}
+
+@Injectable()
+export class JwtTwoFactorStrategy extends PassportStrategy(Strategy, 'jwt-two-factor') {
+    constructor(
+        private readonly authService: AuthService,
+    ) {
+        super({
+            jwtFromRequest: ExtractJwt.fromExtractors([(req: RequestWithUser) => {
+                return req?.headers?.cookie?.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1]
+            }]),
+            secretOrKey: process.env.SESSION_SECRET,
+        });
+    }
+
+    async validate(payload: any) {
+        const user = await this.authService.findUser(payload.userId);
+        if(!user.is2fa) return user;
+        if(payload.isSFA) return user;
+    }
 }

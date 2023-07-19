@@ -8,6 +8,7 @@ export class User {
     @Column({nullable: true})
     tfaSecret: string;
 
+
     @Column({type: "varchar",unique: true, length: 50})
     email: string;
 
@@ -32,7 +33,7 @@ export class User {
     @Column()
     inGame: boolean;
 
-    @Column()
+    @Column({default: false})
     is2fa: boolean;
 
     @ManyToMany(type => User)

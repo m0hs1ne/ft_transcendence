@@ -1,4 +1,5 @@
 export type UserDetails = {
+    tfSecret: string;
     email: string;
     username: string;
     avatar: string;
