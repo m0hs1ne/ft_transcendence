@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserChatService } from './user_chat.service';
 import { CreateUserChatDto } from './dto/create-user_chat.dto';
 import { UpdateUserChatDto } from './dto/update-user_chat.dto';

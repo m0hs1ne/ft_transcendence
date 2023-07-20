@@ -4,6 +4,7 @@ import { User } from "src/users/entities/user.entity";
 import { UserDetails } from "src/utils/types";
 import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
+import { CreateUserDto } from "src/users/dto/create-user.dto";
 
 
 @Injectable()
@@ -14,7 +15,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ){}
 
-    async validateUser(details: UserDetails) {
+    async validateUser(details: CreateUserDto) {
         // console.log(details);
         const user = await this.userRepository.findOneBy({email: details.email})
         if (user) return user;

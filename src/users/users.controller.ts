@@ -1,44 +1,76 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserExistExceptionFilter, UserNotExistExceptionFilter } from 'src/exceptions/exception.filter';
+import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
 import { userAuthGuard } from '../utils/guard'
+import { UserNotExistExceptionFilter } from 'src/exceptions/NotExistException.filter';
+import { AddFriendDto } from './dto/add-friend.dto';
 
+@UseGuards(userAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  @UseGuards(userAuthGuard)
-  @UseFilters(UserExistExceptionFilter)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
-  @UseGuards(userAuthGuard)
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(userAuthGuard)
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    if (+id)
+      return this.usersService.findOne(+id); 
   }
 
   @Patch(':id')
-  @UseGuards(userAuthGuard)
   @UseFilters(UserNotExistExceptionFilter)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto,@Req() req) 
+  {
+    if (+id)
+      return this.usersService.update(+id, updateUserDto,req);
   }
 
   @Delete(':id')
-  @UseGuards(userAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @UseFilters(UserNotExistExceptionFilter)
+  remove(@Param('id') id: string, @Req() req) {
+    if (+id)
+      return this.usersService.remove(+id, req);
+  }
+
+  //friends
+  @Get('friends/:id')
+  getFriends(@Param('id') id: string, @Req() req) {
+    if (+id)
+      return this.usersService.getfriends(+id);
+  }
+
+  @Post('friends')
+  addFriends(@Body() addFriendDto: AddFriendDto,@Req() req)
+  {
+    return this.usersService.addfriends(addFriendDto, req)
+  }
+  @Delete('friends/:id')
+  removeFriends(@Param('id') id: string, @Req() req)
+  {
+    return this.usersService.removefriends(+id, req);
+  }
+
+  //Blocked
+  @Get('blocked/:id')
+  getBlocked(@Param('id') id: string, @Req() req) {
+    if (+id)
+      return this.usersService.getblocked(+id);
+  }
+
+  @Post('blocked')
+  addBlocked(@Body() addFriendDto: AddFriendDto,@Req() req)
+  {
+    return this.usersService.addblocked(addFriendDto, req)
+  }
+  @Delete('blocked/:id')
+  removeBlocked(@Param('id') id: string, @Req() req)
+  {
+    return this.usersService.removeblocked(+id, req);
   }
 }

@@ -31,11 +31,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             losses: 0,
             statusOnline: true,
             inGame: false,
-            is2fa: false,
-            friends: [],
-            blocked: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            is2fa: false
         });
         return user || null;
     }

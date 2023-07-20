@@ -36,15 +36,31 @@ export class User {
     @Column()
     avatar: string;
 
-    @ManyToMany(type => User)
+    @ManyToMany(() => User)
     @JoinTable({
-        name: 'friends'
-    })
+        name: 'friends',
+        joinColumn: {
+          name: 'userId',
+          referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+          name: 'friendId',
+          referencedColumnName: 'id',
+        },
+      })
     friends: User[];
 
     @ManyToMany(type => User)
     @JoinTable({
-        name: 'blocked'
+        name: 'blocked',
+        joinColumn: {
+            name: 'userId',
+            referencedColumnName: 'id',
+        },
+            inverseJoinColumn: {
+            name: 'blockedId',
+            referencedColumnName: 'id',
+        },
     })
     blocked: User[];
 
