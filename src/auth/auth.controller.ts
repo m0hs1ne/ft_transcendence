@@ -22,9 +22,17 @@ export class AuthController {
     async callback(@Req() req: Request, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
+        res.redirect('http://localhost:3000/api/auth/success');
+    }
+
+    @Get('success')
+    @UseGuards(userAuthGuard)
+    async success(@Req() req: Request, @Res() res: Response) {
+        const jwt = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
         res.send({
-            access_token: payload,
+            access_token: jwt,
         })
+        res.end();
     }
 
     @Get('status')
@@ -51,6 +59,6 @@ export class AuthController {
     async googleCallback(@Req() req: Request, @Res() res: Response) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:3000/api/auth/status');
+        res.redirect('http://localhost:3000/api/auth/success');
     }
 }
