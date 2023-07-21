@@ -21,7 +21,7 @@ export class ChatRoomsService {
         createChatRoomDto.privacy != 'private' &&
         createChatRoomDto.privacy != 'public')
         {
-          createChatRoomDto.privacy = 'public';
+          throw new NotAcceptableException();
         }
     if (createChatRoomDto.privacy == 'protected' && !createChatRoomDto.ifProtectedPass)
       throw new NotAcceptableException();
