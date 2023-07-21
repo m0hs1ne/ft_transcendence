@@ -6,7 +6,7 @@ export class UserExistExceptionFilter implements ExceptionFilter {
   catch(exception: QueryFailedError, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
     const status = 409; // or any other status code you want to use
-    const error = 'User already exist';
+    const error = 'Already exist';
     response.status(status).json({ error });
   }
 }
