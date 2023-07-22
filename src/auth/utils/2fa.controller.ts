@@ -18,7 +18,6 @@ export class TwoFactorAuthenticationController {
     @Post('generate')
     @UseGuards(userAuthGuard)
     async register(@Req() req: RequestWithUser, @Res() res: Response) {
-        // user not available
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return res.redirect('/login');
         const { otpauthUrl } = await this.twoAuth.generateTwoFactorAuthenticationSecret(user);
@@ -35,18 +34,18 @@ export class TwoFactorAuthenticationController {
         if (!isCodeValid) return { message: 'Invalid code' };
         await this.authService.turnOn2fa(user.id);
         return { message: '2fa is now enabled' };
-
     }
 
     @Post('authenticate')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
-    async authenticate(@Req() req: RequestWithUser, @Body() { tfaCode }: { tfaCode: string }) {
+    async authenticate(@Req() req: RequestWithUser,@Res() res: Response, @Body() { tfaCode }: { tfaCode: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
         const isCodeValid = await this.twoAuth.isTwoFactorAuthenticationCodeValid(tfaCode, user);
         if (!isCodeValid) throw new UnauthorizedException('Invalid code');
-        const jwt = await this.authService.getCookiesWithJwtToken(user.id, true);
+        const jwt = await this.authService.getCookiesWithJwtToken(user.id);
+        res.clearCookie('jwt');
         req.res.setHeader('Set-Cookie', jwt);
         return user;
     }

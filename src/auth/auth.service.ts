@@ -58,8 +58,8 @@ export class AuthService {
         return this.userRepository.update(id, {is2fa: true});
     }
 
-    public async getCookiesWithJwtToken(userId: number, isSFA = true) {
-        const payload = { userId, isSFA };
+    public async getCookiesWithJwtToken(userId: number) {
+        const payload = { userId };
         const token = this.jwtService.sign(payload, 
             {secret: process.env.SESSION_SECRET, expiresIn: '1d'});
         return `jwt=${token}; HttpOnly; Path=/; Max-Age=${86400}`;

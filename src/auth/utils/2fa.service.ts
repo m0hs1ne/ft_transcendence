@@ -17,7 +17,6 @@ export class TwoFactorAuthenticationService {
     ) {}
 
     public async generateTwoFactorAuthenticationSecret(user: any) {
-        // console.log(user);
         const secret = authenticator.generateSecret();
         const otpauthUrl = authenticator.keyuri(user.email, process.env.TWO_FACTOR_AUTHENTICATION_APP_NAME, secret);
         await this.authService.set2faSecret(user.id, secret);
