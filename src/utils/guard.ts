@@ -26,6 +26,26 @@ export class userAuthGuard implements CanActivate {
     }
 }
 
+@Injectable()
+export class userWSAuthGuard implements CanActivate {
+
+    constructor(private readonly jwtService: JwtService) {}
+
+    canActivate(context: ExecutionContext) {
+        try {
+        const req = context.switchToHttp().getRequest();
+        const cookies = req.handshake.headers.cookie;
+        if(!cookies) 
+            return false
+        const jwt = cookies.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1];
+        const payload = this.jwtService.verify(jwt, {secret: process.env.SESSION_SECRET});
+        if(!payload) return false;
+        return true;
+        } catch (e) {
+            return false
+        }
+    }
+}
 
 export function verifyToken(cookie: string): any {
   try {

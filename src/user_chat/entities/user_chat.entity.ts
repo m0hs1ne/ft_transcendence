@@ -5,7 +5,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export class UserChat {
     @PrimaryGeneratedColumn()
-    public userChatId: number;
+    public id: number;
 
     @Column()
     public userId: number;
@@ -16,9 +16,12 @@ export class UserChat {
     @Column()
     public userStatus: string;
 
-    @ManyToOne(() => User, (user) => user.userChat)
+    @Column()
+    public role: string;
+
+    @ManyToOne(() => User, (user) => user.userChat, {onDelete: 'CASCADE'})
     public user: User
 
-    @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.userChat)
+    @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.userChat, {onDelete: 'CASCADE'})
     public chatRoom: ChatRoom
 }

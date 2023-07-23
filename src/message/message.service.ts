@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { Message } from './entities/message.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class MessageService {
+  constructor(@InjectRepository(Message) private readonly messageRepository: Repository<Message>,
+  ) {}
+
   create(createMessageDto: CreateMessageDto) {
     return 'This action adds a new message';
   }

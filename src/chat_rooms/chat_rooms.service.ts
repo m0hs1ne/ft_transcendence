@@ -3,31 +3,54 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoom } from './entities/chat_room.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, In, QueryFailedError, Repository } from 'typeorm';
 import { verifyToken } from 'src/utils/guard';
 import { NotFoundError } from 'rxjs';
 import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
+import { UserChatService } from 'src/user_chat/user_chat.service';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
+import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 
 @Injectable()
 export class ChatRoomsService {
   constructor(
     @InjectRepository(ChatRoom) private readonly chatRoomRepository: Repository<ChatRoom>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(UserChat) private readonly userChatRepository: Repository<UserChat>
   ) {}
 
   async create(createChatRoomDto: CreateChatRoomDto, @Req() req) {
-    const payload = verifyToken(req.headers.cookie);
-    createChatRoomDto.owner = payload.sub;
+    const payload = verifyToken(req.handshake.headers.cookie);
     if (createChatRoomDto.privacy != 'protected' &&
         createChatRoomDto.privacy != 'private' &&
         createChatRoomDto.privacy != 'public')
         {
-          throw new NotAcceptableException();
+          return 'Not Acceptable';
         }
     if (createChatRoomDto.privacy == 'protected' && !createChatRoomDto.ifProtectedPass)
-      throw new NotAcceptableException();
-      
+      return 'Not Acceptable';
+    createChatRoomDto.owner = payload.sub
     const chatroom = await this.chatRoomRepository.create(createChatRoomDto);
     const newChat = await this.chatRoomRepository.save(chatroom);
+    if(!newChat)
+      return 'Not Acceptable';
+    let options: FindOneOptions<User> = {
+      where: {id: payload.sub},
+    }
+    const ownerObj = await this.userRepository.findOne(options);
+    let optionschat: FindOneOptions<ChatRoom> = {
+      where: {id: newChat.id},
+    }
+    const userChatRel = await this.userChatRepository.create({
+      userId: payload.sub,
+      chatRoomId: newChat.id,
+      userStatus: "normal",
+      role: "owner",
+      user: ownerObj,
+      chatRoom: newChat
+    })
+    await this.userChatRepository.save(userChatRel)
     return {
       id: newChat.id,
       title: newChat.title,
@@ -38,7 +61,11 @@ export class ChatRoomsService {
 
   async findAll() {
     return await this.chatRoomRepository.find({
-      select: ['id', 'title', 'owner', 'privacy'],
+      select: ['id', 'title', 'owner', 'privacy'], 
+      where: {
+        privacy: In(['public', 'protected'])
+      }
+    
     });
   }
  
@@ -58,7 +85,7 @@ export class ChatRoomsService {
   }
 
   async update(title: string, updateChatRoomDto: UpdateChatRoomDto, @Req() req) {
-    const payload = verifyToken(req.headers.cookie);
+    const payload = verifyToken(req.handshake.headers.cookie);
     const options: FindOneOptions<ChatRoom> = {
       where: {title},
     }
@@ -71,21 +98,23 @@ export class ChatRoomsService {
         updateChatRoomDto.privacy = 'public';
 
       if (updateChatRoomDto.privacy == 'protected' && !updateChatRoomDto.ifProtectedPass)
-        throw new NotAcceptableException();
+        return "Not Acceptable"
         chat.title = updateChatRoomDto.title;
         chat.privacy = updateChatRoomDto.privacy;
         chat.ifProtectedPass = updateChatRoomDto.ifProtectedPass
-      await this.chatRoomRepository.save(chat)
-      return `Chat ${title} was updated!` 
+      return await this.chatRoomRepository.save(chat)
     }
     else
-      throw new NotFoundException();
+      return "Not Found"
   }
 
-  async remove(title: string, @Req() req) {
-    const payload = verifyToken(req.headers.cookie);
-    const chat = await this.findOne(title)
-    if (chat.owner == payload.sub)
+  async remove(title, @Req() req) {
+    const payload = verifyToken(req.handshake.headers.cookie);
+    const chat = await this.findOne(title.title)
+    
+    if (chat && chat.owner == payload.sub)
       this.chatRoomRepository.delete({id: chat.id})
+    else
+      return 'Not Acceptable'
   }
 }
