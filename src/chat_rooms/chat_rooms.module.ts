@@ -8,10 +8,11 @@ import { User } from 'src/users/entities/user.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { UserChatService } from 'src/user_chat/user_chat.service';
 import { ChatRoomsGateway } from './chat_rooms.gateway';
+import { ChatRoomInv } from './entities/invitation.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, User, UserChat]),
+    TypeOrmModule.forFeature([ChatRoom, User, UserChat, ChatRoomInv]),
   ],
   providers: [ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
 })

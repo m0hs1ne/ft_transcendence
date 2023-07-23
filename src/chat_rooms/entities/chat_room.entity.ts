@@ -35,7 +35,7 @@ export class ChatRoom {
     @BeforeUpdate()
     @BeforeInsert()
     async hashPassword() {
-      const saltRounds = 10;
+      const saltRounds = process.env.SALT;
       if (this.ifProtectedPass)
         this.ifProtectedPass = await bcrypt.hash(this.ifProtectedPass, saltRounds);
     }

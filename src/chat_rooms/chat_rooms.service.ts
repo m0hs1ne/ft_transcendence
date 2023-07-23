@@ -3,7 +3,7 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoom } from './entities/chat_room.entity';
-import { FindOneOptions, FindOptionsWhere, In, QueryFailedError, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, In, QueryFailedError, RemoveOptions, Repository } from 'typeorm';
 import { verifyToken } from 'src/utils/guard';
 import { NotFoundError } from 'rxjs';
 import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
@@ -11,13 +11,15 @@ import { UserChatService } from 'src/user_chat/user_chat.service';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
+import { ChatRoomInv } from './entities/invitation.entity';
 
 @Injectable()
 export class ChatRoomsService {
   constructor(
     @InjectRepository(ChatRoom) private readonly chatRoomRepository: Repository<ChatRoom>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(UserChat) private readonly userChatRepository: Repository<UserChat>
+    @InjectRepository(UserChat) private readonly userChatRepository: Repository<UserChat>,
+    @InjectRepository(ChatRoomInv) private readonly invitationRepository: Repository<ChatRoomInv>
   ) {}
 
   async create(createChatRoomDto: CreateChatRoomDto, @Req() req) {
@@ -117,4 +119,76 @@ export class ChatRoomsService {
     else
       return 'Not Acceptable'
   }
+
+  async isAdmin(userId: number, chatRoomId: number)
+  {
+    const options: FindOneOptions<UserChat> = {
+      where: {userId, chatRoomId},
+    }
+    const relation = await this.userChatRepository.findOne(options);
+    if (relation && (relation.role == 'admin' || relation.role == 'owner'))
+      return true
+    console.log("false")
+    return false
+  }
+
+  async acceptInviteToChat(body, payload)
+  {
+    const options: FindOneOptions<ChatRoomInv> = {
+      where: {id: body.id},
+    }
+    const invite = await this.invitationRepository.findOne(options)
+    if (!invite || invite.toId != payload.sub)
+      return "Not Allowed"
+    const userChat = await this.userChatRepository.create({
+      userId: invite.toId,
+      chatRoomId: invite.chatRoomId,
+      userStatus: "normal",
+      role: "member"
+    })
+    await this.userChatRepository.save(userChat)
+  }
+
+  async inviteUserToPrivate(id: number, title: string, payload)
+  {
+    const chat = await this.findOne(title)
+    const isAdmin = await this.isAdmin(payload.sub, chat.id)
+    if (chat && chat.privacy == "private" && isAdmin)
+    {
+      const options: FindOneOptions<User> = {
+        select: ['id', 'username', 'avatar'], 
+        where: {id: payload.sub},
+      }
+      const owner = await this.userRepository.findOne(options)
+      const invite = await this.invitationRepository.create({
+        title,
+        chatRoomId: chat.id,
+        fromId: owner.id,
+        toId: id
+      })
+      if (invite)
+      {
+        const inviteChat = await this.invitationRepository.save(invite)
+        return {
+          id: inviteChat.id,
+          title,
+          from: owner
+        }
+      }
+      else
+        return "Failed to send"
+    }
+    else
+      return "Not Owner Or Admin"
+  }
+  async removeInvitation(id: string)
+  {
+    const options: FindOneOptions<ChatRoomInv> = {
+      where: {id},
+    }
+    const entityToRemove = await this.invitationRepository.findOne(options);
+    this.invitationRepository.remove(entityToRemove)
+  }
+
 }
+

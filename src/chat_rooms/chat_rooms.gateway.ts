@@ -4,7 +4,8 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { OnModuleInit, Req, UseGuards } from '@nestjs/common';
 import { Server } from 'socket.io';
-import { userAuthGuard, userWSAuthGuard } from 'src/utils/guard';
+import { userAuthGuard, userWSAuthGuard, verifyToken } from 'src/utils/guard';
+import { UsersService } from 'src/users/users.service';
 
 var clients = {}
 
@@ -16,7 +17,8 @@ var clients = {}
 }
 )
 export class ChatRoomsGateway implements OnModuleInit{
-  constructor(private readonly chatRoomsService: ChatRoomsService) {}
+  constructor(private readonly chatRoomsService: ChatRoomsService) {
+  }
 
   @WebSocketServer()
   server: Server;
@@ -24,9 +26,10 @@ export class ChatRoomsGateway implements OnModuleInit{
   onModuleInit() {
     this.server.on('connection', (socket =>
     {
-      console.log(socket.handshake.headers.cookie)
+      const payload = verifyToken(socket.handshake.headers.cookie)
+      console.log(payload.sub)
       console.log("Connected")
-      clients[socket.handshake.headers.cookie] = socket
+      clients[payload.sub] = socket
     }))
   }
 
@@ -35,7 +38,8 @@ export class ChatRoomsGateway implements OnModuleInit{
     const chatroom = await this.chatRoomsService.create(createChatRoomDto, req)
     if (chatroom == 'Not Acceptable')
     {
-      var client = clients[req.handshake.headers.cookie]
+      const payload = verifyToken(req.handshake.headers.cookie)
+      var client = clients[payload.sub]
       client.emit('Error', 'Not Acceptable')
     }
     else
@@ -53,12 +57,14 @@ export class ChatRoomsGateway implements OnModuleInit{
     return this.chatRoomsService.findOne(title);
   }
 
+  
   @SubscribeMessage('updateChatRoom')
   async update(@MessageBody() updateChatRoomDto: UpdateChatRoomDto, @Req() req) {
     const chatroom = await this.chatRoomsService.update(updateChatRoomDto.title, updateChatRoomDto, req);
     if (chatroom == 'Not Acceptable' || chatroom == 'Not Found')
     {
-      var client = clients[req.handshake.headers.cookie]
+      const payload = verifyToken(req.handshake.headers.cookie)
+      var client = clients[payload.sub]
       client.emit('Error', chatroom)
     }
     else
@@ -70,10 +76,60 @@ export class ChatRoomsGateway implements OnModuleInit{
     const chatroom = await this.chatRoomsService.remove(title, req);
     if (chatroom == 'Not Acceptable')
     {
-      var client = clients[req.handshake.headers.cookie]
+      const payload = verifyToken(req.handshake.headers.cookie)
+      var client = clients[payload.sub]
       client.emit('Error', chatroom)
     }
     else
       this.server.emit('removeChatRoom', chatroom)
+  }
+
+  /* ---------invitation handler------------ */
+  @SubscribeMessage('acceptInviteToChat')
+  async acceptInvite(@MessageBody() body, @Req() req)
+  {
+    // id: invitation id
+    if (body.id)
+    {
+      const payload = verifyToken(req.handshake.headers.cookie)
+      this.chatRoomsService.acceptInviteToChat(body, payload);
+      this.chatRoomsService.removeInvitation(body.id)
+    }
+  }
+  
+  @SubscribeMessage('inviteToChat')
+  async invite(@MessageBody() body, @Req() req) {
+    // toId: id of user to send to | title: title of chatroom
+    const socketClient = clients[body.toId]
+    if (socketClient)
+    {
+      const payload = verifyToken(req.handshake.headers.cookie)
+      const invite = await this.chatRoomsService.inviteUserToPrivate(body.toId, body.title, payload);
+      if (invite == "Not Owner Or Admin" || invite == "Failed to send")
+      {
+        const socket = clients[payload.sub];
+        socket.emit('Error', invite)
+      }
+      else
+        socketClient.emit('ChatInvitations', invite)
+    }
+    /* return Invitation sent to toId, 
+    {
+      id, of invitation
+      title, of chat
+      from:
+        {
+          id,
+          username,
+          avatar
+        }
+      }
+    */
+  }
+    /* ---------message handler------------ */
+  @SubscribeMessage('sendMessage')
+  async newChatMessage(@MessageBody() body, @Req() req)
+  {
+    
   }
 }
