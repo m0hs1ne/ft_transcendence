@@ -72,7 +72,10 @@ export class ChatRoomsGateway implements OnModuleInit{
   }
 
   @SubscribeMessage('removeChatRoom')
-  async remove(@MessageBody() title, @Req() req) {
+  async remove(@MessageBody() body, @Req() req) {
+    const {title} = body;
+    if (!title)
+      return;
     const chatroom = await this.chatRoomsService.remove(title, req);
     if (chatroom == 'Not Acceptable')
     {
@@ -88,8 +91,9 @@ export class ChatRoomsGateway implements OnModuleInit{
   @SubscribeMessage('acceptInviteToChat')
   async acceptInvite(@MessageBody() body, @Req() req)
   {
-    // id: invitation id
-    if (body.id)
+    const {id} = body;
+    //expected params: id: invitation id
+    if (id)
     {
       const payload = verifyToken(req.handshake.headers.cookie)
       this.chatRoomsService.acceptInviteToChat(body, payload);
@@ -99,12 +103,16 @@ export class ChatRoomsGateway implements OnModuleInit{
   
   @SubscribeMessage('inviteToChat')
   async invite(@MessageBody() body, @Req() req) {
-    // toId: id of user to send to | title: title of chatroom
-    const socketClient = clients[body.toId]
+    const {
+      toId,
+      title
+    } = body
+    // expected params: toId: id of user to send to | title: title of chatroom
+    const socketClient = clients[toId]
     if (socketClient)
     {
       const payload = verifyToken(req.handshake.headers.cookie)
-      const invite = await this.chatRoomsService.inviteUserToPrivate(body.toId, body.title, payload);
+      const invite = await this.chatRoomsService.inviteUserToPrivate(toId, title, payload);
       if (invite == "Not Owner Or Admin" || invite == "Failed to send")
       {
         const socket = clients[payload.sub];
@@ -126,10 +134,16 @@ export class ChatRoomsGateway implements OnModuleInit{
       }
     */
   }
-    /* ---------message handler------------ */
+  /* ---------message handler------------ */
   @SubscribeMessage('sendMessage')
   async newChatMessage(@MessageBody() body, @Req() req)
   {
-    
+    //expected params: chatId, messageContent
+    const {
+      toId,
+      messageContent
+    } = body;
+    const payload = verifyToken(req.handshake.headers.cookie);
+    this.chatRoomsService.newChatMessage(payload.sub, toId, messageContent, payload, clients)
   }
 }

@@ -3,7 +3,7 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoom } from './entities/chat_room.entity';
-import { FindOneOptions, FindOptionsWhere, In, QueryFailedError, RemoveOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, QueryFailedError, RemoveOptions, Repository } from 'typeorm';
 import { verifyToken } from 'src/utils/guard';
 import { NotFoundError } from 'rxjs';
 import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { ChatRoomInv } from './entities/invitation.entity';
+import { Message } from 'src/message/entities/message.entity';
 
 @Injectable()
 export class ChatRoomsService {
@@ -19,7 +20,8 @@ export class ChatRoomsService {
     @InjectRepository(ChatRoom) private readonly chatRoomRepository: Repository<ChatRoom>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(UserChat) private readonly userChatRepository: Repository<UserChat>,
-    @InjectRepository(ChatRoomInv) private readonly invitationRepository: Repository<ChatRoomInv>
+    @InjectRepository(ChatRoomInv) private readonly invitationRepository: Repository<ChatRoomInv>,
+    @InjectRepository(Message) private readonly messageRepository: Repository<Message>
   ) {}
 
   async create(createChatRoomDto: CreateChatRoomDto, @Req() req) {
@@ -132,6 +134,7 @@ export class ChatRoomsService {
     return false
   }
 
+  /* ---------invitation handler------------ */
   async acceptInviteToChat(body, payload)
   {
     const options: FindOneOptions<ChatRoomInv> = {
@@ -190,5 +193,33 @@ export class ChatRoomsService {
     this.invitationRepository.remove(entityToRemove)
   }
 
+  /* ---------message handler------------ */
+  async newChatMessage(fromId, chatId, messageContent, payload, clients)
+  {
+    const options : FindManyOptions<UserChat> = {
+      select: ['userId', 'userStatus', 'role', 'chatRoom'],
+      where: {chatRoomId: chatId}
+    }
+    const chatmembers = await this.userChatRepository.find(options)
+    if (!chatmembers)
+      return 'Not Found'
+    const from = await this.userRepository.findOne({
+      select: ['id', 'avatar', 'username'],
+      where: {id: fromId}
+    })
+    if (!from)
+      return 'Not Found'
+    for (const member of chatmembers)
+    {
+      if (member.userStatus != 'blocked' && member.userStatus != 'banned' && member.userStatus != 'muted')
+      {
+        clients[member.userId].emit('receiveMessage', {
+          message: messageContent,
+          from,
+          chatRoomId: chatId
+        })
+      }
+    }
+  }
 }
 
