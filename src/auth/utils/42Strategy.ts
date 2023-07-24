@@ -26,6 +26,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             tfSecret: '',
             username: profile._json.login,
             email: profile._json.email,
+            mailOTP: '',
+            mailOTPExpires: null,
             avatar: profile._json.image.link,
             level: 0,
             wins: 0,

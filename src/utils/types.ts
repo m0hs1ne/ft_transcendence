@@ -2,6 +2,8 @@ export type UserDetails = {
     tfSecret: string;
     email: string;
     username: string;
+    mailOTP: string;
+    mailOTPExpires: Date;
     avatar: string;
     level: number;
     wins: number;

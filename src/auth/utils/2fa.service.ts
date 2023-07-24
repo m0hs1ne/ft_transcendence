@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 import { User } from "src/typeorm/entities/typeof";
 import { authenticator } from 'otplib';
 import { toFileStream } from "qrcode";
-import { JwtService } from "@nestjs/jwt";
+import * as nodemailer from 'nodemailer';
 
 config();
 
@@ -12,9 +12,11 @@ config();
 
 @Injectable()
 export class TwoFactorAuthenticationService {
+
     constructor(
         private readonly authService: AuthService,
-    ) {}
+    ) {
+    }
 
     public async generateTwoFactorAuthenticationSecret(user: any) {
         const secret = authenticator.generateSecret();
@@ -28,6 +30,8 @@ export class TwoFactorAuthenticationService {
     }
 
     public async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+        // console.log(user);
+        // console.log(twoFactorAuthenticationCode);
         const isCodeValid = authenticator.verify({
             token: twoFactorAuthenticationCode,
             secret: user.tfaSecret,

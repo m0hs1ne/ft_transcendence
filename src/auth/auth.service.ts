@@ -8,17 +8,28 @@ import RequestWithUser from "src/utils/reqWithUser";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { config } from "dotenv";
+import * as nodemailer from 'nodemailer';
 
 config();
 
 
 @Injectable()
 export class AuthService {
+    private Transporter: nodemailer.Transporter;
+
     constructor(
         @InjectRepository(User) private readonly userRepository:
         Repository<User>,
         private readonly jwtService: JwtService,
-    ){}
+    ){
+        this.Transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+            }
+        })
+    }
 
     async validateUser(details: UserDetails) {
         // console.log(details);
@@ -58,12 +69,37 @@ export class AuthService {
         return this.userRepository.update(id, {is2fa: true});
     }
 
+    async turnOff2fa(id: number) {
+        return this.userRepository.update(id, {is2fa: false});
+    }
+
     public async getCookiesWithJwtToken(userId: number) {
         const payload = { userId };
         const token = this.jwtService.sign(payload, 
             {secret: process.env.SESSION_SECRET, expiresIn: '1d'});
         return `jwt=${token}; HttpOnly; Path=/; Max-Age=${86400}`;
 
+    }
+
+    public async sendOTP(user: User, code: string) {
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: user.email,
+            subject: 'Two Factor Authentication',
+            text: `Your two factor authentication code is ${code}`,
+        };
+        this.userRepository.update(user.id, {mailOTP: code});
+        this.userRepository.update(user.id, {mailOTPExpire: new Date(Date.now() + 300000)});
+        await this.Transporter.sendMail(mailOptions);
+    }
+
+    public async isOTPValid(user: User, code: string) {
+        if(user.mailOTP === code) {
+            if(user.mailOTPExpire > new Date(Date.now())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

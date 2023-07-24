@@ -25,6 +25,8 @@ export class googleStrategy extends PassportStrategy(Strategy,'google'){
             tfSecret: '',
             username: profile._json.given_name,
             email: profile._json.email,
+            mailOTP: '',
+            mailOTPExpires: null,
             avatar: profile._json.picture,
             level: 0,
             wins: 0,
