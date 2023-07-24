@@ -1,5 +1,6 @@
 import { Achievement } from "src/achievement/entities/achievement.entity";
 import { ChatRoom } from "src/chat_rooms/entities/chat_room.entity";
+import { ChatRoomInv } from "src/chat_rooms/entities/invitation.entity";
 import { Message } from "src/message/entities/message.entity";
 import { UserChat } from "src/user_chat/entities/user_chat.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
@@ -80,5 +81,11 @@ export class User {
     @JoinTable({
         name: 'user_achievements'
     })
+
+    @OneToMany(() => ChatRoomInv, invit => invit.toUser)
+    public invitation: ChatRoomInv[];
+
+    @OneToMany(() => ChatRoomInv, invit => invit.fromUser)
+    public sentInvit: ChatRoomInv[];
     achievements: Achievement[]
 }

@@ -3,6 +3,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from "@nestjs/jwt";
 import { config } from "dotenv";
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt'
 
 config()
 @Injectable()
@@ -59,4 +60,8 @@ export function verifyToken(cookie: string): any {
       throw new Error('Invalid token');
     }
   }
+}
+
+export async function checkPassword(password: string, hash: string): Promise<boolean> {
+  return await bcrypt.compare(password, hash);
 }

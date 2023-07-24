@@ -1,5 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/users/entities/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
+import { ChatRoom } from "./chat_room.entity";
 
 @Entity()
 export class ChatRoomInv {
@@ -10,11 +12,20 @@ export class ChatRoomInv {
     title: string;
 
     @Column()
-    chatRoomId: number;
+    toUserId: number;
 
     @Column()
-    fromId: number;
-    
+    fromUserId: number;
+
     @Column()
-    toId: number;
+    chatRoomId: number;
+
+    @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.invitation, {onDelete: 'CASCADE'})
+    public chatRoom: ChatRoom
+
+    @ManyToOne(() => User, (chatRoom) => chatRoom.invitation, {onDelete: 'CASCADE'})
+    public toUser: User
+
+    @ManyToOne(() => User, (chatRoom) => chatRoom.sentInvit, {onDelete: 'CASCADE'})
+    public fromUser: User
 }

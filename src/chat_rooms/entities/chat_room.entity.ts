@@ -2,6 +2,7 @@ import { Message } from "src/message/entities/message.entity";
 import { UserChat } from "src/user_chat/entities/user_chat.entity";
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
+import { ChatRoomInv } from "./invitation.entity";
 
 @Entity()
 export class ChatRoom {
@@ -31,6 +32,9 @@ export class ChatRoom {
 
     @OneToMany(() => UserChat, userChat => userChat.chatRoom)
     public userChat: UserChat[];
+
+    @OneToMany(() => ChatRoomInv, invit => invit.chatRoom)
+    public invitation: UserChat[];
 
     @BeforeUpdate()
     @BeforeInsert()

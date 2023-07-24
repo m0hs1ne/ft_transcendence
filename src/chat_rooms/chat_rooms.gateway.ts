@@ -2,12 +2,13 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from
 import { ChatRoomsService } from './chat_rooms.service';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
-import { OnModuleInit, Req, UseGuards } from '@nestjs/common';
-import { Server } from 'socket.io';
-import { userAuthGuard, userWSAuthGuard, verifyToken } from 'src/utils/guard';
-import { UsersService } from 'src/users/users.service';
+import { BadRequestException, ForbiddenException, NotFoundException, OnModuleInit, Req, UseGuards } from '@nestjs/common';
+import { Server, Socket } from 'socket.io';
+import { checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
-var clients = {}
+
+var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()
 
 @UseGuards(userWSAuthGuard)
 @WebSocketGateway({
@@ -16,34 +17,41 @@ var clients = {}
   }
 }
 )
-export class ChatRoomsGateway implements OnModuleInit{
+export class ChatRoomsGateway{
   constructor(private readonly chatRoomsService: ChatRoomsService) {
   }
 
   @WebSocketServer()
   server: Server;
 
-  onModuleInit() {
-    this.server.on('connection', (socket =>
-    {
-      const payload = verifyToken(socket.handshake.headers.cookie)
-      console.log(payload.sub)
-      console.log("Connected")
-      clients[payload.sub] = socket
-    }))
+  async handleConnection(socket: Socket)
+  {
+    const payload = verifyToken(socket.handshake.headers.cookie)
+    console.log(payload.sub)
+    console.log("Connected")
+    clients.set(payload.sub,socket)
+    const invitation = await this.chatRoomsService.getInvitationOfUser(payload.sub);
+    socket.emit('Notification', invitation)
   }
+
+  handleDisconnect(socket: Socket) {
+    const payload = verifyToken(socket.handshake.headers.cookie)
+    console.log(`socket disconnected: ${payload.sub}`);
+    clients.delete(payload.sub)
+  }
+
 
   @SubscribeMessage('createChatRoom')
   async create(@MessageBody() createChatRoomDto: CreateChatRoomDto, @Req() req) {
-    const chatroom = await this.chatRoomsService.create(createChatRoomDto, req)
-    if (chatroom == 'Not Acceptable')
+    const payload = verifyToken(req.handshake.headers.cookie);
+    try
     {
-      const payload = verifyToken(req.handshake.headers.cookie)
-      var client = clients[payload.sub]
-      client.emit('Error', 'Not Acceptable')
-    }
-    else
+      const chatroom = await this.chatRoomsService.create(createChatRoomDto, payload)
       this.server.emit('onNewChatRoom', chatroom)
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
   }
 
   @SubscribeMessage('findAllChatRooms')
@@ -60,15 +68,15 @@ export class ChatRoomsGateway implements OnModuleInit{
   
   @SubscribeMessage('updateChatRoom')
   async update(@MessageBody() updateChatRoomDto: UpdateChatRoomDto, @Req() req) {
-    const chatroom = await this.chatRoomsService.update(updateChatRoomDto.title, updateChatRoomDto, req);
-    if (chatroom == 'Not Acceptable' || chatroom == 'Not Found')
+    const payload = verifyToken(req.handshake.headers.cookie);
+    try 
     {
-      const payload = verifyToken(req.handshake.headers.cookie)
-      var client = clients[payload.sub]
-      client.emit('Error', chatroom)
-    }
-    else
+      const chatroom = await this.chatRoomsService.update(updateChatRoomDto.title, updateChatRoomDto, payload);
       this.server.emit('updateChatRoom', chatroom)
+    } catch (e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
   }
 
   @SubscribeMessage('removeChatRoom')
@@ -76,50 +84,75 @@ export class ChatRoomsGateway implements OnModuleInit{
     const {title} = body;
     if (!title)
       return;
-    const chatroom = await this.chatRoomsService.remove(title, req);
-    if (chatroom == 'Not Acceptable')
+    const payload = verifyToken(req.handshake.headers.cookie);
+    try 
     {
-      const payload = verifyToken(req.handshake.headers.cookie)
-      var client = clients[payload.sub]
-      client.emit('Error', chatroom)
+      if (title && typeof title === 'string')
+      {
+        const chatroom = await this.chatRoomsService.remove(title, payload);
+        clients[payload.sub].emit('Notification', {message: `${chatroom.affected} has been deleted.`})
+      }
+    } catch (e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
     }
-    else
-      this.server.emit('removeChatRoom', chatroom)
   }
 
-  /* ---------invitation handler------------ */
-  @SubscribeMessage('acceptInviteToChat')
-  async acceptInvite(@MessageBody() body, @Req() req)
+  /* ---------add Member to public or protected Chat----------- */
+  @SubscribeMessage('enterToChat')
+  async enterMember(@MessageBody() body, @Req() req)
   {
-    const {id} = body;
-    //expected params: id: invitation id
-    if (id)
+    //expected params chatId, password: if chat is protected
+    const payload = await verifyToken(req.handshake.headers.cookie)
+    const {chatId, password} = body;
+    try
     {
-      const payload = verifyToken(req.handshake.headers.cookie)
-      this.chatRoomsService.acceptInviteToChat(body, payload);
-      this.chatRoomsService.removeInvitation(body.id)
+      if (typeof chatId === 'number')
+      {
+
+          const chat = await this.chatRoomsService.findOneById(chatId);
+          if (!chat)
+            throw new NotFoundException();
+          else if (chat.privacy == 'protected' && typeof password != 'string')
+            throw new ForbiddenException()
+          else if (chat.privacy == 'public' || (chat.privacy == 'protected' && checkPassword(password, chat.password)))
+          {
+            const member = await this.chatRoomsService.addMemberToChat(chatId, payload.sub)
+            await this.chatRoomsService.newChatMessage(chat.owner, chatId, `${member.username} joined the chat.` , 'notification', clients);
+          }
+      }
+      else if (typeof chatId != 'number')
+        throw new BadRequestException('chatId should be a number')
+    }
+    catch(e)
+    {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
     }
   }
-  
+
+  /* ---------add Member to private chat via invitation------------ */
   @SubscribeMessage('inviteToChat')
   async invite(@MessageBody() body, @Req() req) {
     const {
       toId,
       title
     } = body
+
     // expected params: toId: id of user to send to | title: title of chatroom
-    const socketClient = clients[toId]
-    if (socketClient)
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try
     {
-      const payload = verifyToken(req.handshake.headers.cookie)
       const invite = await this.chatRoomsService.inviteUserToPrivate(toId, title, payload);
-      if (invite == "Not Owner Or Admin" || invite == "Failed to send")
+      const client = clients.get(toId)
+      if (client)
       {
-        const socket = clients[payload.sub];
-        socket.emit('Error', invite)
+        console.log("Socket Entered")
+        client.emit('Notification', invite)
       }
-      else
-        socketClient.emit('ChatInvitations', invite)
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
     }
     /* return Invitation sent to toId, 
     {
@@ -134,16 +167,52 @@ export class ChatRoomsGateway implements OnModuleInit{
       }
     */
   }
+
+  @SubscribeMessage('acceptInviteToChat')
+  async acceptInvite(@MessageBody() body, @Req() req)
+  {
+    const {id} = body;
+    //expected params: id: invitation id
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try
+    {
+      if (typeof id === 'string')
+      {
+        await this.chatRoomsService.acceptInviteToChat(body, payload);
+        const invitation = await this.chatRoomsService.getInvitationById(id)
+        await this.chatRoomsService.removeInvitation(id)
+        if (invitation)
+        {
+          await this.chatRoomsService.newChatMessage(invitation.fromUser.id, invitation.chatRoom.id, `${invitation.toUser.username} joined the chat.` , 'notification', clients);
+        }
+      }
+      else
+        throw new BadRequestException('id should be a string.')
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
+  }
+
   /* ---------message handler------------ */
   @SubscribeMessage('sendMessage')
   async newChatMessage(@MessageBody() body, @Req() req)
   {
-    //expected params: chatId, messageContent
+    //expected params: chatId, message
     const {
-      toId,
-      messageContent
+      chatId,
+      message
     } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
-    this.chatRoomsService.newChatMessage(payload.sub, toId, messageContent, payload, clients)
+    try
+    {
+      if (chatId && message)
+        await this.chatRoomsService.newChatMessage(payload.sub, chatId, message, "message", clients)
+      else
+        throw new BadRequestException()
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
   }
 }

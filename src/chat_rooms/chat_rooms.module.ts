@@ -9,10 +9,11 @@ import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { UserChatService } from 'src/user_chat/user_chat.service';
 import { ChatRoomsGateway } from './chat_rooms.gateway';
 import { ChatRoomInv } from './entities/invitation.entity';
+import { Message } from 'src/message/entities/message.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, User, UserChat, ChatRoomInv]),
+    TypeOrmModule.forFeature([ChatRoom, User, UserChat, ChatRoomInv, Message]),
   ],
   providers: [ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
 })

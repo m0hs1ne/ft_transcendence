@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException, NotFoundException, Req, UseFilters } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotAcceptableException, NotFoundException, Req, UseFilters } from '@nestjs/common';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,21 +24,20 @@ export class ChatRoomsService {
     @InjectRepository(Message) private readonly messageRepository: Repository<Message>
   ) {}
 
-  async create(createChatRoomDto: CreateChatRoomDto, @Req() req) {
-    const payload = verifyToken(req.handshake.headers.cookie);
+  async create(createChatRoomDto: CreateChatRoomDto, payload) {
     if (createChatRoomDto.privacy != 'protected' &&
         createChatRoomDto.privacy != 'private' &&
         createChatRoomDto.privacy != 'public')
         {
-          return 'Not Acceptable';
+          throw new ForbiddenException()
         }
     if (createChatRoomDto.privacy == 'protected' && !createChatRoomDto.ifProtectedPass)
-      return 'Not Acceptable';
+      throw new ForbiddenException()
     createChatRoomDto.owner = payload.sub
     const chatroom = await this.chatRoomRepository.create(createChatRoomDto);
     const newChat = await this.chatRoomRepository.save(chatroom);
     if(!newChat)
-      return 'Not Acceptable';
+      throw new ForbiddenException()
     let options: FindOneOptions<User> = {
       where: {id: payload.sub},
     }
@@ -84,12 +83,28 @@ export class ChatRoomsService {
       id: one.id,
       title: one.title,
       owner: one.owner,
-      privacy: one.privacy,
+      privacy: one.privacy
     };
   }
 
-  async update(title: string, updateChatRoomDto: UpdateChatRoomDto, @Req() req) {
-    const payload = verifyToken(req.handshake.headers.cookie);
+  async findOneById(id: number) {
+    const options: FindOneOptions<ChatRoom> = {
+      where: {id},
+    }
+    const one = await this.chatRoomRepository.findOne(options)
+    if (!one)
+      throw new NotFoundException()
+    return {
+      id: one.id,
+      title: one.title,
+      owner: one.owner,
+      privacy: one.privacy,
+      password: one.ifProtectedPass
+    };
+  }
+
+
+  async update(title: string, updateChatRoomDto: UpdateChatRoomDto, payload) {
     const options: FindOneOptions<ChatRoom> = {
       where: {title},
     }
@@ -102,24 +117,23 @@ export class ChatRoomsService {
         updateChatRoomDto.privacy = 'public';
 
       if (updateChatRoomDto.privacy == 'protected' && !updateChatRoomDto.ifProtectedPass)
-        return "Not Acceptable"
+        throw new ForbiddenException()
         chat.title = updateChatRoomDto.title;
         chat.privacy = updateChatRoomDto.privacy;
         chat.ifProtectedPass = updateChatRoomDto.ifProtectedPass
       return await this.chatRoomRepository.save(chat)
     }
     else
-      return "Not Found"
+      throw new NotFoundException()
   }
 
-  async remove(title, @Req() req) {
-    const payload = verifyToken(req.handshake.headers.cookie);
-    const chat = await this.findOne(title.title)
+  async remove(title, payload) {
     
+    const chat = await this.findOne(title)
     if (chat && chat.owner == payload.sub)
-      this.chatRoomRepository.delete({id: chat.id})
+      return await this.chatRoomRepository.delete({id: chat.id})
     else
-      return 'Not Acceptable'
+      throw new ForbiddenException()
   }
 
   async isAdmin(userId: number, chatRoomId: number)
@@ -134,6 +148,25 @@ export class ChatRoomsService {
     return false
   }
 
+  async addMemberToChat(chatId, userId)
+  {
+    const oldMember = await this.userChatRepository.findOne({
+      where: {userId, chatRoomId: chatId}
+    })
+    if (oldMember)
+      throw new ForbiddenException('Already joined this chat')
+    const newMember = await this.userChatRepository.create({
+      userId,
+      chatRoomId: chatId,
+      userStatus: "normal",
+      role: "member"
+    })
+    await this.userChatRepository.save(newMember)
+    return await this.userRepository.findOne({
+      where: {id: userId}
+    })
+  }
+
   /* ---------invitation handler------------ */
   async acceptInviteToChat(body, payload)
   {
@@ -141,10 +174,15 @@ export class ChatRoomsService {
       where: {id: body.id},
     }
     const invite = await this.invitationRepository.findOne(options)
-    if (!invite || invite.toId != payload.sub)
-      return "Not Allowed"
+    if (!invite || invite.toUserId != payload.sub)
+      throw new NotFoundException()
+      const oldMember = await this.userChatRepository.findOne({
+        where: {userId: invite.toUserId, chatRoomId: invite.chatRoomId}
+      })
+      if (oldMember)
+        throw new ForbiddenException('Already joined this chat')
     const userChat = await this.userChatRepository.create({
-      userId: invite.toId,
+      userId: invite.toUserId,
       chatRoomId: invite.chatRoomId,
       userStatus: "normal",
       role: "member"
@@ -158,16 +196,27 @@ export class ChatRoomsService {
     const isAdmin = await this.isAdmin(payload.sub, chat.id)
     if (chat && chat.privacy == "private" && isAdmin)
     {
-      const options: FindOneOptions<User> = {
+      const fromUser = await this.userRepository.findOne({
         select: ['id', 'username', 'avatar'], 
         where: {id: payload.sub},
-      }
-      const owner = await this.userRepository.findOne(options)
+      })
+      const toUser = await this.userRepository.findOne({
+        select: ['id', 'username', 'avatar'], 
+        where: {id: id},
+      })
+      const oldMember = await this.userChatRepository.findOne({
+        where: {userId: toUser.id, chatRoomId: chat.id}
+      })
+      if (oldMember)
+        throw new ForbiddenException('Already joined this chat')
       const invite = await this.invitationRepository.create({
         title,
         chatRoomId: chat.id,
-        fromId: owner.id,
-        toId: id
+        fromUserId: fromUser.id,
+        toUserId: id,
+        toUser,
+        fromUser,
+        chatRoom: chat
       })
       if (invite)
       {
@@ -175,15 +224,14 @@ export class ChatRoomsService {
         return {
           id: inviteChat.id,
           title,
-          from: owner
+          from: fromUser
         }
       }
-      else
-        return "Failed to send"
     }
     else
-      return "Not Owner Or Admin"
+      return new ForbiddenException()
   }
+
   async removeInvitation(id: string)
   {
     const options: FindOneOptions<ChatRoomInv> = {
@@ -193,8 +241,57 @@ export class ChatRoomsService {
     this.invitationRepository.remove(entityToRemove)
   }
 
+  async getInvitationById(id: string)
+  {
+    const invitations = await this.invitationRepository
+    .createQueryBuilder('invitation')
+    .leftJoinAndSelect('invitation.toUser', 'toUser')
+    .leftJoinAndSelect('invitation.fromUser', 'fromUser')
+    .leftJoinAndSelect('invitation.chatRoom', 'chatRoom')
+    .where('invitation.id = :id', { id })
+    .select([
+      'invitation.id',
+      'toUser.id',
+      'toUser.username',
+      'toUser.avatar',
+      'fromUser.id',
+      'fromUser.username',
+      'fromUser.avatar',
+      'chatRoom.id',
+      'chatRoom.title',
+    ])
+    .getOne();
+  
+    return invitations;
+  }
+
+
+  async getInvitationOfUser(id: number)
+  {
+    const invitations = await this.invitationRepository
+    .createQueryBuilder('invitation')
+    .leftJoinAndSelect('invitation.toUser', 'toUser')
+    .leftJoinAndSelect('invitation.fromUser', 'fromUser')
+    .leftJoinAndSelect('invitation.chatRoom', 'chatRoom')
+    .where('invitation.toUserId = :id', { id })
+    .select([
+      'invitation.id',
+      'toUser.id',
+      'toUser.username',
+      'toUser.avatar',
+      'fromUser.id',
+      'fromUser.username',
+      'fromUser.avatar',
+      'chatRoom.id',
+      'chatRoom.title',
+    ])
+    .getMany();
+  
+    return invitations;
+  }
+
   /* ---------message handler------------ */
-  async newChatMessage(fromId, chatId, messageContent, payload, clients)
+  async newChatMessage(fromId, chatId, messageContent, type, clients)
   {
     const options : FindManyOptions<UserChat> = {
       select: ['userId', 'userStatus', 'role', 'chatRoom'],
@@ -202,24 +299,40 @@ export class ChatRoomsService {
     }
     const chatmembers = await this.userChatRepository.find(options)
     if (!chatmembers)
-      return 'Not Found'
+      throw new NotFoundException()
+    let fromIsMember = false;
+    await chatmembers.find((member) => {
+        if (member.userId == fromId)
+          fromIsMember = true
+    })
+    if (!fromIsMember)
+      throw new ForbiddenException()
     const from = await this.userRepository.findOne({
       select: ['id', 'avatar', 'username'],
       where: {id: fromId}
     })
     if (!from)
-      return 'Not Found'
+      throw new NotFoundException()
     for (const member of chatmembers)
     {
-      if (member.userStatus != 'blocked' && member.userStatus != 'banned' && member.userStatus != 'muted')
+      const client = clients.get(member.userId)
+      if (client && member.userStatus != 'blocked' && member.userStatus != 'banned' && member.userStatus != 'muted')
       {
-        clients[member.userId].emit('receiveMessage', {
-          message: messageContent,
-          from,
-          chatRoomId: chatId
-        })
+        client.emit('receiveMessage', {
+            type,
+            message: messageContent,
+            from,
+            chatRoomId: chatId
+          })
       }
     }
+    const chatroom = await this.chatRoomRepository.findOne({where: {id: chatId}})
+    const message = await this.messageRepository.create({
+      message: messageContent,
+      user: from,
+      chatroom
+    })
+    this.messageRepository.save(message)
   }
 }
 
