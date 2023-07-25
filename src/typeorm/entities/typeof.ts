@@ -1,35 +1,35 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, OneToMany,JoinTable, UpdateDateColumn, CreateDateColumn} from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, OneToMany, JoinTable, UpdateDateColumn, CreateDateColumn } from "typeorm";
 
-@Entity({name: 'users'})
+@Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     tfaSecret: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     mailOTP: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     mailOTPExpire: Date;
 
-    @Column({type: "varchar",unique: true, length: 50})
+    @Column({ type: "varchar", unique: true, length: 50 })
     email: string;
 
-    @Column({type: "varchar",unique: true, length: 50})
+    @Column({ type: "varchar", unique: true, length: 50 })
     username: string;
 
     @Column()
     avatar: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     level: number;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     wins: number;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     losses: number;
 
     @Column()
@@ -38,7 +38,7 @@ export class User {
     @Column()
     inGame: boolean;
 
-    @Column({default: false})
+    @Column({ default: false })
     is2fa: boolean;
 
     @ManyToMany(type => User)
@@ -53,10 +53,10 @@ export class User {
     })
     blocked: User[];
 
-    @CreateDateColumn({type: 'timestamp'})
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @UpdateDateColumn({type: 'timestamp'})
+    @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date;
 
     // @OneToMany(() => Message, (message) => message.user)

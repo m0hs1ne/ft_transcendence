@@ -30,7 +30,7 @@ export class TwoFactorAuthenticationController {
     async turnOn2fa(@Req() req: RequestWithUser, @Body() { tfaCode }: { tfaCode: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
-        if(user.is2fa) return { message: '2fa is already enabled' };
+        if (user.is2fa) return { message: '2fa is already enabled' };
         const isCodeValid = await this.twoAuth.isTwoFactorAuthenticationCodeValid(tfaCode, user);
         if (!isCodeValid) return { message: 'Invalid code' };
         await this.authService.turnOn2fa(user.id);
@@ -40,7 +40,7 @@ export class TwoFactorAuthenticationController {
     @Post('authenticate')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
-    async authenticate(@Req() req: RequestWithUser,@Res() res: Response, @Body() { tfaCode }: { tfaCode: string }) {
+    async authenticate(@Req() req: RequestWithUser, @Res() res: Response, @Body() { tfaCode }: { tfaCode: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
         const isCodeValid = await this.twoAuth.isTwoFactorAuthenticationCodeValid(tfaCode, user);
@@ -57,7 +57,7 @@ export class TwoFactorAuthenticationController {
     async turnOff2fa(@Req() req: RequestWithUser, @Body() { tfaCode }: { tfaCode: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
-        if(!user.is2fa) return { message: '2fa is already disabled' };
+        if (!user.is2fa) return { message: '2fa is already disabled' };
         const isCodeValid = await this.twoAuth.isTwoFactorAuthenticationCodeValid(tfaCode, user);
         if (!isCodeValid) return { message: 'Invalid code' };
         await this.authService.turnOff2fa(user.id);
@@ -81,7 +81,7 @@ export class TwoFactorAuthenticationController {
     async turnOn2faMail(@Req() req: RequestWithUser, @Body() { otp }: { otp: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
-        if(user.is2fa) return { message: '2fa is already enabled' };
+        if (user.is2fa) return { message: '2fa is already enabled' };
         const isCodeValid = await this.authService.isOTPValid(user, otp);
         if (!isCodeValid) return { message: 'Invalid code' };
         await this.authService.turnOn2fa(user.id);
@@ -91,7 +91,7 @@ export class TwoFactorAuthenticationController {
     @Post('/mail/authenticate')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
-    async authenticateMail(@Req() req: RequestWithUser,@Res() res: Response, @Body() { otp }: { otp: string }) {
+    async authenticateMail(@Req() req: RequestWithUser, @Res() res: Response, @Body() { otp }: { otp: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
         const isCodeValid = await this.authService.isOTPValid(user, otp);
@@ -108,7 +108,7 @@ export class TwoFactorAuthenticationController {
     async turnOff2faMail(@Req() req: RequestWithUser, @Body() { otp }: { otp: string }) {
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
-        if(!user.is2fa) return { message: '2fa is already disabled' };
+        if (!user.is2fa) return { message: '2fa is already disabled' };
         const isCodeValid = await this.authService.isOTPValid(user, otp);
         if (!isCodeValid) return { message: 'Invalid code' };
         await this.authService.turnOff2fa(user.id);

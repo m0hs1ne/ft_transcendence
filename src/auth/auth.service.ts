@@ -19,9 +19,9 @@ export class AuthService {
 
     constructor(
         @InjectRepository(User) private readonly userRepository:
-        Repository<User>,
+            Repository<User>,
         private readonly jwtService: JwtService,
-    ){
+    ) {
         this.Transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -33,7 +33,7 @@ export class AuthService {
 
     async validateUser(details: UserDetails) {
         // console.log(details);
-        const user = await this.userRepository.findOneBy({email: details.email})
+        const user = await this.userRepository.findOneBy({ email: details.email })
         if (user) return user;
         // console.log('Creating new user...');
         const newUser = this.userRepository.create(details);
@@ -41,7 +41,7 @@ export class AuthService {
     }
 
     async findUser(id: number) {
-        return await this.userRepository.findOneBy({id: id});
+        return await this.userRepository.findOneBy({ id: id });
     }
 
     async login(user: any) {
@@ -50,33 +50,33 @@ export class AuthService {
     }
 
     async set2faSecret(id: number, secret: string) {
-        return this.userRepository.update(id, {tfaSecret: secret});
+        return this.userRepository.update(id, { tfaSecret: secret });
     }
 
     async getUserFromJwt(req: RequestWithUser) {
         try {
-        const jwt = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
-        const decoded = await this.jwtService.decode(jwt);
-        const id = decoded.sub;
-        const user = await this.findUser(id);
-        return user;
+            const jwt = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
+            const decoded = await this.jwtService.decode(jwt);
+            const id = decoded.sub;
+            const user = await this.findUser(id);
+            return user;
         } catch (e) {
             return null;
         }
     }
 
     async turnOn2fa(id: number) {
-        return this.userRepository.update(id, {is2fa: true});
+        return this.userRepository.update(id, { is2fa: true });
     }
 
     async turnOff2fa(id: number) {
-        return this.userRepository.update(id, {is2fa: false});
+        return this.userRepository.update(id, { is2fa: false });
     }
 
     public async getCookiesWithJwtToken(userId: number) {
         const payload = { userId };
-        const token = this.jwtService.sign(payload, 
-            {secret: process.env.SESSION_SECRET, expiresIn: '1d'});
+        const token = this.jwtService.sign(payload,
+            { secret: process.env.SESSION_SECRET, expiresIn: '1d' });
         return `jwt=${token}; HttpOnly; Path=/; Max-Age=${86400}`;
 
     }
@@ -88,14 +88,14 @@ export class AuthService {
             subject: 'Two Factor Authentication',
             text: `Your two factor authentication code is ${code}`,
         };
-        this.userRepository.update(user.id, {mailOTP: code});
-        this.userRepository.update(user.id, {mailOTPExpire: new Date(Date.now() + 300000)});
+        this.userRepository.update(user.id, { mailOTP: code });
+        this.userRepository.update(user.id, { mailOTPExpire: new Date(Date.now() + 300000) });
         await this.Transporter.sendMail(mailOptions);
     }
 
     public async isOTPValid(user: User, code: string) {
-        if(user.mailOTP === code) {
-            if(user.mailOTPExpire > new Date(Date.now())) {
+        if (user.mailOTP === code) {
+            if (user.mailOTPExpire > new Date(Date.now())) {
                 return true;
             }
         }
@@ -119,7 +119,7 @@ export class JwtTwoFactorStrategy extends PassportStrategy(Strategy, 'jwt-two-fa
 
     async validate(payload: any) {
         const user = await this.authService.findUser(payload.userId);
-        if(!user.is2fa) return user;
-        if(payload.isSFA) return user;
+        if (!user.is2fa) return user;
+        if (payload.isSFA) return user;
     }
 }

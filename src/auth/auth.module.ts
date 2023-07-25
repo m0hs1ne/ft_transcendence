@@ -27,8 +27,8 @@ config();
   providers: [FortyTwoStrategy,
     SessionSerializer,
     {
-    provide: 'AUTH_SERVICE',
-    useClass: AuthService,
-  }, AuthService,JwtStrategy, googleStrategy, TwoFactorAuthenticationService],
+      provide: 'AUTH_SERVICE',
+      useClass: AuthService,
+    }, AuthService, JwtStrategy, googleStrategy, TwoFactorAuthenticationService],
 })
 export class AuthModule { }

@@ -20,9 +20,9 @@ config();
     entities: [User],
     synchronize: true,
   }),
-  PassportModule.register({ session: true })
-],
+    PassportModule.register({ session: true })
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

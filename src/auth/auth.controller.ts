@@ -9,7 +9,7 @@ import { googleStrategy } from './utils/googleStrategy';
 export class AuthController {
 
     constructor(private readonly authService: AuthService,
-        ) {}
+    ) { }
 
     @Get('42/login')
     @UseGuards(FortyTwoAuthGuard)

@@ -26,18 +26,18 @@ export class googleAuthGuard extends AuthGuard('google') {
 @Injectable()
 export class userAuthGuard implements CanActivate {
 
-    constructor(private readonly jwtService: JwtService) {}
+    constructor(private readonly jwtService: JwtService) { }
 
     canActivate(context: ExecutionContext) {
         try {
-        const req = context.switchToHttp().getRequest();
-        const cookies = req.headers.cookie;
-        if(!cookies) 
-            throw new UnauthorizedException();
-        const jwt = cookies.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
-        const payload = this.jwtService.verify(jwt);
-        if(!payload) return false;
-        return true;
+            const req = context.switchToHttp().getRequest();
+            const cookies = req.headers.cookie;
+            if (!cookies)
+                throw new UnauthorizedException();
+            const jwt = cookies.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
+            const payload = this.jwtService.verify(jwt);
+            if (!payload) return false;
+            return true;
         } catch (e) {
             throw new UnauthorizedException();
         }
