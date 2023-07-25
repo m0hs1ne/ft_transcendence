@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
-import { userAuthGuard } from '../utils/guard'
+import { userAuthGuard, verifyToken } from '../utils/guard'
 import { UserNotExistExceptionFilter } from 'src/exceptions/NotExistException.filter';
 import { AddFriendDto } from './dto/add-friend.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express'
+import { diskStorage } from 'multer';
 
 @UseGuards(userAuthGuard)
 @Controller('users')
@@ -72,5 +75,28 @@ export class UsersController {
   removeBlocked(@Param('id') id: string, @Req() req)
   {
     return this.usersService.removeblocked(+id, req);
+  }
+
+  @Post('upload_avatar')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: 'public/img',
+      filename: (req, file, cb) => {
+        cb(null, file.originalname);
+      },
+    }),
+  }))
+  uploadFile(@UploadedFile(new ParseFilePipe({
+    validators: [
+      new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+      new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+    ],
+  }),) file: Express.Multer.File, @Req() req) {
+    const payload = verifyToken(req.headers.cookie);
+    this.usersService.uploadAvatar(file, payload)
+    return {
+      statusCode: 200,
+      data: file.path,
+    };;
   }
 }

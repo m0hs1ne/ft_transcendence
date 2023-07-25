@@ -3,7 +3,7 @@ import { ChatRoom } from "src/chat_rooms/entities/chat_room.entity";
 import { ChatRoomInv } from "src/chat_rooms/entities/invitation.entity";
 import { Message } from "src/message/entities/message.entity";
 import { UserChat } from "src/user_chat/entities/user_chat.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -37,6 +37,9 @@ export class User {
     @Column()
     avatar: string;
 
+    @Column({nullable: true, type: 'timestamp'})
+    disconnectAt: Date
+
     @ManyToMany(() => User)
     @JoinTable({
         name: 'friends',
@@ -65,12 +68,6 @@ export class User {
     })
     blocked: User[];
 
-    @CreateDateColumn({type: 'timestamp'})
-    createdAt: Date;
-
-    @UpdateDateColumn({type: 'timestamp'})
-    updatedAt: Date;
-
     @OneToMany(() => Message, (message) => message.user)
     messages: Message[]
 
@@ -88,4 +85,21 @@ export class User {
     @OneToMany(() => ChatRoomInv, invit => invit.fromUser)
     public sentInvit: ChatRoomInv[];
     achievements: Achievement[]
+
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
+
+    @BeforeInsert()
+    updateCreatedAt() {
+      this.createdAt = new Date();
+      this.updatedAt = new Date();
+    }
+  
+    @BeforeUpdate()
+    updateUpdatedAt() {
+      this.updatedAt = new Date();
+    }
 }

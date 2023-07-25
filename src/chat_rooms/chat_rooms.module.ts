@@ -15,6 +15,6 @@ import { Message } from 'src/message/entities/message.entity';
   imports: [
     TypeOrmModule.forFeature([ChatRoom, User, UserChat, ChatRoomInv, Message]),
   ],
-  providers: [ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
+  providers: [UserChatService, ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
 })
 export class ChatRoomsModule {}

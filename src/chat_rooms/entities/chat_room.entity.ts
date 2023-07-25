@@ -21,12 +21,6 @@ export class ChatRoom {
     @Column({nullable: true})
     ifProtectedPass: string;
 
-    @CreateDateColumn({type: 'timestamp'})
-    createdAt: Date;
-
-    @UpdateDateColumn({type: 'timestamp'})
-    updatedAt: Date;
-
     @OneToMany(() => Message, (message) => message.chatroom)
     messages: Message[]
 
@@ -42,5 +36,23 @@ export class ChatRoom {
       const saltRounds = process.env.SALT;
       if (this.ifProtectedPass)
         this.ifProtectedPass = await bcrypt.hash(this.ifProtectedPass, saltRounds);
+    }
+
+
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
+
+    @BeforeInsert()
+    updateCreatedAt() {
+      this.createdAt = new Date();
+      this.updatedAt = new Date();
+    }
+  
+    @BeforeUpdate()
+    updateUpdatedAt() {
+      this.updatedAt = new Date();
     }
 }

@@ -6,6 +6,7 @@ import { BadRequestException, ForbiddenException, NotFoundException, OnModuleIni
 import { Server, Socket } from 'socket.io';
 import { checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { UsersService } from 'src/users/users.service';
 
 
 var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()
@@ -18,7 +19,8 @@ var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEven
 }
 )
 export class ChatRoomsGateway{
-  constructor(private readonly chatRoomsService: ChatRoomsService) {
+  constructor(private readonly chatRoomsService: ChatRoomsService, 
+    private readonly userService: UsersService) {
   }
 
   @WebSocketServer()
@@ -30,13 +32,18 @@ export class ChatRoomsGateway{
     console.log(payload.sub)
     console.log("Connected")
     clients.set(payload.sub,socket)
+    const notification = []
     const invitation = await this.chatRoomsService.getInvitationOfUser(payload.sub);
-    socket.emit('Notification', invitation)
+    notification.push({type: 'invitation', invitation})
+    const message = await this.chatRoomsService.messagesNotification(payload.sub)
+    notification.push({type: 'messageCount', message})
+    socket.emit('Notification', notification)
   }
 
   handleDisconnect(socket: Socket) {
     const payload = verifyToken(socket.handshake.headers.cookie)
     console.log(`socket disconnected: ${payload.sub}`);
+    this.userService.updateDateDisconnect(payload.sub)
     clients.delete(payload.sub)
   }
 
@@ -90,7 +97,8 @@ export class ChatRoomsGateway{
       if (title && typeof title === 'string')
       {
         const chatroom = await this.chatRoomsService.remove(title, payload);
-        clients[payload.sub].emit('Notification', {message: `${chatroom.affected} has been deleted.`})
+        const client = clients.get(payload.sub)
+        client.emit('Notification', {message: `${chatroom.affected} has been deleted.`})
       }
     } catch (e) {
       const client = clients.get(payload.sub)
@@ -98,8 +106,77 @@ export class ChatRoomsGateway{
     }
   }
 
+  /* ----------------Member Work------------------ */
+  @SubscribeMessage('updateMemberRole')
+  async updateRole(@MessageBody() body, @Req() req)
+  {
+    const {
+      memberId,
+      chatId,
+      role
+    } = body;
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try{
+      if (typeof memberId === 'number' && typeof chatId === 'number' && typeof role === 'string')
+      {
+        const updatedMember = await this.chatRoomsService.updateMemberRole(memberId, chatId, role, payload)
+        if (updatedMember.role == 'admin')
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is an ${updatedMember.role} now.` , 'notification', clients);
+        else
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is a normal ${updatedMember.role} now.` , 'notification', clients);
+      }
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
+  }
+
+  @SubscribeMessage('updateMemberStatus')
+  async updateStatus(@MessageBody() body, @Req() req)
+  {
+    const {
+      memberId,
+      chatId,
+      status
+    } = body;
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try{
+      if (typeof memberId === 'number' && typeof chatId === 'number' && typeof status === 'string')
+      {
+        const updatedMember = await this.chatRoomsService.updateMemberStatus(memberId, chatId, status, payload)
+        await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is ${updatedMember.userStatus}.` , 'notification', clients);
+      }
+      else
+        throw new BadRequestException()
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
+  }
+
+  @SubscribeMessage('kickMember')
+  async kickMember(@MessageBody() body, @Req() req)
+  {
+    const {
+      memberId,
+      chatId
+    } = body
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try{
+      if (typeof memberId === 'number' && typeof chatId === 'number')
+      {
+        const kick = await this.chatRoomsService.kickMemberFromChat(memberId, chatId, payload);
+        await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);
+      }
+      else
+        throw new BadRequestException()
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
+  }
   /* ---------add Member to public or protected Chat----------- */
-  @SubscribeMessage('enterToChat')
+  @SubscribeMessage('enterChat')
   async enterMember(@MessageBody() body, @Req() req)
   {
     //expected params chatId, password: if chat is protected
@@ -132,7 +209,7 @@ export class ChatRoomsGateway{
   }
 
   /* ---------add Member to private chat via invitation------------ */
-  @SubscribeMessage('inviteToChat')
+  @SubscribeMessage('sendInvit')
   async invite(@MessageBody() body, @Req() req) {
     const {
       toId,
@@ -208,6 +285,29 @@ export class ChatRoomsGateway{
     {
       if (chatId && message)
         await this.chatRoomsService.newChatMessage(payload.sub, chatId, message, "message", clients)
+      else
+        throw new BadRequestException()
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      client.emit('Error', {error: e.message});
+    }
+  }
+
+  @SubscribeMessage('sendDM')
+  async newDMMessage(@MessageBody() body, @Req() req)
+  {
+    //expected params: toUserId, message
+    const {
+      toUserId,
+      message
+    } = body;
+    const payload = verifyToken(req.handshake.headers.cookie);
+    try
+    {
+      if (typeof toUserId === 'number' && typeof message === 'string')
+      {
+        const msg = await this.chatRoomsService.newDMMessage(payload.sub, toUserId, message, clients)
+      }
       else
         throw new BadRequestException()
     } catch(e) {

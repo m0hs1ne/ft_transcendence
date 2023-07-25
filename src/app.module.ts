@@ -11,10 +11,15 @@ import { UserChatModule } from './user_chat/user_chat.module';
 import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 config();
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..'),
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

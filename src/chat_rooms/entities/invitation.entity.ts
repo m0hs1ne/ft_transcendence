@@ -1,5 +1,5 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
 import { ChatRoom } from "./chat_room.entity";
 
@@ -28,4 +28,22 @@ export class ChatRoomInv {
 
     @ManyToOne(() => User, (chatRoom) => chatRoom.sentInvit, {onDelete: 'CASCADE'})
     public fromUser: User
+
+
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
+
+    @BeforeInsert()
+    updateCreatedAt() {
+      this.createdAt = new Date();
+      this.updatedAt = new Date();
+    }
+  
+    @BeforeUpdate()
+    updateUpdatedAt() {
+      this.updatedAt = new Date();
+    }
 }

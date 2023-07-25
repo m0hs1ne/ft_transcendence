@@ -7,6 +7,9 @@ import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { verifyToken } from 'src/utils/guard';
 import { AddFriendDto } from './dto/add-friend.dto';
+import { disconnect } from 'process';
+import { catchError, firstValueFrom } from 'rxjs';
+
 
 
 @Injectable()
@@ -149,5 +152,21 @@ export class UsersService {
       `DELETE FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1); `,
       [id, payload.sub],
     );
+  }
+
+  async updateDateDisconnect(id: number)
+  {
+    const user = await this.userRepository.findOne({
+      where: {id}
+    })
+    if (!user)
+      return;
+    user.disconnectAt = new Date()
+    await this.userRepository.save(user)
+  }
+
+  async uploadAvatar(avatar, payload)
+  {
+    await this.userRepository.update({id: payload.sub}, {avatar: process.env.DOMAIN_URL + avatar.path})
   }
 }
