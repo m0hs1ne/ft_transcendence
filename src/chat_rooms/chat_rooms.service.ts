@@ -8,6 +8,8 @@ import { User } from 'src/users/entities/user.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { ChatRoomInv } from './entities/invitation.entity';
 import { Message } from 'src/message/entities/message.entity';
+import { of } from 'rxjs';
+import { notEqual } from 'assert';
 
 @Injectable()
 export class ChatRoomsService {
@@ -179,7 +181,7 @@ export class ChatRoomsService {
     return userChat;
   }
 
-  async updateMemberStatus(memberId, chatId, status, payload)
+  async updateMemberStatus(memberId, chatId, status, mutedFor,payload)
   {
     const userChat = await this.userChatRepository.findOne({
       relations: ['user', 'chatRoom'],
@@ -191,12 +193,22 @@ export class ChatRoomsService {
       throw new UnauthorizedException()
     if (status != 'banned' && status != 'muted')
       throw new BadRequestException()
+    if (status == 'muted')
+    {
+      if (typeof mutedFor === 'number')
+      {
+        const mutedAt = new Date()
+        userChat.mutedTill.setMinutes(mutedAt.getMinutes() + mutedFor)
+      }
+      else
+        throw new BadRequestException()
+    }
     userChat.userStatus = status;
     await this.userChatRepository.save(userChat)
     return userChat;
   }
 
-  async kickMemberFromChat(memberId, chatId, payload)
+  async kickMemberFromChat(memberId, chatId, payload, clients)
   {
     const userChat = await this.userChatRepository.findOne({
       relations: ['user', 'chatRoom'],
@@ -204,10 +216,37 @@ export class ChatRoomsService {
     })
     if (!userChat)
       throw new NotFoundException()
+    if (memberId != payload.sub)
+    {
       if (userChat.role == 'owner' || (userChat.role == 'admin' && userChat.chatRoom.owner != payload.sub) || !this.isAdmin(payload.sub, chatId))
         throw new UnauthorizedException()
-    await this.userChatRepository.remove(userChat);
-    return userChat;
+    }
+    else if (userChat.role == 'owner')
+    {
+      const members = await this.userChatRepository.find({
+        where: {chatRoomId: chatId, userStatus: In(['normal', 'muted'])}
+      })
+      if (members.length == 1)
+      {
+        const chat = await this.chatRoomRepository.findOne({where: {id: chatId}})
+        await this.chatRoomRepository.remove(chat);
+      }
+      else
+      {
+        for (const member of members)
+        {
+          if (member.role != 'owner')
+          {
+            member.role = 'owner'
+            this.userChatRepository.save(member)
+            break;
+          }
+        }
+        this.newChatMessage(payload.sub, chatId, `${userChat.user.username} left the chat.` , 'notification', clients);
+        this.userChatRepository.remove(userChat);
+        return userChat;
+      }
+    }
   }
 
   /* ---------invitation handler------------ */
@@ -233,11 +272,11 @@ export class ChatRoomsService {
     await this.userChatRepository.save(userChat)
   }
 
-  async inviteUserToPrivate(id: number, title: string, payload)
+  async inviteUserToChat(id: number, title: string, payload)
   {
     const chat = await this.findOne(title)
     const isAdmin = await this.isAdmin(payload.sub, chat.id)
-    if (chat && chat.privacy == "private" && isAdmin)
+    if (chat && isAdmin)
     {
       const fromUser = await this.userRepository.findOne({
         select: ['id', 'username', 'avatar'], 
@@ -251,7 +290,12 @@ export class ChatRoomsService {
         where: {userId: toUser.id, chatRoomId: chat.id}
       })
       if (oldMember)
-        throw new ForbiddenException('Already joined this chat')
+      {
+        if (oldMember.userStatus == 'normal' || oldMember.userStatus == 'muted')
+          throw new ForbiddenException('Already joined this chat.')
+        else if (oldMember.userStatus == 'banned')
+          throw new NotAcceptableException('This user is banned from this chat.')  
+      }
       const invite = await this.invitationRepository.create({
         title,
         chatRoomId: chat.id,
@@ -337,19 +381,33 @@ export class ChatRoomsService {
   async newChatMessage(fromId, chatId, messageContent, type, clients)
   {
     const options : FindManyOptions<UserChat> = {
-      select: ['userId', 'userStatus', 'role', 'chatRoom'],
+      select: ['id', 'userId', 'userStatus', 'role', 'chatRoom'],
       where: {chatRoomId: chatId}
     }
     const chatmembers = await this.userChatRepository.find(options)
     if (!chatmembers)
       throw new NotFoundException()
     let fromIsMember = false;
-    await chatmembers.find((member) => {
+    const fromMember = await chatmembers.find((member) => {
         if (member.userId == fromId)
+        {
           fromIsMember = true
+          return member
+        }
     })
     if (!fromIsMember)
       throw new ForbiddenException()
+    if (fromMember.userStatus == 'muted')
+    {
+      const timeNow = new Date()
+      if (timeNow.getMinutes() < fromMember.mutedTill.getMinutes())
+        throw new NotAcceptableException(`You are muted in this chat (time remaining ${fromMember.mutedTill.getMinutes() - timeNow.getMinutes()} Min)`)
+      else
+      {        
+        fromMember.userStatus = 'normal'
+        await this.userChatRepository.save(fromMember);
+      }
+    }
     const from = await this.userRepository.findOne({
       relations: ['blocked'],
       select: ['id', 'avatar', 'username'],
@@ -362,7 +420,7 @@ export class ChatRoomsService {
       const client = clients.get(member.userId)
       if (await this.checkUserisBlockedByUser(from, member.userId))
         continue;
-      if (client && member.userStatus != 'banned' && member.userStatus != 'muted')
+      if (client && member.userStatus != 'banned')
       {
         client.emit('receiveMessage', {
             type,
@@ -380,6 +438,7 @@ export class ChatRoomsService {
     })
     this.messageRepository.save(message)
   }
+
   /* ---------DM message handler------------ */
   async newDMMessage(formId, toId, message, clients)
   {

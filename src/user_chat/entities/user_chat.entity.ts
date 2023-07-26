@@ -19,12 +19,14 @@ export class UserChat {
     @Column()
     public role: string;
 
+    @Column({nullable: true, type: 'timestamp'})
+    mutedTill: Date
+
     @ManyToOne(() => User, (user) => user.userChat, {onDelete: 'CASCADE'})
     public user: User
 
     @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.userChat, {onDelete: 'CASCADE'})
     public chatRoom: ChatRoom
-
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

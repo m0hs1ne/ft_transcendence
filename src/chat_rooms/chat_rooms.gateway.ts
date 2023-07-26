@@ -7,6 +7,7 @@ import { Server, Socket } from 'socket.io';
 import { checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { UsersService } from 'src/users/users.service';
+import { type } from 'os';
 
 
 var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()
@@ -134,16 +135,18 @@ export class ChatRoomsGateway{
   @SubscribeMessage('updateMemberStatus')
   async updateStatus(@MessageBody() body, @Req() req)
   {
+    // MutedFor in minutes
     const {
       memberId,
       chatId,
-      status
+      status,
+      mutedFor
     } = body;
     const payload = verifyToken(req.handshake.headers.cookie)
     try{
       if (typeof memberId === 'number' && typeof chatId === 'number' && typeof status === 'string')
       {
-        const updatedMember = await this.chatRoomsService.updateMemberStatus(memberId, chatId, status, payload)
+        const updatedMember = await this.chatRoomsService.updateMemberStatus(memberId, chatId, status, mutedFor, payload)
         await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is ${updatedMember.userStatus}.` , 'notification', clients);
       }
       else
@@ -165,8 +168,9 @@ export class ChatRoomsGateway{
     try{
       if (typeof memberId === 'number' && typeof chatId === 'number')
       {
-        const kick = await this.chatRoomsService.kickMemberFromChat(memberId, chatId, payload);
-        await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);
+        const kick = await this.chatRoomsService.kickMemberFromChat(memberId, chatId, payload, clients);
+        if (memberId != payload.sub)
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);          
       }
       else
         throw new BadRequestException()
@@ -209,7 +213,7 @@ export class ChatRoomsGateway{
   }
 
   /* ---------add Member to private chat via invitation------------ */
-  @SubscribeMessage('sendInvit')
+  @SubscribeMessage('sendInvite')
   async invite(@MessageBody() body, @Req() req) {
     const {
       toId,
@@ -220,13 +224,18 @@ export class ChatRoomsGateway{
     const payload = verifyToken(req.handshake.headers.cookie)
     try
     {
-      const invite = await this.chatRoomsService.inviteUserToPrivate(toId, title, payload);
-      const client = clients.get(toId)
-      if (client)
+      if (typeof toId === 'number' && typeof title === 'string')
       {
-        console.log("Socket Entered")
-        client.emit('Notification', invite)
+        const invite = await this.chatRoomsService.inviteUserToChat(toId, title, payload);
+        const client = clients.get(toId)
+        if (client)
+        {
+          console.log("Socket Entered")
+          client.emit('Notification', invite)
+        }
       }
+      else 
+        throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
       client.emit('Error', {error: e.message});
@@ -245,7 +254,7 @@ export class ChatRoomsGateway{
     */
   }
 
-  @SubscribeMessage('acceptInviteToChat')
+  @SubscribeMessage('acceptInvite')
   async acceptInvite(@MessageBody() body, @Req() req)
   {
     const {id} = body;

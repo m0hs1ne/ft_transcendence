@@ -8,7 +8,7 @@ export class ChatRoomInv {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({unique: true})
+    @Column()
     title: string;
 
     @Column()
