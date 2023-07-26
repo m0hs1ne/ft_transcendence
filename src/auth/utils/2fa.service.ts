@@ -18,6 +18,11 @@ export class TwoFactorAuthenticationService {
     ) {
     }
 
+    /**
+     * 
+     * @param user The user
+     * @returns the secret and the otpauthUrl
+     */
     public async generateTwoFactorAuthenticationSecret(user: any) {
         const secret = authenticator.generateSecret();
         const otpauthUrl = authenticator.keyuri(user.email, process.env.TWO_FACTOR_AUTHENTICATION_APP_NAME, secret);
@@ -25,10 +30,22 @@ export class TwoFactorAuthenticationService {
         return { secret, otpauthUrl };
     }
 
+    /**
+     * 
+     * @param url  The otpauthUrl
+     * @param stream  The stream
+     * @returns the qrcode
+     */
     public async pipeQrCodeStream(url: string, stream: any) {
         return toFileStream(stream, url);
     }
 
+    /**
+     * 
+     * @param twoFactorAuthenticationCode  The 2fa code
+     * @param user The user
+     * @returns  true if the code is valid, else false
+     */
     public async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
         // console.log(user);
         // console.log(twoFactorAuthenticationCode);

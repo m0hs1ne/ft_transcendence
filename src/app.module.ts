@@ -9,6 +9,13 @@ import { PassportModule } from '@nestjs/passport';
 
 config();
 
+/**
+ * AppModule
+ * This module is the root module
+ * It imports the AuthModule
+ * It also imports the typeorm module and connects to the database
+ * It also imports the passport module and registers it
+ */
 @Module({
   imports: [AuthModule, TypeOrmModule.forRoot({
     type: 'postgres',

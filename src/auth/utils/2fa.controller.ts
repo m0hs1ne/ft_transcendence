@@ -15,6 +15,10 @@ export class TwoFactorAuthenticationController {
         private readonly authService: AuthService
     ) { }
 
+    /**
+     * Generate a secret and a otpauthUrl then pipe the qrcode to the response
+     * @returns the qrcode
+     */
     @Post('generate')
     @UseGuards(userAuthGuard)
     async register(@Req() req: RequestWithUser, @Res() res: Response) {
@@ -24,6 +28,13 @@ export class TwoFactorAuthenticationController {
         await this.twoAuth.pipeQrCodeStream(otpauthUrl, res);
     }
 
+    /**
+     *  Check if the code is valid then turn on 2fa
+     * 
+     * @param req  The request
+     * @param param1  The 2fa code
+     * @returns  true if the code is valid, else false
+     */
     @Post('turn-on')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
@@ -37,6 +48,14 @@ export class TwoFactorAuthenticationController {
         return { message: '2fa is now enabled' };
     }
 
+    /**
+     *
+     * Check if the code is valid then authenticate the user
+     * @param req The request
+     * @param res The response
+     * @param param2 The 2fa code
+     * @returns the user if the code is valid, else throw an error
+     */
     @Post('authenticate')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
@@ -51,6 +70,12 @@ export class TwoFactorAuthenticationController {
         return user;
     }
 
+    /**
+     * Check if the code is valid then turn off 2fa
+     * @param req The request
+     * @param param1 The 2fa code
+     * @returns true if the code is valid, else false
+     */
     @Post('turn-off')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
@@ -64,6 +89,11 @@ export class TwoFactorAuthenticationController {
         return { message: '2fa is now disabled' };
     }
 
+    /**
+     * Send an otp to the user email
+     * @param req The request
+     * @returns 200 if the email is sent, else 404
+     */
     @Post('/mail/send-otp')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
@@ -74,7 +104,12 @@ export class TwoFactorAuthenticationController {
         await this.authService.sendOTP(user, code.toString());
         return { message: 'OTP sent' };
     }
-
+    /**
+     * Check if the code is valid then turn on 2fa
+     * @param req The request
+     * @param param1 The otp code
+     * @returns true if the code is valid, else false
+     */
     @Post('/mail/turn-on')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
@@ -88,6 +123,13 @@ export class TwoFactorAuthenticationController {
         return { message: '2fa is now enabled' };
     }
 
+    /**
+     * Check if the code is valid then authenticate the user
+     * @param req The request
+     * @param res The response
+     * @param param2 The otp code
+     * @returns the user if the code is valid, else throw an error
+     */
     @Post('/mail/authenticate')
     @HttpCode(200)
     @UseGuards(userAuthGuard)
@@ -102,6 +144,12 @@ export class TwoFactorAuthenticationController {
         return user;
     }
 
+    /**
+     * Check if the code is valid then turn off 2fa
+     * @param req The request
+     * @param param1 The otp code
+     * @returns true if the code is valid, else false
+     */
     @Post('/mail/turn-off')
     @HttpCode(200)
     @UseGuards(userAuthGuard)

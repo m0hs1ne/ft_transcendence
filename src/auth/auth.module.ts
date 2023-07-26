@@ -15,6 +15,12 @@ import * as nodemailer from 'nodemailer';
 
 config();
 
+/**
+ * AuthModule
+ * This module is responsible for the authentication of the user
+ * It uses the 42 oauth and google oauth
+ * It also uses jwt to generate a token and set it in a cookie
+ */
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
