@@ -63,7 +63,8 @@ export class ChatRoomsGateway{
       this.server.emit('ChatRoomList', {type: 'new', chatroom})
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -82,7 +83,8 @@ export class ChatRoomsGateway{
         client.emit('ChatRoomList', {type: 'mylist', chatrooms: mychatRooms});
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -99,7 +101,8 @@ export class ChatRoomsGateway{
       this.server.emit('ChatRoomList', {type: 'updated', chatrooms: chatroom})
     } catch (e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -119,7 +122,8 @@ export class ChatRoomsGateway{
       }
     } catch (e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -147,7 +151,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -172,7 +177,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -196,7 +202,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -235,7 +242,8 @@ export class ChatRoomsGateway{
     catch(e)
     {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -255,15 +263,13 @@ export class ChatRoomsGateway{
         const messages = await this.chatRoomsService.getMessages('chat', chatId, payload)
         const client = clients.get(payload.sub)
         if (client)
-        {
           client.emit('receiveMessage', {type: "messages", messages})
-        }
-        console.log(chatId)
 
       }
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -290,7 +296,8 @@ export class ChatRoomsGateway{
       }
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -319,7 +326,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
     /* return Invitation sent to toId, 
     {
@@ -357,7 +365,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException('id should be a string.')
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -379,7 +388,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 
@@ -402,7 +412,8 @@ export class ChatRoomsGateway{
         throw new BadRequestException()
     } catch(e) {
       const client = clients.get(payload.sub)
-      client.emit('Error', {error: e.message});
+      if (client)
+        client.emit('Error', {error: e.message});
     }
   }
 }
