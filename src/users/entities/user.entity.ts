@@ -1,6 +1,7 @@
 import { Achievement } from "src/achievement/entities/achievement.entity";
 import { ChatRoom } from "src/chat_rooms/entities/chat_room.entity";
 import { ChatRoomInv } from "src/chat_rooms/entities/invitation.entity";
+import { Game } from "src/game/entities/game.entity";
 import { Message } from "src/message/entities/message.entity";
 import { UserChat } from "src/user_chat/entities/user_chat.entity";
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
@@ -68,6 +69,20 @@ export class User {
     })
     blocked: User[];
 
+    @ManyToMany(type => User)
+    @JoinTable({
+        name: 'blockedBy',
+        joinColumn: {
+            name: 'userId',
+            referencedColumnName: 'id',
+        },
+            inverseJoinColumn: {
+            name: 'blockedId',
+            referencedColumnName: 'id',
+        },
+    })
+    blockedBy: User[];
+
     @OneToMany(() => Message, (message) => message.user)
     messages: Message[]
 
@@ -81,6 +96,9 @@ export class User {
 
     @OneToMany(() => ChatRoomInv, invit => invit.toUser)
     public invitation: ChatRoomInv[];
+
+    @OneToMany(() => Game, game => game.user1)
+    public games: Game[];
 
     @OneToMany(() => ChatRoomInv, invit => invit.fromUser)
     public sentInvit: ChatRoomInv[];

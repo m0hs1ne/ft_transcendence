@@ -22,6 +22,31 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
+  async profile(id: number) {
+    const user = await this.userRepository
+    .createQueryBuilder('users')
+    .leftJoinAndSelect('users.friends', 'friends')
+    .leftJoinAndSelect('users.blocked', 'blocked')
+    .where('users.id = :id', { id })
+    .select([
+      'users.username',
+      'users.wins',
+      'users.loses',
+      'users.avatar',
+      'users.is2fa',
+      'friends.id',
+      'friends.username',
+      'friends.wins',
+      'friends.loses',
+      'friends.avatar',
+      'blocked.id',
+      'blocked.username',
+      'blocked.avatar'
+    ])
+    .getOne()
+    return user;
+  }
+
   async findOne(id: number) {
     return await this.userRepository.findOneBy({id : id});
   }
@@ -70,22 +95,25 @@ export class UsersService {
 
   async addfriends(addFriendDto: AddFriendDto, @Req() req)
   {
-    const friendId: FindOptionsWhere<User> = {
-      id: addFriendDto.id,
-    };
-    const friend = await this.userRepository.findOneBy(friendId)
+    const friend = await this.userRepository.findOne({
+      relations: ['friends'],
+      where: {id: addFriendDto.id},
+    })
     if (!friend) {
       throw new NotFoundException();
     }
     const payload = verifyToken(req.headers.cookie);
-    const myId: FindOptionsWhere<User> = {
-      id: payload.sub,
-    };
-    const isBlocked = await this.userRepository.query(
+    let isBlocked = await this.userRepository.query(
       ` SELECT * FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1);`,
       [addFriendDto.id, payload.sub],
     );
 
+    if (isBlocked !== undefined && isBlocked.length > 0)
+      throw new NotAcceptableException();
+    isBlocked = await this.userRepository.query(
+      ` SELECT * FROM blockedBy WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1);`,
+      [addFriendDto.id, payload.sub],
+    );
     if (isBlocked !== undefined && isBlocked.length > 0)
       throw new NotAcceptableException();
     const me = await this.userRepository
@@ -94,6 +122,8 @@ export class UsersService {
     .where('user.id = :id', { id: payload.sub })
     .getOne();
     me.friends.push(friend);
+    friend.friends.push(me)
+    await this.userRepository.save(friend)
     await this.userRepository.save(me);
   }
 
@@ -127,7 +157,10 @@ export class UsersService {
     const blockedId: FindOptionsWhere<User> = {
       id: addFriendDto.id,
     };
-    const friend = await this.userRepository.findOneBy(blockedId)
+    const friend = await this.userRepository.findOne({
+      relations: ['blockedBy'],
+      where: {id: addFriendDto.id},
+    })
     if (!friend) {
       throw new NotFoundException();
     }
@@ -141,6 +174,7 @@ export class UsersService {
     .where('user.id = :id', { id: payload.sub })
     .getOne();
     me.blocked.push(friend);
+    friend.blockedBy.push(me)
     this.removefriends(addFriendDto.id, req)
     await this.userRepository.save(me);
   }
@@ -149,7 +183,7 @@ export class UsersService {
   {
     const payload = verifyToken(req.headers.cookie);
     await this.userRepository.query(
-      `DELETE FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1); `,
+      `DELETE FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2)`,
       [id, payload.sub],
     );
   }

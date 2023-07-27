@@ -1,5 +1,5 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Game {
@@ -7,10 +7,10 @@ export class Game {
     id: number;
 
     @Column()
-    userId1: number;
+    user1Id: number;
 
     @Column()
-    userId2: number
+    user2Id: number
 
     @Column()
     winner: number
@@ -20,4 +20,10 @@ export class Game {
 
     @Column()
     mode: string;
+
+    @ManyToOne(() => User, (user) => user.games, {onDelete: 'CASCADE'})
+    public user1: User
+
+    @ManyToOne(() => User, (user) => user.games, {onDelete: 'CASCADE'})
+    public user2: User
 }

@@ -20,6 +20,12 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('myprofile')
+  findProfile(@Req() req) {
+    const payload = verifyToken(req.headers.cookie)
+    return this.usersService.profile(payload.sub);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     if (+id)
@@ -42,10 +48,10 @@ export class UsersController {
   }
 
   //friends
-  @Get('friends/:id')
-  getFriends(@Param('id') id: string, @Req() req) {
-    if (+id)
-      return this.usersService.getfriends(+id);
+  @Get('friends')
+  getFriends(@Req() req) {
+    const payload = verifyToken(req.headers.cookie)
+    return this.usersService.getfriends(payload.sub);
   }
 
   @Post('friends')
@@ -54,23 +60,25 @@ export class UsersController {
     return this.usersService.addfriends(addFriendDto, req)
   }
   @Delete('friends/:id')
-  removeFriends(@Param('id') id: string, @Req() req)
+  removeFriends(@Param('id') id: number, @Req() req)
   {
     return this.usersService.removefriends(+id, req);
   }
 
   //Blocked
-  @Get('blocked/:id')
-  getBlocked(@Param('id') id: string, @Req() req) {
-    if (+id)
-      return this.usersService.getblocked(+id);
+  @Get('blocked')
+  getBlocked(@Req() req) {
+    const payload = verifyToken(req.headers.cookie)
+    return this.usersService.getblocked(payload.sub);
   }
 
   @Post('blocked')
   addBlocked(@Body() addFriendDto: AddFriendDto,@Req() req)
   {
+    //expected: id: user to block
     return this.usersService.addblocked(addFriendDto, req)
   }
+
   @Delete('blocked/:id')
   removeBlocked(@Param('id') id: string, @Req() req)
   {
