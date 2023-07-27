@@ -4,7 +4,6 @@ import { config } from 'dotenv';
 import { User } from "src/typeorm/entities/typeof";
 import { authenticator } from 'otplib';
 import { toFileStream } from "qrcode";
-import * as nodemailer from 'nodemailer';
 
 config();
 

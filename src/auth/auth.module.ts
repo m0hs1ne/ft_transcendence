@@ -11,7 +11,6 @@ import { config } from 'dotenv';
 import { googleStrategy } from './utils/googleStrategy';
 import { TwoFactorAuthenticationController } from './utils/2fa.controller';
 import { TwoFactorAuthenticationService } from './utils/2fa.service';
-import * as nodemailer from 'nodemailer';
 
 config();
 

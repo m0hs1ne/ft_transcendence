@@ -1,7 +1,7 @@
 import { Body, ClassSerializerInterceptor, Controller, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards, UseInterceptors } from "@nestjs/common";
 import { TwoFactorAuthenticationService } from "./2fa.service";
-import { Request, Response } from 'express';
-import { FortyTwoAuthGuard, userAuthGuard } from "./Guards";
+import {  Response } from 'express';
+import {  userAuthGuard } from "./Guards";
 import RequestWithUser from "src/utils/reqWithUser";
 import { AuthService } from "../auth.service";
 
