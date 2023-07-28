@@ -4,7 +4,7 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { BadRequestException, ForbiddenException, NotFoundException, OnModuleInit, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
+import { AuthMiddleware, checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { UsersService } from 'src/users/users.service';
 import { type } from 'os';
@@ -12,7 +12,6 @@ import { type } from 'os';
 
 var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()
 
-@UseGuards(userWSAuthGuard)
 @WebSocketGateway({
   cors : {
     origin: "*"
@@ -29,16 +28,22 @@ export class ChatRoomsGateway{
 
   async handleConnection(socket: Socket)
   {
-    const payload = verifyToken(socket.handshake.headers.cookie)
-    console.log(payload.sub)
-    console.log("Connected")
-    clients.set(payload.sub,socket)
-    const notifications = []
-    const invitation = await this.chatRoomsService.getInvitationOfUser(payload.sub);
-    notifications.push({type: 'invitation', invitation})
-    const message = await this.chatRoomsService.messagesNotification(payload.sub)
-    notifications.push({type: 'info', message: `You Got ${message} new Messages`})
-    socket.emit('Notification', {type: 'list', notifications})
+    try
+    {
+      const payload = verifyToken(socket.handshake.headers.cookie)
+      console.log(payload.sub)
+      console.log("Connected")
+      clients.set(payload.sub,socket)
+      const notifications = []
+      const invitation = await this.chatRoomsService.getInvitationOfUser(payload.sub);
+      notifications.push({type: 'invitation', invitation})
+      const message = await this.chatRoomsService.messagesNotification(payload.sub)
+      notifications.push({type: 'info', message: `You Got ${message} new Messages`})
+      socket.emit('Notification', {type: 'list', notifications})
+  } catch(e) {
+    console.log(e.message)
+    socket.disconnect()
+  }
   }
 
   handleDisconnect(socket: Socket) {
@@ -48,7 +53,7 @@ export class ChatRoomsGateway{
     clients.delete(payload.sub)
   }
 
-
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('createChatRoom')
   async create(@MessageBody() createChatRoomDto: CreateChatRoomDto, @Req() req) {
     /*
@@ -67,13 +72,14 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-
+  @UseGuards  (userWSAuthGuard)
   @SubscribeMessage('findAllChatRooms')
   async findAll(@Req() req) {
     const chatroom = await this.chatRoomsService.findAll()
     this.server.emit('ChatRoomList', {type: 'all', chatrooms: chatroom})
   }
 
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('findMyChatRooms')
   async findOne(@MessageBody() body, @Req() req) {
     const payload = verifyToken(req.handshake.headers.cookie)
@@ -87,7 +93,7 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('updateChatRoom')
   async update(@MessageBody() updateChatRoomDto: UpdateChatRoomDto, @Req() req) {
     /* chatId: number;
@@ -105,7 +111,7 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('removeChatRoom')
   async remove(@MessageBody() body, @Req() req) {
     const {chatId} = body;
@@ -128,6 +134,7 @@ export class ChatRoomsGateway{
   }
 
   /* ----------------Member Work------------------ */
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('updateMemberRole')
   async updateRole(@MessageBody() body, @Req() req)
   {
@@ -155,7 +162,7 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('updateMemberStatus')
   async updateStatus(@MessageBody() body, @Req() req)
   {
@@ -181,7 +188,7 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-
+  @UseGuards  (userWSAuthGuard)
   @SubscribeMessage('kickMember')
   async kickMember(@MessageBody() body, @Req() req)
   {
@@ -207,7 +214,8 @@ export class ChatRoomsGateway{
     }
   }
 
-  /* ---------add Member to public or protected Chat----------- */
+  /* ---------add Member to public or protected Chat-----------*/
+  @UseGuards  (userWSAuthGuard)
   @SubscribeMessage('enterChat')
   async enterMember(@MessageBody() body, @Req() req)
   {
@@ -247,6 +255,7 @@ export class ChatRoomsGateway{
     }
   }
 
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('getChatMessages')
   async getChatMessages(@MessageBody() body, @Req() req)
   {
@@ -273,6 +282,7 @@ export class ChatRoomsGateway{
     }
   }
 
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('getDMMessages')
   async getDMMessages(@MessageBody() body, @Req() req)
   {
@@ -301,7 +311,8 @@ export class ChatRoomsGateway{
     }
   }
 
-  /* ---------add Member to private chat via invitation------------ */
+  /* ---------add Member to private chat via invitation------------*/
+  @UseGuards  (userWSAuthGuard)
   @SubscribeMessage('sendInvite')
   async invite(@MessageBody() body, @Req() req) {
     const {
@@ -343,6 +354,7 @@ export class ChatRoomsGateway{
     */
   }
 
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('acceptInvite')
   async acceptInvite(@MessageBody() body, @Req() req)
   {
@@ -370,7 +382,8 @@ export class ChatRoomsGateway{
     }
   }
 
-  /* ---------message handler------------ */
+  /* ---------message handler------------*/
+  @UseGuards  (userWSAuthGuard)
   @SubscribeMessage('sendMessage')
   async newChatMessage(@MessageBody() body, @Req() req)
   {
@@ -393,6 +406,7 @@ export class ChatRoomsGateway{
     }
   }
 
+  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('sendDM')
   async newDMMessage(@MessageBody() body, @Req() req)
   {

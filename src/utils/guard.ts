@@ -1,5 +1,5 @@
 
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { config } from "dotenv";
 import * as jwt from 'jsonwebtoken';
@@ -34,8 +34,7 @@ export class userWSAuthGuard implements CanActivate {
 
     canActivate(context: ExecutionContext) {
         try {
-        const req = context.switchToHttp().getRequest();
-        const cookies = req.handshake.headers.cookie;
+        const cookies = context.switchToWs().getData().token;
         if(!cookies) 
             return false
         const jwt = cookies.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1];
@@ -46,6 +45,15 @@ export class userWSAuthGuard implements CanActivate {
             return false
         }
     }
+}
+
+
+@Injectable()
+export class AuthMiddleware implements NestMiddleware {
+  use(req: any, res: any, next: () => void) {
+    req.token = req.handshake.query.token;
+    next();
+  }
 }
 
 export function verifyToken(cookie: string): any {

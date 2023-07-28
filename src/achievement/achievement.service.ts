@@ -11,8 +11,8 @@ export class AchievementService {
   {}
   async createAchievement(): Promise<Achievement[]> {
     const achievementToCreate = [
-      { title: 'Sniper', image: 'alice@example.com' },
-      { title: '10 Strike Wins', image: 'bob@example.com' },
+      { title: 'Sniper', image:  `${process.env.DOMAIN}/public/img/achievement.png` },
+      { title: '10 Strike Wins', image: `${process.env.DOMAIN}/public/img/achievement.png` },
       // Add more user objects here as needed
     ];
 
