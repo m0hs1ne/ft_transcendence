@@ -20,11 +20,18 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('myprofile')
+  @Get('profile')
   findProfile(@Req() req) {
     const payload = verifyToken(req.headers.cookie)
-    return this.usersService.profile(payload.sub);
+    return this.usersService.myprofile(payload.sub);
   }
+
+  @Get('profile/:id')
+  findOtherProfile(@Param('id') id:number, @Req() req) {
+    const payload = verifyToken(req.headers.cookie)
+    return this.usersService.profile(id, payload);
+  }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

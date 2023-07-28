@@ -1,5 +1,4 @@
 import { Achievement } from "src/achievement/entities/achievement.entity";
-import { ChatRoom } from "src/chat_rooms/entities/chat_room.entity";
 import { ChatRoomInv } from "src/chat_rooms/entities/invitation.entity";
 import { Game } from "src/game/entities/game.entity";
 import { Message } from "src/message/entities/message.entity";
