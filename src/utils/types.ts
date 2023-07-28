@@ -1,4 +1,7 @@
 export type UserDetails = {
+    tfSecret: string;
+    mailOTP: string;
+    mailOTPExpires: Date;
     email: string;
     username: string;
     avatar: string;

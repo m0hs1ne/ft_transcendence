@@ -11,6 +11,16 @@ export class User {
     @PrimaryGeneratedColumn()
     id : number;
 
+    @Column({ nullable: true })
+    tfaSecret: string;
+
+    @Column({ nullable: true })
+    mailOTP: string;
+
+    @Column({ nullable: true })
+    mailOTPExpire: Date;
+
+
     @Column({ type: 'varchar', unique: true, length: 50 })
     email: string;
 
@@ -77,7 +87,7 @@ export class User {
             referencedColumnName: 'id',
         },
             inverseJoinColumn: {
-            name: 'blockedId',
+            name: 'blockedById',
             referencedColumnName: 'id',
         },
     })

@@ -8,10 +8,10 @@ config();
 
 
 @Injectable()
-export class googleStrategy extends PassportStrategy(Strategy,'google'){
+export class googleStrategy extends PassportStrategy(Strategy, 'google') {
     constructor(
         @Inject('AUTH_SERVICE') private readonly authService: AuthService,
-    ){
+    ) {
         super({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -20,17 +20,24 @@ export class googleStrategy extends PassportStrategy(Strategy,'google'){
         });
     }
 
-    async validate(accessToken: string, refreshToken: string, profile: any, done: any){
+    async validate(accessToken: string, refreshToken: string, profile: any, done: any) {
         const user = await this.authService.validateUser({
+            tfSecret: '',
             username: profile._json.given_name,
             email: profile._json.email,
+            mailOTP: '',
+            mailOTPExpires: null,
             avatar: profile._json.picture,
             level: 0,
             wins: 0,
             losses: 0,
             statusOnline: true,
             inGame: false,
-            is2fa: false
+            is2fa: false,
+            friends: [],
+            blocked: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
         });
         return user || null;
     }
