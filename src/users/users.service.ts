@@ -22,11 +22,34 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async profile(id: number) {
+  async checkUserisBlockedByUser(user1Id, user2Id)
+  {
+    var isblocked = false;
+    const user = await this.userRepository.findOne({
+      relations:['blocked', 'blockedBy'],
+      where: {id: user1Id}
+    })    
+    user.blocked.map(block =>{
+      if (block.id == user2Id)
+        isblocked = true
+    })
+    if (isblocked)
+    return true
+    user.blockedBy.map(block =>{
+      if (block.id == user2Id)
+        isblocked = true
+    })
+    if (isblocked)
+      return true
+    return false
+  }
+
+  async myprofile(id: number) {
     const user = await this.userRepository
     .createQueryBuilder('users')
     .leftJoinAndSelect('users.friends', 'friends')
     .leftJoinAndSelect('users.blocked', 'blocked')
+    .leftJoinAndSelect('users.user_achievements.achievement', 'achievement')
     .where('users.id = :id', { id })
     .select([
       'users.username',
@@ -42,6 +65,29 @@ export class UsersService {
       'blocked.id',
       'blocked.username',
       'blocked.avatar'
+    ])
+    .getOne()
+    return user;
+  }
+
+  async profile(id: number, payload) {
+    if (await this.checkUserisBlockedByUser(id, payload.sub))
+      throw new NotAcceptableException();
+    const user = await this.userRepository
+    .createQueryBuilder('users')
+    .leftJoinAndSelect('users.friends', 'friends')
+    .where('users.id = :id', { id })
+    .select([
+      'users.username',
+      'users.wins',
+      'users.loses',
+      'users.avatar',
+      'users.is2fa',
+      'friends.id',
+      'friends.username',
+      'friends.wins',
+      'friends.loses',
+      'friends.avatar',
     ])
     .getOne()
     return user;
@@ -79,18 +125,22 @@ export class UsersService {
   //friends
   async getfriends(id: number)
   {
-    const friends = await this.userRepository.query(
-      ` SELECT U2.id, U2.username, U2.avatar, U2."inGame", U2."statusOnline"
-      FROM public.user U1
-      JOIN friends F ON F."userId" = U1.id OR F."friendId" = U1.id
-      JOIN public.user U2 ON U2.id = CASE
-        WHEN F."userId" = U1.id THEN F."friendId"
-        WHEN F."friendId" = U1.id THEN F."userId"
-      END
-      WHERE U1.id = $1;`,
-      [id],
-    );
-    return friends;
+    const blocked = await this.userRepository
+    .createQueryBuilder('users')
+    .leftJoinAndSelect('users.blocked', 'blocked')
+    .where('users.id = :id', { id })
+    .select([
+      'users.username',
+      'users.wins',
+      'users.loses',
+      'users.avatar',
+      'users.is2fa',
+      'blocked.id',
+      'blocked.username',
+      'blocked.avatar',
+    ])
+    .getOne()
+    return blocked;
   }
 
   async addfriends(addFriendDto: AddFriendDto, @Req() req)
@@ -183,7 +233,11 @@ export class UsersService {
   {
     const payload = verifyToken(req.headers.cookie);
     await this.userRepository.query(
-      `DELETE FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2)`,
+      `DELETE FROM blocked WHERE ("userId" = $2 AND "blockedId" = $1)`,
+      [id, payload.sub],
+    );
+    await this.userRepository.query(
+      `DELETE FROM blockedBy WHERE ("userId" = $1 AND "blockedById" = $2)`,
       [id, payload.sub],
     );
   }

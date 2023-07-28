@@ -3,13 +3,11 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoom } from './entities/chat_room.entity';
-import { FindManyOptions, FindOneOptions, In, MoreThan, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, In, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { ChatRoomInv } from './entities/invitation.entity';
 import { Message } from 'src/message/entities/message.entity';
-import { of } from 'rxjs';
-import { notEqual } from 'assert';
 
 @Injectable()
 export class ChatRoomsService {
@@ -81,7 +79,7 @@ export class ChatRoomsService {
     ])
     .getMany();
     if (!mychatRooms)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'Chat not found'})
     return mychatRooms;
   }
 
@@ -91,7 +89,7 @@ export class ChatRoomsService {
     }
     const one = await this.chatRoomRepository.findOne(options)
     if (!one)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'Chat not found'})
     return one;
   }
 
@@ -117,7 +115,7 @@ export class ChatRoomsService {
       return await this.chatRoomRepository.save(chat)
     }
     else
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'Chat not found'})
   }
 
   async remove(chatId, payload) {
@@ -168,7 +166,7 @@ export class ChatRoomsService {
       where: {userId: memberId, chatRoomId: chatId}
     })
     if (!userChat)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'User is not in this chat'})
     if (userChat.role == 'owner' || !this.isAdmin(payload.sub, chatId))
       throw new UnauthorizedException()
     if (role != 'member' && role != 'admin')
@@ -185,7 +183,7 @@ export class ChatRoomsService {
       where: {userId: memberId, chatRoomId: chatId}
     })
     if (!userChat)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'User is not in this chat'})
     if (userChat.role == 'owner' || (userChat.role == 'admin' && userChat.chatRoom.owner != payload.sub) || !this.isAdmin(payload.sub, chatId))
       throw new UnauthorizedException()
     if (status != 'banned' && status != 'muted')
@@ -212,8 +210,7 @@ export class ChatRoomsService {
       where: {userId: memberId, chatRoomId: chatId}
     })
     if (!userChat)
-      throw new NotFoundException()
-      console.log(userChat.role == 'owner')
+      throw new NotFoundException({message: 'User is not in this chat'})
     if (memberId != payload.sub)
     {
       if (userChat.role == 'owner' || (userChat.role == 'admin' && userChat.chatRoom.owner != payload.sub) || !this.isAdmin(payload.sub, chatId))
@@ -266,7 +263,7 @@ export class ChatRoomsService {
     }
     const invite = await this.invitationRepository.findOne(options)
     if (!invite || invite.toUserId != payload.sub)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'Invitation not found'})
       const oldMember = await this.userChatRepository.findOne({
         where: {userId: invite.toUserId, chatRoomId: invite.chatRoomId}
       })
@@ -397,7 +394,7 @@ export class ChatRoomsService {
     }
     const chatmembers = await this.userChatRepository.find(options)
     if (!chatmembers)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'Chat not found'})
     let fromIsMember = false;
     const fromMember = await chatmembers.find((member) => {
         if (member.userId == fromId)
@@ -425,7 +422,7 @@ export class ChatRoomsService {
       where: {id: fromId}
     })
     if (!from)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'User not found'})
     for (const member of chatmembers)
     {
       const client = clients.get(member.userId)
@@ -459,14 +456,14 @@ export class ChatRoomsService {
       where: {id: formId}
     })
     if (!fromUser)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'User not found'})
     const toUser = await this.userRepository.findOne({
       select: ['id', 'username', 'avatar'],
       relations: ['blocked'],
       where: {id: toId}
     })
     if(!toUser)
-      throw new NotFoundException()
+      throw new NotFoundException({message: 'User not found'})
     if (await this.checkUserisBlockedByUser(fromUser.id, toUser.id))
       throw new NotAcceptableException()
     delete fromUser.blocked
