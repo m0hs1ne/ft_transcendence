@@ -20,7 +20,7 @@ export class UserChat {
     public role: string;
 
     @Column({nullable: true, type: 'timestamp'})
-    mutedTill: Date
+    public mutedTill: Date
 
     @ManyToOne(() => User, (user) => user.userChat, {onDelete: 'CASCADE'})
     public user: User
@@ -38,6 +38,7 @@ export class UserChat {
     updateCreatedAt() {
       this.createdAt = new Date();
       this.updatedAt = new Date();
+      this.mutedTill = new Date();
     }
   
     @BeforeUpdate()

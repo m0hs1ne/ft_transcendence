@@ -19,6 +19,9 @@ export class Message {
     @Column({nullable: true})
     chatroomId: number;
 
+    @Column({nullable: true})
+    type: string;
+
     @ManyToOne(() => User, (user) => user.messages, {onDelete: 'CASCADE'})
     user: User;
 

@@ -2,7 +2,7 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from
 import { ChatRoomsService } from './chat_rooms.service';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
-import { BadRequestException, ForbiddenException, NotFoundException, OnModuleInit, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ForbiddenException, NotFoundException, OnModuleInit, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { AuthMiddleware, checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -36,7 +36,7 @@ export class ChatRoomsGateway{
       clients.set(payload.sub,socket)
       const notifications = []
       const invitation = await this.chatRoomsService.getInvitationOfUser(payload.sub);
-      notifications.push({type: 'invitation', invitation})
+      notifications.push({type: 'invitations', invitation})
       const message = await this.chatRoomsService.messagesNotification(payload.sub)
       notifications.push({type: 'info', message: `You Got ${message} new Messages`})
       socket.emit('Notification', {type: 'list', notifications})
@@ -52,35 +52,42 @@ export class ChatRoomsGateway{
     this.userService.updateDateDisconnect(payload.sub)
     clients.delete(payload.sub)
   }
-
-  @UseGuards(userWSAuthGuard)
+  
   @SubscribeMessage('createChatRoom')
-  async create(@MessageBody() createChatRoomDto: CreateChatRoomDto, @Req() req) {
+  async create(@MessageBody() body, @Req() req) {
     /*
     title: string;
     privacy: string;
-    ifProtectedPass: string;
+    password: string;
     */
+   const {
+    title,
+    privacy,
+    password,
+    owner
+   } = body
     const payload = verifyToken(req.handshake.headers.cookie);
     try
     {
-      const chatroom = await this.chatRoomsService.create(createChatRoomDto, payload)
-      this.server.emit('ChatRoomList', {type: 'new', chatroom})
+      if (typeof title === 'string' && typeof privacy === 'string')
+      {
+        const chatroom = await this.chatRoomsService.create({title, privacy, owner,ifProtectedPass: password}, payload)
+        this.server.emit('ChatRoomList', {type: 'new', chatroom})
+      }
     } catch(e) {
       const client = clients.get(payload.sub)
       if (client)
         client.emit('Error', {error: e.message});
     }
   }
-  @UseGuards  (userWSAuthGuard)
+  
   @SubscribeMessage('findAllChatRooms')
   async findAll(@Req() req) {
     const chatroom = await this.chatRoomsService.findAll()
     this.server.emit('ChatRoomList', {type: 'all', chatrooms: chatroom})
   }
 
-  @UseGuards(userWSAuthGuard)
-  @SubscribeMessage('findMyChatRooms')
+  @SubscribeMessage('myChatRooms')
   async findOne(@MessageBody() body, @Req() req) {
     const payload = verifyToken(req.handshake.headers.cookie)
     try{
@@ -93,13 +100,12 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('updateChatRoom')
   async update(@MessageBody() updateChatRoomDto: UpdateChatRoomDto, @Req() req) {
     /* chatId: number;
     title: string;
     privacy: string;
-    ifProtectedPass: string; */
+    password: string; */
     const payload = verifyToken(req.handshake.headers.cookie);
     try 
     {
@@ -111,7 +117,6 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('removeChatRoom')
   async remove(@MessageBody() body, @Req() req) {
     const {chatId} = body;
@@ -134,7 +139,6 @@ export class ChatRoomsGateway{
   }
 
   /* ----------------Member Work------------------ */
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('updateMemberRole')
   async updateRole(@MessageBody() body, @Req() req)
   {
@@ -162,7 +166,6 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('updateMemberStatus')
   async updateStatus(@MessageBody() body, @Req() req)
   {
@@ -188,7 +191,7 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
-  @UseGuards  (userWSAuthGuard)
+  
   @SubscribeMessage('kickMember')
   async kickMember(@MessageBody() body, @Req() req)
   {
@@ -203,7 +206,9 @@ export class ChatRoomsGateway{
       {
         const kick = await this.chatRoomsService.kickMemberFromChat(memberId, chatId, payload, clients);
         if (memberId != payload.sub)
-          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);          
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);
+        else
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} left the chat.` , 'notification', clients);        
       }
       else
         throw new BadRequestException()
@@ -215,7 +220,7 @@ export class ChatRoomsGateway{
   }
 
   /* ---------add Member to public or protected Chat-----------*/
-  @UseGuards  (userWSAuthGuard)
+  
   @SubscribeMessage('enterChat')
   async enterMember(@MessageBody() body, @Req() req)
   {
@@ -255,7 +260,6 @@ export class ChatRoomsGateway{
     }
   }
 
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('getChatMessages')
   async getChatMessages(@MessageBody() body, @Req() req)
   {
@@ -272,7 +276,7 @@ export class ChatRoomsGateway{
         const messages = await this.chatRoomsService.getMessages('chat', chatId, payload)
         const client = clients.get(payload.sub)
         if (client)
-          client.emit('receiveMessage', {type: "messages", messages})
+          client.emit('receiveMessage', {type: "ChatMessages", chatId, messages})
 
       }
     } catch(e) {
@@ -282,7 +286,6 @@ export class ChatRoomsGateway{
     }
   }
 
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('getDMMessages')
   async getDMMessages(@MessageBody() body, @Req() req)
   {
@@ -300,7 +303,7 @@ export class ChatRoomsGateway{
         const client = clients.get(payload.sub)
         if (client)
         {
-          client.emit('receiveMessage', {type: "messages", messages})
+          client.emit('receiveMessage', {type: "DMMessages", user: userId, messages})
         }
 
       }
@@ -312,7 +315,7 @@ export class ChatRoomsGateway{
   }
 
   /* ---------add Member to private chat via invitation------------*/
-  @UseGuards  (userWSAuthGuard)
+  
   @SubscribeMessage('sendInvite')
   async invite(@MessageBody() body, @Req() req) {
     const {
@@ -354,7 +357,6 @@ export class ChatRoomsGateway{
     */
   }
 
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('acceptInvite')
   async acceptInvite(@MessageBody() body, @Req() req)
   {
@@ -383,7 +385,7 @@ export class ChatRoomsGateway{
   }
 
   /* ---------message handler------------*/
-  @UseGuards  (userWSAuthGuard)
+  
   @SubscribeMessage('sendMessage')
   async newChatMessage(@MessageBody() body, @Req() req)
   {
@@ -406,7 +408,6 @@ export class ChatRoomsGateway{
     }
   }
 
-  @UseGuards(userWSAuthGuard)
   @SubscribeMessage('sendDM')
   async newDMMessage(@MessageBody() body, @Req() req)
   {

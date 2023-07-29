@@ -9,9 +9,10 @@ import { AddFriendDto } from './dto/add-friend.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express'
 import { diskStorage } from 'multer';
+import { MessageBody } from '@nestjs/websockets';
 
 @UseGuards(userAuthGuard)
-@Controller('users')
+@Controller('users/')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -27,31 +28,23 @@ export class UsersController {
   }
 
   @Get('profile/:id')
-  findOtherProfile(@Param('id') id:number, @Req() req) {
+  findOtherProfile(@Param('id') id, @Req() req) {
+    if (typeof id != 'number')
+      return;
     const payload = verifyToken(req.headers.cookie)
     return this.usersService.profile(id, payload);
   }
 
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (+id)
-      return this.usersService.findOne(+id); 
-  }
-
-  @Patch(':id')
-  @UseFilters(UserNotExistExceptionFilter)
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto,@Req() req) 
+  @Patch('profile/update')
+  async update(@MessageBody() body,@Req() req) 
   {
-    if (+id)
-      return this.usersService.update(+id, updateUserDto,req);
-  }
-
-  @Delete(':id')
-  @UseFilters(UserNotExistExceptionFilter)
-  remove(@Param('id') id: string, @Req() req) {
-    if (+id)
-      return this.usersService.remove(+id, req);
+    const {
+      username
+    } = body;
+    if (typeof username != 'string')
+      return;
+    const payload = verifyToken(req.headers.cookie);
+    return await this.usersService.update(payload.sub, username);
   }
 
   //friends
@@ -62,14 +55,20 @@ export class UsersController {
   }
 
   @Post('friends')
-  addFriends(@Body() addFriendDto: AddFriendDto,@Req() req)
+  addFriends(@MessageBody() body,@Req() req)
   {
-    return this.usersService.addfriends(addFriendDto, req)
+    const {
+      id
+    } = body
+    if (typeof id === 'number')
+      return this.usersService.addfriends(id, req)
   }
+
   @Delete('friends/:id')
-  removeFriends(@Param('id') id: number, @Req() req)
+  removeFriends(@Param('id') id, @Req() req)
   {
-    return this.usersService.removefriends(+id, req);
+    if (typeof id === 'number')
+      return this.usersService.removefriends(+id, req);
   }
 
   //Blocked
@@ -80,16 +79,21 @@ export class UsersController {
   }
 
   @Post('blocked')
-  addBlocked(@Body() addFriendDto: AddFriendDto,@Req() req)
+  addBlocked(@MessageBody() body,@Req() req)
   {
     //expected: id: user to block
-    return this.usersService.addblocked(addFriendDto, req)
+    const {
+      id
+    } = body
+    if (typeof id === 'number')
+      return this.usersService.addblocked(id, req)
   }
 
   @Delete('blocked/:id')
-  removeBlocked(@Param('id') id: string, @Req() req)
+  removeBlocked(@Param('id') id, @Req() req)
   {
-    return this.usersService.removeblocked(+id, req);
+    if (typeof id === 'number')
+      return this.usersService.removeblocked(id, req);
   }
 
   @Post('upload_avatar')
@@ -112,6 +116,6 @@ export class UsersController {
     return {
       statusCode: 200,
       data: file.path,
-    };;
+    };
   }
 }

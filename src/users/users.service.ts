@@ -1,14 +1,10 @@
 import { Injectable, NotAcceptableException, NotFoundException, Options, Req, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
 import { verifyToken } from 'src/utils/guard';
 import { AddFriendDto } from './dto/add-friend.dto';
-import { disconnect } from 'process';
-import { catchError, firstValueFrom } from 'rxjs';
 
 
 
@@ -49,9 +45,10 @@ export class UsersService {
     .createQueryBuilder('users')
     .leftJoinAndSelect('users.friends', 'friends')
     .leftJoinAndSelect('users.blocked', 'blocked')
-    .leftJoinAndSelect('users.user_achievements.achievement', 'achievement')
+    .leftJoinAndSelect('users.achievements', 'achievement')
     .where('users.id = :id', { id })
     .select([
+      'users.id',
       'users.username',
       'users.wins',
       'users.loses',
@@ -64,7 +61,9 @@ export class UsersService {
       'friends.avatar',
       'blocked.id',
       'blocked.username',
-      'blocked.avatar'
+      'blocked.avatar',
+      'achievement.title',
+      'achievement.image'
     ])
     .getOne()
     return user;
@@ -76,18 +75,21 @@ export class UsersService {
     const user = await this.userRepository
     .createQueryBuilder('users')
     .leftJoinAndSelect('users.friends', 'friends')
+    .leftJoinAndSelect('users.achievements', 'achievement')
     .where('users.id = :id', { id })
     .select([
+      'users.id',
       'users.username',
       'users.wins',
       'users.loses',
       'users.avatar',
-      'users.is2fa',
       'friends.id',
       'friends.username',
       'friends.wins',
       'friends.loses',
       'friends.avatar',
+      'achievement.title',
+      'achievement.image'
     ])
     .getOne()
     return user;
@@ -97,21 +99,13 @@ export class UsersService {
     return await this.userRepository.findOneBy({id : id});
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, @Req() req) {
-    const payload = verifyToken(req.headers.cookie);
-    if (id != payload.sub)
-      throw new EntityNotFoundError(User, {});
-    
+  async update(id: number, username) {
     const options: FindOneOptions<User> = {
       where: { id },
     };
-    await this.userRepository.update({id}, {
-    username: updateUserDto.username,
-    avatar: updateUserDto.avatar,
-    is2fa: updateUserDto.is2fa
+    const updatedUser = await this.userRepository.update({id}, {
+    username,
     });
-
-    const updatedUser = await this.userRepository.findOneOrFail(options);
     return updatedUser;
   }
 
@@ -127,14 +121,10 @@ export class UsersService {
   {
     const blocked = await this.userRepository
     .createQueryBuilder('users')
-    .leftJoinAndSelect('users.blocked', 'blocked')
+    .leftJoinAndSelect('users.friends', 'blocked')
     .where('users.id = :id', { id })
     .select([
       'users.username',
-      'users.wins',
-      'users.loses',
-      'users.avatar',
-      'users.is2fa',
       'blocked.id',
       'blocked.username',
       'blocked.avatar',
@@ -143,11 +133,12 @@ export class UsersService {
     return blocked;
   }
 
-  async addfriends(addFriendDto: AddFriendDto, @Req() req)
+  async addfriends(id, @Req() req)
   {
     const friend = await this.userRepository.findOne({
       relations: ['friends'],
-      where: {id: addFriendDto.id},
+      select: ['id', 'username', 'avatar'],
+      where: {id},
     })
     if (!friend) {
       throw new NotFoundException();
@@ -155,14 +146,14 @@ export class UsersService {
     const payload = verifyToken(req.headers.cookie);
     let isBlocked = await this.userRepository.query(
       ` SELECT * FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1);`,
-      [addFriendDto.id, payload.sub],
+      [id, payload.sub],
     );
 
     if (isBlocked !== undefined && isBlocked.length > 0)
       throw new NotAcceptableException();
     isBlocked = await this.userRepository.query(
-      ` SELECT * FROM blockedBy WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1);`,
-      [addFriendDto.id, payload.sub],
+      ` SELECT * FROM "blockedBy" WHERE ("userId" = $1 AND "blockedById" = $2) OR ("userId" = $2 AND "blockedById" = $1);`,
+      [id, payload.sub],
     );
     if (isBlocked !== undefined && isBlocked.length > 0)
       throw new NotAcceptableException();
@@ -173,43 +164,49 @@ export class UsersService {
     .getOne();
     me.friends.push(friend);
     friend.friends.push(me)
-    await this.userRepository.save(friend)
-    await this.userRepository.save(me);
+    this.userRepository.save(friend)
+    this.userRepository.save(me);
+    return {message: `${friend.username} was added to your friends.`}
   }
 
   async removefriends(id: number, @Req() req)
   {
     const payload = verifyToken(req.headers.cookie);
+    const user = await this.userRepository.find({
+      where: {id}
+    })
+    if (!user)
+      throw new NotFoundException()
     await this.userRepository.query(
       `DELETE FROM friends WHERE ("userId" = $1 AND "friendId" = $2) OR ("userId" = $2 AND "friendId" = $1); `,
       [id, payload.sub],
     );
+    return {message: `${id} was removed from your friends`}
   }
   //blocked
   async getblocked(id: number)
   {
-    const blocked = await this.userRepository.query(
-      ` SELECT U2.id, U2.username, U2.avatar, U2."inGame", U2."statusOnline"
-      FROM public.user U1
-      JOIN blocked F ON F."userId" = U1.id OR F."blockedId" = U1.id
-      JOIN public.user U2 ON U2.id = CASE
-        WHEN F."userId" = U1.id THEN F."blockedId"
-        WHEN F."blockedId" = U1.id THEN F."userId"
-      END
-      WHERE U1.id = $1;`,
-      [id],
-    );
+    const blocked = await this.userRepository
+    .createQueryBuilder('users')
+    .leftJoinAndSelect('users.blocked', 'blocked')
+    .where('users.id = :id', { id })
+    .select([
+      'blocked.id',
+      'blocked.username',
+      'blocked.avatar',
+    ])
+    .getOne()
     return blocked;
   }
 
-  async addblocked(addFriendDto: AddFriendDto, @Req() req)
+  async addblocked(id, @Req() req)
   {
     const blockedId: FindOptionsWhere<User> = {
-      id: addFriendDto.id,
+      id: id,
     };
     const friend = await this.userRepository.findOne({
       relations: ['blockedBy'],
-      where: {id: addFriendDto.id},
+      where: {id: id},
     })
     if (!friend) {
       throw new NotFoundException();
@@ -225,8 +222,9 @@ export class UsersService {
     .getOne();
     me.blocked.push(friend);
     friend.blockedBy.push(me)
-    this.removefriends(addFriendDto.id, req)
-    await this.userRepository.save(me);
+    this.removefriends(id, req)
+    this.userRepository.save(me);
+    return {message: `${friend.username} was added to your blocked list.`}
   }
 
   async removeblocked(id: number, @Req() req)
@@ -240,6 +238,7 @@ export class UsersService {
       `DELETE FROM blockedBy WHERE ("userId" = $1 AND "blockedById" = $2)`,
       [id, payload.sub],
     );
+    return {message: `${id} was removed from your friends`}
   }
 
   async updateDateDisconnect(id: number)

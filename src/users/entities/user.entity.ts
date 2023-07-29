@@ -98,10 +98,13 @@ export class User {
     @OneToMany(() => UserChat, userChat => userChat.user)
     public userChat: UserChat[];
 
-    @ManyToMany(() => Achievement)
+    @ManyToMany(() => Achievement, achievement => achievement.users)
     @JoinTable({
-        name: 'user_achievements'
+      name: 'user_achievements',
+      joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+      inverseJoinColumn: { name: 'achievement_id', referencedColumnName: 'id' },
     })
+    achievements: Achievement[];
 
     @OneToMany(() => ChatRoomInv, invit => invit.toUser)
     public invitation: ChatRoomInv[];
@@ -111,7 +114,6 @@ export class User {
 
     @OneToMany(() => ChatRoomInv, invit => invit.fromUser)
     public sentInvit: ChatRoomInv[];
-    achievements: Achievement[]
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

@@ -5,5 +5,5 @@ export class UpdateChatRoomDto extends PartialType(CreateChatRoomDto) {
     chatId: number;
     title: string;
     privacy: string;
-    ifProtectedPass: string;
+    password: string;
 }
