@@ -28,6 +28,14 @@ export class ChatRoomsService {
         }
     if (createChatRoomDto.privacy == 'protected' && !createChatRoomDto.ifProtectedPass)
       throw new ForbiddenException()
+    else if (createChatRoomDto.privacy == 'protected' && createChatRoomDto.ifProtectedPass)
+    {
+      if (typeof createChatRoomDto.ifProtectedPass != 'string')
+        throw new BadRequestException()
+      const msg = this.checkPasswordStrength(createChatRoomDto.ifProtectedPass)
+      if (msg)
+        throw new BadRequestException(msg)
+    }
     createChatRoomDto.owner = payload.sub
     const chatroom = await this.chatRoomRepository.create(createChatRoomDto);
     const newChat = await this.chatRoomRepository.save(chatroom);
@@ -599,5 +607,41 @@ export class ChatRoomsService {
     if (isblocked)
       return true
     return false
+  }
+
+  checkPasswordStrength(password) {
+    // Define the regular expressions to check the password strength
+    const regex = {
+      lowercase: /[a-z]/,
+      uppercase: /[A-Z]/,
+      number: /[0-9]/,
+      special: /[$&+,:;=?@#|'<>.^*()%!-]/
+    };
+  
+    // Check if the password meets the minimum length
+    if (password.length < 8) {
+      return 'Password should be at least 8 characters long.';
+    }
+  
+    // Check if the password contains at least one lowercase letter
+    if (!regex.lowercase.test(password)) {
+      return 'Password should contain at least one lowercase letter.';
+    }
+  
+    // Check if the password contains at least one uppercase letter
+    if (!regex.uppercase.test(password)) {
+      return 'Password should contain at least one uppercase letter.';
+    }
+  
+    // Check if the password contains at least one number
+    if (!regex.number.test(password)) {
+      return 'Password should contain at least one number.';
+    }
+  
+    // Check if the password contains at least one special character
+    if (!regex.special.test(password)) {
+      return 'Password should contain at least one special character.';
+    }
+    return false;
   }
 }
