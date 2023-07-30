@@ -18,11 +18,11 @@ config();
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join('./public', '..'),
+      rootPath: join(__dirname, '..', 'public'),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'postgres',
       port: 5432,
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
