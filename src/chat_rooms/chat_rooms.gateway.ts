@@ -83,7 +83,8 @@ export class ChatRoomsGateway{
   
   @SubscribeMessage('findAllChatRooms')
   async findAll(@Req() req) {
-    const chatroom = await this.chatRoomsService.findAll()
+    const payload = verifyToken(req.handshake.headers.cookie)
+    const chatroom = await this.chatRoomsService.findAll(payload)
     this.server.emit('ChatRoomList', {type: 'all', chatrooms: chatroom})
   }
 
@@ -110,13 +111,15 @@ export class ChatRoomsGateway{
     try 
     {
       const chatroom = await this.chatRoomsService.update(updateChatRoomDto.chatId, updateChatRoomDto, payload);
-      this.server.emit('ChatRoomList', {type: 'updated', chatrooms: chatroom})
+      if (chatroom.privacy != 'private')
+        this.server.emit('ChatRoomList', {type: 'updated', chatrooms: chatroom})
     } catch (e) {
       const client = clients.get(payload.sub)
       if (client)
         client.emit('Error', {error: e.message});
     }
   }
+
   @SubscribeMessage('removeChatRoom')
   async remove(@MessageBody() body, @Req() req) {
     const {chatId} = body;
@@ -166,6 +169,7 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
+
   @SubscribeMessage('updateMemberStatus')
   async updateStatus(@MessageBody() body, @Req() req)
   {
@@ -220,7 +224,6 @@ export class ChatRoomsGateway{
   }
 
   /* ---------add Member to public or protected Chat-----------*/
-  
   @SubscribeMessage('enterChat')
   async enterMember(@MessageBody() body, @Req() req)
   {

@@ -53,21 +53,23 @@ export class ChatRoomsService {
       chatRoom: newChat
     })
     await this.userChatRepository.save(userChatRel)
-    return {
-      id: newChat.id,
-      title: newChat.title,
-      owner: newChat.owner,
-      privacy: newChat.privacy,
-    };
+    if (newChat.privacy != 'private')
+    {
+      return {
+        id: newChat.id,
+        title: newChat.title,
+        owner: newChat.owner,
+        privacy: newChat.privacy,
+      };
+    }
   }
 
-  async findAll() {
+  async findAll(payload) {
     return await this.chatRoomRepository.find({
       select: ['id', 'title', 'owner', 'privacy'], 
       where: {
         privacy: In(['public', 'protected'])
       }
-    
     });
   }
  
@@ -110,8 +112,6 @@ export class ChatRoomsService {
       where: {id},
     }
     const chat = await this.chatRoomRepository.findOne(options)
-    console.log(chat.owner)
-    console.log(payload.sub)
     if (chat && chat.owner == payload.sub)
     {
       if (updateChatRoomDto.privacy != 'protected' &&
@@ -124,7 +124,9 @@ export class ChatRoomsService {
         chat.title = updateChatRoomDto.title;
         chat.privacy = updateChatRoomDto.privacy;
         chat.ifProtectedPass = updateChatRoomDto.password
-      return await this.chatRoomRepository.save(chat)
+      await this.chatRoomRepository.save(chat)
+      delete chat.ifProtectedPass
+      return chat
     }
     else
       throw new NotFoundException({message: 'Chat not found'})
