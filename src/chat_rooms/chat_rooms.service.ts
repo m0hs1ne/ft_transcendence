@@ -480,6 +480,8 @@ export class ChatRoomsService {
   /* ---------DM message handler------------ */
   async newDMMessage(formId, toId, message, clients)
   {
+    if (toId == formId)
+      throw new BadRequestException("Can't self DMs.")
     const fromUser = await this.userRepository.findOne({
       select: ['id', 'username', 'avatar'],
       relations: ['blocked'],

@@ -92,7 +92,7 @@ export class User {
     })
     blockedBy: User[];
 
-    @OneToMany(() => Message, (message) => message.user)
+    @OneToMany(() => Message, (message) => message.from)
     messages: Message[]
 
     @OneToMany(() => UserChat, userChat => userChat.user)
