@@ -73,3 +73,16 @@ export function verifyToken(cookie: string): any {
 export async function checkPassword(password: string, hash: string): Promise<boolean> {
   return await bcrypt.compare(password, hash);
 }
+
+export function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let randomString = '';
+  const crypto = require('crypto');
+  const randomBytes = crypto.randomBytes(length);
+  for (let i = 0; i < length; i++) {
+    const randomIndex = randomBytes[i] % characters.length;
+    randomString += characters.charAt(randomIndex);
+  }
+
+  return randomString;
+}

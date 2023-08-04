@@ -11,10 +11,10 @@ export class Message {
     message: string;
 
     @Column()
-    userId: number;
+    fromId: number;
 
     @Column({nullable: true})
-    user2Id: number;
+    toId: number;
 
     @Column({nullable: true})
     chatroomId: number;
@@ -23,13 +23,13 @@ export class Message {
     type: string;
 
     @ManyToOne(() => User, (user) => user.messages, {onDelete: 'CASCADE'})
-    user: User;
+    from: User;
 
     @ManyToOne(() => ChatRoom, (ChatRoom) => ChatRoom.messages, {onDelete: 'CASCADE'})
     chatroom: ChatRoom;
 
     @ManyToOne(() => User, (user) => user.messages, {onDelete: 'CASCADE'})
-    user2: User;
+    to: User;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

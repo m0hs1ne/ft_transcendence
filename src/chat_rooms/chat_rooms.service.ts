@@ -471,7 +471,7 @@ export class ChatRoomsService {
     const message = await this.messageRepository.create({
       type,
       message: messageContent,
-      user: from,
+      from,
       chatroom
     })
     this.messageRepository.save(message)
@@ -499,15 +499,15 @@ export class ChatRoomsService {
     delete fromUser.blocked
     delete toUser.blocked
     const msg = await this.messageRepository.create({
-      user: fromUser,
-      user2: toUser,
+      from: fromUser,
+      to: toUser,
       message
     })
     const msgtoSent = await this.messageRepository.save(msg)
     delete msgtoSent.chatroom
     delete msgtoSent.chatroomId
-    delete msgtoSent.user2Id
-    delete msgtoSent.userId
+    delete msgtoSent.toId
+    delete msgtoSent.fromId
     let client = clients.get(toId)
     if (client)
       client.emit('receiveMessage', {type: 'DM', message: msgtoSent})
@@ -526,7 +526,7 @@ export class ChatRoomsService {
     if(!user.disconnectAt)
     {
       message = await this.messageRepository.count({
-        where: {user2Id: id}
+        where: {toId: id}
       })
     }
     else
@@ -573,7 +573,7 @@ export class ChatRoomsService {
         throw new NotAcceptableException()
       messages = await this.messageRepository.createQueryBuilder('message')
       .leftJoinAndSelect('message.user', 'user')
-      .where('("userId" = :id AND "user2Id" = :id2) OR "userId" = :id2 AND "user2Id" = :id', {id, id2: payload.sub})
+      .where('("fromId" = :id AND "toId" = :id2) OR "fromId" = :id2 AND "toId" = :id', {id, id2: payload.sub})
       .select([
         'message.id',
         'message.message',

@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
-import { userAuthGuard, verifyToken } from '../utils/guard'
+import { generateRandomString, userAuthGuard, verifyToken } from '../utils/guard'
 import { UserNotExistExceptionFilter } from 'src/exceptions/NotExistException.filter';
 import { AddFriendDto } from './dto/add-friend.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -101,7 +101,9 @@ export class UsersController {
     storage: diskStorage({
       destination: 'public/img',
       filename: (req, file, cb) => {
-        cb(null, file.originalname);
+        const filename = file.originalname + '_' + generateRandomString(10);
+        cb(null, filename);
+        file.originalname = filename
       },
     }),
   }))
