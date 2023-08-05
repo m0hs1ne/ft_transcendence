@@ -37,7 +37,7 @@ export class AuthController {
     @Get('success')
     @UseGuards(userAuthGuard)
     async success(@Req() req: Request, @Res() res: Response) {
-        const jwt = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
+        const jwt = req.headers.authorization.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
         res.send({
             access_token: jwt,
         })
