@@ -23,7 +23,7 @@ export class UsersController {
 
   @Get('profile')
   findProfile(@Req() req) {
-    const payload = verifyToken(req.headers.cookie)
+    const payload = verifyToken(req.headers.authorization)
     return this.usersService.myprofile(payload.sub);
   }
 
@@ -31,7 +31,7 @@ export class UsersController {
   findOtherProfile(@Param('id') id, @Req() req) {
     if (typeof id != 'number')
       return;
-    const payload = verifyToken(req.headers.cookie)
+    const payload = verifyToken(req.headers.authorization)
     return this.usersService.profile(id, payload);
   }
 
@@ -43,14 +43,14 @@ export class UsersController {
     } = body;
     if (typeof username != 'string')
       return;
-    const payload = verifyToken(req.headers.cookie);
+    const payload = verifyToken(req.headers.authorization);
     return await this.usersService.update(payload.sub, username);
   }
 
   //friends
   @Get('friends')
   getFriends(@Req() req) {
-    const payload = verifyToken(req.headers.cookie)
+    const payload = verifyToken(req.headers.authorization)
     return this.usersService.getfriends(payload.sub);
   }
 
@@ -74,7 +74,7 @@ export class UsersController {
   //Blocked
   @Get('blocked')
   getBlocked(@Req() req) {
-    const payload = verifyToken(req.headers.cookie)
+    const payload = verifyToken(req.headers.authorization)
     return this.usersService.getblocked(payload.sub);
   }
 
@@ -113,7 +113,7 @@ export class UsersController {
       new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
     ],
   }),) file: Express.Multer.File, @Req() req) {
-    const payload = verifyToken(req.headers.cookie);
+    const payload = verifyToken(req.headers.authorization);
     this.usersService.uploadAvatar(file, payload)
     return {
       statusCode: 200,
