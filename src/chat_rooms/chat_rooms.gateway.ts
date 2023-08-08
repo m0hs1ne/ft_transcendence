@@ -30,7 +30,7 @@ export class ChatRoomsGateway{
   {
     try
     {
-      const payload = verifyToken(socket.handshake.headers.authorization)
+      const payload = verifyToken(socket.handshake.headers.cookie)
       console.log(payload.sub)
       console.log("Connected")
       clients.set(payload.sub,socket)
@@ -47,7 +47,7 @@ export class ChatRoomsGateway{
   }
 
   handleDisconnect(socket: Socket) {
-    const payload = verifyToken(socket.handshake.headers.authorization)
+    const payload = verifyToken(socket.handshake.headers.cookie)
     console.log(`socket disconnected: ${payload.sub}`);
     this.userService.updateDateDisconnect(payload.sub)
     clients.delete(payload.sub)
@@ -66,7 +66,7 @@ export class ChatRoomsGateway{
     password,
     owner
    } = body
-    const payload = verifyToken(req.handshake.headers.authorization);
+    const payload = verifyToken(req.handshake.headers.cookie);
     try
     {
       if (typeof title === 'string' && typeof privacy === 'string')
@@ -83,14 +83,14 @@ export class ChatRoomsGateway{
   
   @SubscribeMessage('findAllChatRooms')
   async findAll(@Req() req) {
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     const chatroom = await this.chatRoomsService.findAll(payload)
     this.server.emit('ChatRoomList', {type: 'all', chatrooms: chatroom})
   }
 
   @SubscribeMessage('myChatRooms')
   async findOne(@MessageBody() body, @Req() req) {
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try{
         const mychatRooms = await this.chatRoomsService.findMyChatRooms(payload);
         const client = clients.get(payload.sub)
@@ -107,7 +107,7 @@ export class ChatRoomsGateway{
     title: string;
     privacy: string;
     password: string; */
-    const payload = verifyToken(req.handshake.headers.authorization);
+    const payload = verifyToken(req.handshake.headers.cookie);
     try 
     {
       const chatroom = await this.chatRoomsService.update(updateChatRoomDto.chatId, updateChatRoomDto, payload);
@@ -125,7 +125,7 @@ export class ChatRoomsGateway{
     const {chatId} = body;
     if (!chatId)
       return;
-    const payload = verifyToken(req.handshake.headers.authorization);
+    const payload = verifyToken(req.handshake.headers.cookie);
     try 
     {
       if (chatId && typeof chatId === 'number')
@@ -151,7 +151,7 @@ export class ChatRoomsGateway{
       chatId,
       role
     } = body;
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try{
       if (typeof memberId === 'number' && typeof chatId === 'number' && typeof role === 'string')
       {
@@ -180,7 +180,7 @@ export class ChatRoomsGateway{
       status,
       mutedFor
     } = body;
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try{
       if (typeof memberId === 'number' && typeof chatId === 'number' && typeof status === 'string')
       {
@@ -204,7 +204,7 @@ export class ChatRoomsGateway{
       memberId,
       chatId
     } = body
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try{
       if (typeof memberId === 'number' && typeof chatId === 'number')
       {
@@ -228,7 +228,7 @@ export class ChatRoomsGateway{
   async enterMember(@MessageBody() body, @Req() req)
   {
     //expected params chatId, password: if chat is protected
-    const payload = await verifyToken(req.handshake.headers.authorization)
+    const payload = await verifyToken(req.handshake.headers.cookie)
     const {chatId, password} = body;
     try
     {
@@ -270,7 +270,7 @@ export class ChatRoomsGateway{
       chatId
     }  = body
 
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try
     {
       if (typeof chatId === 'number')
@@ -296,7 +296,7 @@ export class ChatRoomsGateway{
       userId
     }  = body
 
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try
     {
       if (typeof userId === 'number')
@@ -327,7 +327,7 @@ export class ChatRoomsGateway{
     } = body
 
     // expected params: toId: id of user to send to | title: title of chatroom
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try
     {
       if (typeof toId === 'number' && typeof chatId === 'number')
@@ -365,7 +365,7 @@ export class ChatRoomsGateway{
   {
     const {id} = body;
     //expected params: id: invitation id
-    const payload = verifyToken(req.handshake.headers.authorization)
+    const payload = verifyToken(req.handshake.headers.cookie)
     try
     {
       if (typeof id === 'string')
@@ -397,7 +397,7 @@ export class ChatRoomsGateway{
       chatId,
       message
     } = body;
-    const payload = verifyToken(req.handshake.headers.authorization);
+    const payload = verifyToken(req.handshake.headers.cookie);
     try
     {
       if (chatId && message)
@@ -419,7 +419,7 @@ export class ChatRoomsGateway{
       toId,
       message
     } = body;
-    const payload = verifyToken(req.handshake.headers.authorization);
+    const payload = verifyToken(req.handshake.headers.cookie);
     try
     {
       if (typeof toId === 'number' && typeof message === 'string')

@@ -92,7 +92,7 @@ export class AuthService {
      */
     async getUserFromJwt(req: RequestWithUser) {
         try {
-            const jwt = req.headers.authorization.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
+            const jwt = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
             const decoded = await this.jwtService.decode(jwt);
             const id = decoded.sub;
             const user = await this.findUser(id);

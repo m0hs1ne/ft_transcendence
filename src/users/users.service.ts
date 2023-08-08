@@ -110,7 +110,7 @@ export class UsersService {
   }
 
   async remove(id: number, @Req() req) {
-    const payload = verifyToken(req.headers.authorization);
+    const payload = verifyToken(req.headers.cookie);
     if (id != payload.sub)
       throw new EntityNotFoundError(User, {});
     return await this.userRepository.delete({id});
@@ -143,7 +143,7 @@ export class UsersService {
     if (!friend) {
       throw new NotFoundException();
     }
-    const payload = verifyToken(req.headers.authorization);
+    const payload = verifyToken(req.headers.cookie);
     let isBlocked = await this.userRepository.query(
       ` SELECT * FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1);`,
       [id, payload.sub],
@@ -171,7 +171,7 @@ export class UsersService {
 
   async removefriends(id: number, @Req() req)
   {
-    const payload = verifyToken(req.headers.authorization);
+    const payload = verifyToken(req.headers.cookie);
     const user = await this.userRepository.find({
       where: {id}
     })
@@ -211,7 +211,7 @@ export class UsersService {
     if (!friend) {
       throw new NotFoundException();
     }
-    const payload = verifyToken(req.headers.authorization);
+    const payload = verifyToken(req.headers.cookie);
     const myId: FindOptionsWhere<User> = {
       id: payload.sub,
     };
@@ -229,7 +229,7 @@ export class UsersService {
 
   async removeblocked(id: number, @Req() req)
   {
-    const payload = verifyToken(req.headers.authorization);
+    const payload = verifyToken(req.headers.cookie);
     await this.userRepository.query(
       `DELETE FROM blocked WHERE ("userId" = $2 AND "blockedId" = $1)`,
       [id, payload.sub],
