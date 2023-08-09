@@ -3,6 +3,8 @@ import { FortyTwoAuthGuard, googleAuthGuard, userAuthGuard } from './utils/Guard
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import RequestWithUser from 'src/utils/reqWithUser';
+import { verify } from 'crypto';
+import { verifyToken } from 'src/utils/guard';
 
 @Controller('auth')
 export class AuthController {
@@ -27,7 +29,7 @@ export class AuthController {
     async callback(@Req() req: RequestWithUser, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:3000/api/auth/success');
+        res.redirect('http://localhost:8000/home');
     }
 
     /**
