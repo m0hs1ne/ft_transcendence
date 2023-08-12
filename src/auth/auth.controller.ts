@@ -29,7 +29,7 @@ export class AuthController {
     async callback(@Req() req: RequestWithUser, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:8000/home');
+        res.redirect('http://localhost:8080/home');
     }
 
     /**
@@ -63,6 +63,7 @@ export class AuthController {
     @Get('google/login')
     @UseGuards(googleAuthGuard)
     googleLogin() {
+        
     }
 
     /**
@@ -73,6 +74,6 @@ export class AuthController {
     async googleCallback(@Req() req: RequestWithUser, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:3000/api/auth/success');
+        res.redirect('http://localhost:8000/home');
     }
 }
