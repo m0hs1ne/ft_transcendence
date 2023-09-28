@@ -29,8 +29,6 @@ export class UsersController {
 
   @Get('profile/:id')
   findOtherProfile(@Param('id') id, @Req() req) {
-    if (typeof id != 'number')
-      return;
     const payload = verifyToken(req.headers.cookie)
     return this.usersService.profile(id, payload);
   }
