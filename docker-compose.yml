@@ -10,27 +10,27 @@ services:
     networks:
     - postgres
  
-  # pgadmin:
-  #   links:
-  #   - postgres:postgres
-  #   container_name: pgadmin
-  #   image: dpage/pgadmin4
-  #   ports:
-  #   - "8080:80"
-  #   env_file:
-  #   - .env
-  #   networks:
-  #   - postgres
-
-  backend:
-    container_name: backend
-    build: .
+  pgadmin:
+    links:
+    - postgres:postgres
+    container_name: pgadmin
+    image: dpage/pgadmin4
     ports:
-    - "3000:3000"
+    - "8080:80"
     env_file:
     - .env
     networks:
-      - postgres
+    - postgres
+
+  # backend:
+  #   container_name: backend
+  #   build: .
+  #   ports:
+  #   - "3000:3000"
+  #   env_file:
+  #   - .env
+  #   networks:
+  #     - postgres
  
 networks:
   postgres:

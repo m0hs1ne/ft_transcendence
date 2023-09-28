@@ -147,7 +147,7 @@ export class AuthService {
             text: `Your two factor authentication code is ${code}`,
         };
         this.userRepository.update(user.id, { mailOTP: code });
-        this.userRepository.update(user.id, { mailOTPExpire: new Date(Date.now() + 300000) });
+        this.userRepository.update(user.id, { mailOTPExpire: new Date(Date.now() + 60000) });
         await this.Transporter.sendMail(mailOptions);
     }
 

@@ -33,7 +33,7 @@ export class User {
     wins: number;
 
     @Column({nullable: true})
-    loses: number;
+    losses: number;
 
     @Column()
     statusOnline: boolean;

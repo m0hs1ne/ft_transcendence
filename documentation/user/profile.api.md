@@ -24,7 +24,7 @@ Fetch and update user data.
     "id": 0
     "username": "username",
     "wins": 0,
-    "loses": null,
+    "losses": null,
     "is2fa": false,
     "avatar": "http://localhost:3000/public/img/image.jpeg",
     "friends": [
@@ -32,7 +32,7 @@ Fetch and update user data.
             "id": 3,
             "username": "username",
             "wins": 0,
-            "loses": null,
+            "losses": null,
             "avatar": "https://cdn.intra.42.fr/users/id/login"
         }
     ],
@@ -41,14 +41,14 @@ Fetch and update user data.
             "id": 2,
             "username": "username",
             "wins": 0,
-            "loses": null,
+            "losses": null,
             "avatar": "https://cdn.intra.42.fr/users/id/login"
         },
         {
             "id": 5,
             "username": "username",
             "wins": 0,
-            "loses": null,
+            "losses": null,
             "avatar": "https://cdn.intra.42.fr/users/id/login"
         }
     ],
@@ -110,14 +110,14 @@ Fetch and update user data.
     "id": 0
     "username": "username",
     "wins": 0,
-    "loses": null,
+    "losses": null,
     "avatar": "http://localhost:3000/public/img/image.jpeg",
     "friends": [
         {
             "id": 3,
             "username": "username",
             "wins": 0,
-            "loses": null,
+            "losses": null,
             "avatar": "https://cdn.intra.42.fr/users/id/login"
         }
     ],
@@ -181,7 +181,7 @@ Fetch and update user data.
     "id": 0,
     "username": "username",
     "wins": 0,
-    "loses": null,
+    "losses": null,
     "is2fa": false,
     "avatar": "http://localhost:3000/public/img/image.jpeg"
 }
