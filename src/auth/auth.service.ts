@@ -107,8 +107,12 @@ export class AuthService {
      * @param id  The user id
      * @returns the user with the given id and sets the 2fa to true
      */
-    async turnOn2fa(id: number) {
-        return this.userRepository.update(id, { is2fa: true });
+    async turnOn2fa(id: number, type: string) {
+        if(type === "GoogleAuth") {
+            return this.userRepository.update(id, {is2faEnabled: true, is2faEnabledViaGoogleAuth: true});
+        } else if(type === "Email") {
+            return this.userRepository.update(id, { is2faEnabled: true, is2faEnabledViaEmail: true });
+        }
     }
 
     /**
@@ -116,8 +120,12 @@ export class AuthService {
      * @param id  The user id
      * @returns the user with the given id and sets the 2fa to false
      */
-    async turnOff2fa(id: number) {
-        return this.userRepository.update(id, { is2fa: false });
+    async turnOff2fa(id: number, type: string) {
+        if(type === "GoogleAuth") {
+            return this.userRepository.update(id, { is2faEnabled: false, is2faEnabledViaGoogleAuth: false });
+        } else if(type === "Email") {
+            return this.userRepository.update(id, { is2faEnabled: false, is2faEnabledViaEmail: false });
+        }
     }
 
     /**
@@ -193,7 +201,7 @@ export class JwtTwoFactorStrategy extends PassportStrategy(Strategy, 'jwt-two-fa
      */
     async validate(payload: any) {
         const user = await this.authService.findUser(payload.userId);
-        if (!user.is2fa) return user;
+        if (!user.is2faEnabled) return user;
         if (payload.isSFA) return user;
     }
 }

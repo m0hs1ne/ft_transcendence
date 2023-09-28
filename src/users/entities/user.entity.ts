@@ -41,8 +41,14 @@ export class User {
     @Column()
     inGame: boolean;
 
-    @Column()
-    is2fa: boolean;
+    @Column({ default: false })
+    is2faEnabled: boolean;
+
+    @Column({ default: false })
+    is2faEnabledViaGoogleAuth: boolean;
+  
+    @Column({ default: false })
+    is2faEnabledViaEmail: boolean;
 
     @Column()
     avatar: string;
