@@ -2,27 +2,23 @@
 import { RouterView } from 'vue-router'
 import Sidebar from './components/Sidebar.vue';
 
+
 export default {
   components: {
     Sidebar,
   },
   methods: {
-    Sidebar() {
-      if (this.$route.path === "/" || this.$route.path === "/chat"
-        || this.$route.path === "/profile" || this.$route.path === "/search"
-        || this.$route.path === "/setting") {
-        return true
-      } else {
-        return false
-      }
+    isSidebarVisible() {
+      const allowedPaths = ['/', '/chat', '/profile', '/search', '/setting'];
+      return allowedPaths.includes(this.$route.path);
     }
   }
 }
 </script>
 
 <template>
-  <div class="flex">
-    <Sidebar v-if="Sidebar()" />
+  <main>
+    <Sidebar v-if="isSidebarVisible()" />
     <RouterView />
-  </div>
+  </main>
 </template>
