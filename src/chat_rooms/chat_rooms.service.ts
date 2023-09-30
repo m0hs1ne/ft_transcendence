@@ -550,7 +550,7 @@ export class ChatRoomsService {
       if (isUserInChat)
       {
         messages = await this.messageRepository.createQueryBuilder('message')
-      .leftJoinAndSelect('message.user', 'user')
+      .leftJoinAndSelect('message.from', 'user')
       .where('"chatroomId" = :id', {id})
       .select([
         'message.chatroomId',
@@ -573,7 +573,7 @@ export class ChatRoomsService {
       if (await this.checkUserisBlockedByUser(payload.sub, id))
         throw new NotAcceptableException()
       messages = await this.messageRepository.createQueryBuilder('message')
-      .leftJoinAndSelect('message.user', 'user')
+      .leftJoinAndSelect('message.from', 'user')
       .where('("fromId" = :id AND "toId" = :id2) OR "fromId" = :id2 AND "toId" = :id', {id, id2: payload.sub})
       .select([
         'message.id',
