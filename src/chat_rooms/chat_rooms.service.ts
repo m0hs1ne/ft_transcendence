@@ -53,15 +53,14 @@ export class ChatRoomsService {
       chatRoom: newChat
     })
     await this.userChatRepository.save(userChatRel)
-    if (newChat.privacy != 'private')
-    {
+
       return {
         id: newChat.id,
         title: newChat.title,
         owner: newChat.owner,
         privacy: newChat.privacy,
       };
-    }
+
   }
 
   async findAll(payload) {
