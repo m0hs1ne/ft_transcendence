@@ -22,7 +22,7 @@ const lastBattles = ref([
 			</h1>
 			<div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
 		</div>
-		<div class="overflow-y-auto w-full">
+		<div class="overflow-y-auto w-full font-Poppins text-lg font-medium">
 			<div v-for="(battle, index) in lastBattles" :key="index" 
 				class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
 				<div class="mb-2">
