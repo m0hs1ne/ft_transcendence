@@ -15,7 +15,7 @@ const lastBattles = ref([
 </script>
 
 <template>
-	<div id="Main" class="h-[480px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
+	<div  class="h-[480px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
 		<div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
 			<h1 class="font-Poppins font-semibold text-2xl dark:text-white">
 				Last Battles
