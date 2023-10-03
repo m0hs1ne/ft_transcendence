@@ -274,6 +274,24 @@ export class ChatRoomsService {
     }
   }
 
+  async getChatMember(id)
+  {
+    let member = await this.userChatRepository.createQueryBuilder('user_chat')
+      .leftJoinAndSelect('user_chat.user', 'user')
+      .where('"chatRoomId" = :id', {id})
+      .select([
+        'user_chat.id',
+        'user_chat.role',
+        'user_chat.userStatus',
+        'user.id',
+        'user.username',
+        'user.avatar',
+      ])
+      .getMany()
+
+      return member
+  }
+
   /* ---------invitation handler------------ */
   async acceptInviteToChat(body, payload)
   {
