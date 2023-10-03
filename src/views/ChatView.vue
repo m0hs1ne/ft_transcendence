@@ -2,5 +2,9 @@
 </script>
 
 <template>
-	<h1>This is chat</h1>
+	<div class="flex justify-center items-center h-screen w-screen dark:bg-slate-800">
+		<h1 class="font-Poppins font-medium text-2xl dark:text-white">
+			Waiting for Sultan!!!
+		</h1>
+	</div>
 </template>
