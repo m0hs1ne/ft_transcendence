@@ -12,7 +12,7 @@ export class ChatRoomsController {
         const payload = verifyToken(req.headers.cookie)
         const members = await this.chatroomservice.getChatMember(id);
         const messages = await this.chatroomservice.getMessages('chat', id, payload)
-        let details = {members, messages}
+        let details = {id:payload.sub, members, messages}
         return details
     }
 }
