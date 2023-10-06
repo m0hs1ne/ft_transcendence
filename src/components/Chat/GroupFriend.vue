@@ -1,7 +1,7 @@
 <!-- FriendListComponent.vue -->
 <template>
     <div class="m-2 p-5 rounded-lg bg-slate-300">
-        <ChatAlertChannel />
+        <AlertChannel/>
         <ul class="">
           <li v-for="friend in friends" :key="friend.id"
             class="flex items-center p-2 space-x-4 border-b"
@@ -19,8 +19,13 @@
   </template>
   
   <script>
+  import AlertChannel from "./AlertChannel.vue";
   import axios from "axios";
   export default {
+    components:
+    {
+      AlertChannel,
+    },
     data() {
       return {
         friends: [
@@ -36,9 +41,9 @@
           .get("http://localhost:3000/api/users/friends/", { withCredentials: true })
           .then((response) => {
             console.log(" i am here fetsh ", response);
-            // this.responseData = response.data;
-            // this.friends = this.responseData.friends
-            // console.log(this.friends)
+            this.responseData = response.data;
+            this.friends = this.responseData.friends
+            console.log(this.friends)
   
           })
           .catch((error) => {

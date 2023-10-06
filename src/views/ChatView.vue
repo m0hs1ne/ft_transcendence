@@ -6,12 +6,12 @@
 		  <ChatGroupFriend @object-sent="handleObject"/>
 	  </div>
 	  <div class="basis-3/4  ">
-		<!-- <ChatChatbox v-if="displayTargetComponent" :person="personObject" class="border-b-2" />
-		<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject"/> -->
+		<ChatChatbox v-if="displayTargetComponent" :person="personObject" class="border-b-2" />
+		<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject"/>
 	  </div>
 	  <div class="basis-1/4">
-		<!-- <ChatUserProfile :person="personObject" v-if="displayTargetComponent"/>
-		<ChatChannelProfil v-if="displayChatboxChannel"  :Channeldetails="members" @o-sent="han" /> -->
+		<ChatUserProfile :person="personObject" v-if="displayTargetComponent"/>
+		<ChatChannelProfil v-if="displayChatboxChannel"  :Channeldetails="members" @o-sent="han" />
 	
 	  </div>
 	</div>
@@ -23,8 +23,10 @@
   import ChatFriendList from '../components/Chat/FriendList.vue';
   import ChatRoom from '../components/Chat/chatRoom.vue';
   import ChatBoxChannel from '../components/Chat/ChatBoxChannel.vue'
-  import  ChatGroupFriend  from '../components/Chat/GroupFriend.vue';
+  import ChatGroupFriend  from '../components/Chat/GroupFriend.vue';
   import ChatChannelProfil from'../components/Chat/ChannelProfil.vue';
+  import ChatUserProfile from'../components/Chat/UserProfile.vue';
+
   export default {
 	components: {
 	  ChatBoxChannel,
@@ -33,6 +35,7 @@
 	  GroupList,
 	  ChatRoom,
 	  ChatGroupFriend,
+	  ChatUserProfile,
 	  ChatChannelProfil
   
 	},
