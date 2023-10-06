@@ -1,13 +1,15 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class=" p-5 max-h-1.2 rounded-lg bg-slate-300">
-    <div class="h-1/2">
-      <ul class=" w-1/2 h-1/2 ">
+  <div class=" m-2 p-5 rounded-lg bg-slate-300">
+    <ChatAlertChannel />
+      <ul class="">
         <li v-for="friend in friends" :key="friend.id"
           class="collection-item collection-item-avatar flex items-center p-2 space-x-4 border-b"
-         >
+          @click="handleChannelClick(friend)"
+          >
           <div class="flex-shrink-0">
-            <img src="https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png"  @click="handleChatClick(friend)"  alt="Avatar" class=" h-12 rounded-full" />
+            <img src="https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png"
+                    alt="Avatar" class=" h-12 rounded-full" />
             <div class="status text-xs py-1 px-2 rounded-full capitalize" :class="{
               'bg-green-500 text-white': friend.status === 'Online',
               'bg-red-500 text-white': friend.status === 'Offline',
@@ -19,14 +21,11 @@
             <span class="text-lg font-semibold">{{ friend.title }}</span>
             <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
           </div>
-        
         </li>
       </ul>
     </div>
     <div>
-      <button>  </button>
     </div>
-  </div>
 </template>
 
 <script>
@@ -58,15 +57,16 @@ export default {
               this.friends.push({
                 // id: Date.now(),
                 title: element.title,
-              });
+                id:element.id,
+              }); 
             });
           }
         });
         console.log( "This is length",this.friends.length)
     },
-    handleChatClick(Item) {
+    handleChannelClick(Item) {
       // Your click event logic here
-      console.log("Prop emitd ");
+      console.log("Prop emitd Group list ", Item);
       // console.log(Item)
       this.$emit('object-sent', Item);
     },

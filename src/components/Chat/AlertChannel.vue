@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <button class="flex items-center justify-between text-red-700 hover:text-blue-900" @click="openPopup">
+      <span class="mr-2">Add Channel</span>
+    </button>
+    <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
       <div class="bg-white rounded-lg p-6">
         <h2 class="text-xl font-bold mb-4">Create Channel:</h2>
         <div>
@@ -30,9 +33,7 @@
         </button>
       </div>
     </div>
-    <button @click="openPopup" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-      Create Channel
-    </button>
+   
   </div>
 </template>
 

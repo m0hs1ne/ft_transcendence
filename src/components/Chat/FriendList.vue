@@ -1,10 +1,10 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="m-2 p-5 max-h-1.2 rounded-lg bg-slate-300">
-    <div class="h-1/2">
-      <ul class=" w-1/2 h-1/2 ">
+  <div class="m-2 p-5 rounded-lg bg-slate-300">
+    {{ this.friends }}
+      <!-- <ul class="">
         <li v-for="friend in friends" :key="friend.id"
-          class="collection-item collection-item-avatar flex items-center p-2 space-x-4 border-b"
+          class="flex items-center p-2 space-x-4 border-b"
          >
           <div class="flex-shrink-0">
             <img :src="friend.avatar"  @click="handleChatClick(friend)"  alt="Avatar" class=" h-12 rounded-full" />
@@ -19,10 +19,8 @@
             <span class="text-lg font-semibold">{{ friend.username }}</span>
             <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
           </div>
-        
         </li>
-      </ul>
-    </div>
+      </ul> -->
   </div>
 </template>
 
@@ -43,10 +41,10 @@ export default {
       axios
         .get("http://localhost:3000/api/users/friends/", { withCredentials: true })
         .then((response) => {
-          this.responseData = response.data;
-          this.friends = this.responseData.friends
-          console.log(" i am here ", this.responseData.friends);
-          console.log(this.friends)
+          // this.responseData = response.data;
+          // this.friends = this.responseData.friends
+          // console.log(" i am here ", this.responseData.friends);
+          // console.log(this.friends)
 
         })
         .catch((error) => {
@@ -62,7 +60,9 @@ export default {
   
   },
   mounted() {
+    console.log("Hello: ")
     this.fetchData();
+    
   },
 };
 </script>

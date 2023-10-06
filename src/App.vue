@@ -16,14 +16,14 @@ export default {
       return allowedPaths.includes(this.$route.path);
     },
     async checkValidUser() {
-      await axios.get('http://localhost:3000/api/auth/success', { withCredentials: true })
-        .then(() => {
-          console.log('Logged IN')
-        })
-        .catch((error) => {
-          console.log(error)
-          this.$router.push('/signIn')
-        })
+      // await axios.get('http://localhost:3000/api/auth/success', { withCredentials: true })
+      //   .then(() => {
+      //     console.log('Logged IN')
+      //   })
+      //   .catch((error) => {
+      //     console.log(error)
+      //     this.$router.push('/signIn')
+      //   })
     }
   }
 }

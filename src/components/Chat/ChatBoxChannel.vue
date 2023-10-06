@@ -4,7 +4,6 @@
     <div class=" flex flex-col mt-5 overflow-y-scroll" ref="scrollContainer">
       <div
         v-for="message in messages"
-        :key="message.id"
         :class="{
           message: true,
           received: message.type === 'received',
@@ -17,7 +16,7 @@
             <span>{{ message.text }}</span>
           </div>
         </div>
-        <!-- <div class = "message-time">00:00</div> -->
+ 
       </div>
     </div>
     <div class="flex ">
@@ -29,18 +28,21 @@
       />
       <button class="flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600" @click="sendMessage()">Send</button>
     </div>
+   
   </div>
 </template>
 
 <script>
-import ChatUserProfile from  './UserProfile.vue';
+import ChatChannelProfil from  './ChannelProfil.vue';
+import axios from "axios";
+
 export default {
   components:
   {
-    ChatUserProfile,
+    ChatChannelProfil,
   },
   props: {
-    person: {
+    channel: {
       type: Object,
       required: true,
     },
@@ -51,17 +53,54 @@ export default {
       messages: [],
       newMessage: "",
       UserProfile:{},
-      length:0
+      length:0,
+      members:{},
+      b : false
     };
   },
   methods: {
+    fetchData() {
+     
+      axios
+        .get(`http://localhost:3000/api/chat-rooms/${this.channel.id}/`, { withCredentials: true })
+        .then((response) => {
+          response.data.messages.forEach((element) => {
+          var tye = "";
+          if (element.from.id != response.data.id)
+            tye = "received";
+          else tye = "sent";
+         
+          this.messages.push({
+            // id: Date.now(),
+            img: element.from.avatar,
+            type: tye,
+            text: element.message,
+          });
+        });  
+         this.members =  response.data.members;
+         console.log("emmmmit o-sent ")
+         this.$emit('o-sent', this.members);
+
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    },
     sendMessage() {
-        console.log("I AM SENDmessage function ", this.person);
+        console.log("I AM SENDmessage fun");
         this.$socket.emit(
-          "sendDM",
-          { toId: this.person.id, message: this.newMessage },
+          "sendMessage",
+          { chatId: this.channel.id, message: this.newMessage},
           () => {},
         );
+        this.$socket.on("receiveMessage", (data) => {
+          this.messages.push({
+            // id: Date.now(),
+            img: data.from.avatar,
+            type: "received",
+            text: data.message,
+          });
+        })
         this.$nextTick(() => {
           const scrollContainer = this.$refs.scrollContainer;
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -71,48 +110,12 @@ export default {
   },
 
   mounted() {
-    this.UserProfile = this.person;
-    console.log(" I am in Mounted in chatbox ", this.UserProfile)
-    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => {});
-    this.$socket.on("receiveMessage", (data) => {
-      //this.messages.img = data.message.from.avatar
-      console.log("This is my person: ", this.person);
-      
-      if(data.type == "DM")
-      {
-        var tye = "";
-        if (data.message.from.id != this.person.id) tye = "sent";
-        else tye = "received";
+   // this.UserProfile = this.person;
+   console.log(" I am in Mounted in chatbox****** ", this.channel)
+   this.members =  this.channel;
+    this.fetchData()
+    this.b = 1;
 
-        this.messages.push({
-          // id: Date.now(),
-          img: data.message.from.avatar,
-          type: tye,
-          text: data.message.message,
-        });
-        
-      }
-      if (data.type == "DMMessages") {
-        data.messages.forEach((element) => {
-          var tye = "";
-          if (element.from.id != this.person.id)
-            tye = "sent";
-          else tye = "received";
-
-          this.messages.push({
-            // id: Date.now(),
-            img: element.from.avatar,
-            type: tye,
-            text: element.message,
-          });
-        });
-      }
-      this.$nextTick(() =>{
-          const scrollContainer = this.$refs.scrollContainer;
-          scrollContainer.scrollTop = scrollContainer.scrollHeight;
-        });
-  
-    });
 
   },
 };
