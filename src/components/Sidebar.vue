@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 import { useDark, useToggle } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
-import SidebarTab from './SidebarTab.vue';
+import SidebarTab from './SideBarTab.vue';
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -26,7 +26,7 @@ const confirmLogout = () => {
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">
-			<img src="../assets/imgs/logo.png" alt="Logo" class="w-[5rem]">
+			<img src="../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
 		</div>
 
 		<!-- Tabs -->

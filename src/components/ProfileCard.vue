@@ -1,5 +1,5 @@
 <script setup>
-import ProfileStat from "./profileStat.vue"
+import ProfileStat from "./ProfileStat.vue"
 </script>
 
 <template>
