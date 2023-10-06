@@ -1,7 +1,7 @@
 <script setup>
-import ProfileCard from "./../components/ProfileCard.vue"
-import LastBattlesCard from "./../components/LastBattlesCard.vue"
-import AchievementsCard from "./../components/AchievementsCard.vue"
+import ProfileCard from "./../components/Profile/ProfileCard.vue"
+import LastBattlesCard from "./../components/Profile/LastBattlesCard.vue"
+import AchievementsCard from "./../components/Profile/AchievementsCard.vue"
 </script>
 
 <template>

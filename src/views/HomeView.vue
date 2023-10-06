@@ -1,5 +1,5 @@
 <script setup>
-import PlayModeCard from '../components/PlayModeCard.vue';
+import PlayModeCard from '../components/Home/PlayModeCard.vue';
 </script>
 
 

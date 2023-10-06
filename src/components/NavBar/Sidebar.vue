@@ -13,7 +13,7 @@ const confirmLogout = () => {
 
   if (confirmed) {
     // Use $router from the setup context
-    router.push('/SignIn');
+    router.push('/signIn');
   }
   // else: User canceled the logout
 };
@@ -26,7 +26,7 @@ const confirmLogout = () => {
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">
-			<img src="../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
+			<img src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
 		</div>
 
 		<!-- Tabs -->

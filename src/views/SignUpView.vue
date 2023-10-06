@@ -15,7 +15,7 @@
 			</router-link>
 			<div class="text-center">
 				<span class="font-Poppins text-gray-700 dark:text-gray-300">Already have an account? </span>
-				<router-link to="/SignIn" class="font-Poppins text-blue-500 dark:text-cyan-500 font-medium">Sign In</router-link>
+				<router-link to="/signIn" class="font-Poppins text-blue-500 dark:text-cyan-500 font-medium">Sign In</router-link>
 			</div>
 		</div>
 	</main>
