@@ -35,6 +35,9 @@ export class User {
     @Column({nullable: true})
     losses: number;
 
+    @Column({type: 'double'})
+    winrate: number;
+
     @Column()
     statusOnline: boolean;
 

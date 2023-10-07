@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -117,5 +117,15 @@ export class UsersController {
       statusCode: 200,
       data: file.path,
     };
+  }
+  //Leaderboard
+  @Get('leaderboard')
+  getleaderboard(@Req() req) {
+    return this.usersService.getleaders();
+  }
+
+  @Get('search')
+  searchUsers(@Query('query') query: string) {
+    return this.usersService.search(query);
   }
 }

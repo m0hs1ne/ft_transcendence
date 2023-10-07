@@ -29,7 +29,7 @@ export class AuthController {
     async callback(@Req() req: RequestWithUser, @Res() res) {
         const payload = await this.authService.login(req.user);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:8080/home');
+        res.redirect('http://localhost:5173/home');
     }
 
     /**

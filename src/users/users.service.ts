@@ -1,7 +1,7 @@
 import { Injectable, NotAcceptableException, NotFoundException, Options, Req, UseGuards } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, QueryFailedError, Repository } from 'typeorm';
+import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { verifyToken } from 'src/utils/guard';
 import { AddFriendDto } from './dto/add-friend.dto';
@@ -255,5 +255,28 @@ export class UsersService {
   async uploadAvatar(avatar, payload)
   {
     await this.userRepository.update({id: payload.sub}, {avatar: process.env.DOMAIN_URL + avatar.path})
+  }
+
+  async getleaders()
+  {
+    const list = await this.userRepository
+              .createQueryBuilder('user')
+              .orderBy('user.win')
+              .select([
+                'user.id',
+                'user.username',
+                'user.avatar',
+                'user.win',
+              ])
+              .take(10)
+    return list;
+  }
+
+  async search(query: string): Promise<User[]> {
+    return this.userRepository.find({
+      where: {
+        username: ILike(`%${query}%`),
+      },
+    });
   }
 }
