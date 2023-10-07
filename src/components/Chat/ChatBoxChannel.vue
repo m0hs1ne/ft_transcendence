@@ -33,7 +33,7 @@
 
 <script>
 import axios from "axios";
-import { useUserStore } from './../../stores/state.js';
+import { useUserStore } from './../../stores/state.ts';
 export default {
 
   props: {

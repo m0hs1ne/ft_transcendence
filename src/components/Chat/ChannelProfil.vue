@@ -32,7 +32,7 @@
   
   <script>
   import axios from "axios";
-  import { useUserStore } from './../../stores/state.js';
+  import { useUserStore } from './../../stores/state.ts';
   import FriendList from "./FriendList.vue";
   export default {
     setup() {
