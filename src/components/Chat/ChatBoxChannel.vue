@@ -35,7 +35,7 @@
 <script>
 import ChatChannelProfil from  './ChannelProfil.vue';
 import axios from "axios";
-
+import { useUserStore } from './../../stores/counter.js';
 export default {
   components:
   {
@@ -47,6 +47,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const userStore = useUserStore();
+
+    return { userStore }
+  },
 
   data() {
     return {
@@ -56,36 +61,16 @@ export default {
       length:0,
       members:{},
       b : false
-    };
-  },
+    }; 
+  }, 
   methods: {
-    fetchData() {
-     
-      axios
-        .get(`http://localhost:3000/api/chat-rooms/${this.channel.id}/`, { withCredentials: true })
-        .then((response) => {
-          response.data.messages.forEach((element) => {
-          var tye = "";
-          if (element.from.id != response.data.id)
-            tye = "received";
-          else tye = "sent";
-         
-          this.messages.push({
-            // id: Date.now(),
-            img: element.from.avatar,
-            type: tye,
-            text: element.message,
-          });
-        });  
-         this.members =  response.data.members;
-         console.log("emmmmit o-sent ")
-         this.$emit('o-sent', this.members);
-
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    async fetchData() { 
+      this.userStore.UpdateChannelId(this.channel.id)
+      await this.userStore.fetchChannelById();  
+      
+      console.log("ChannelData   " ,this.userStore. ActiveChannelData);
     },
+
     sendMessage() {
         console.log("I AM SENDmessage fun");
         this.$socket.emit(
@@ -110,13 +95,10 @@ export default {
   },
 
   mounted() {
+    this.fetchData();
    // this.UserProfile = this.person;
-   console.log(" I am in Mounted in chatbox****** ", this.channel)
-   this.members =  this.channel;
-    this.fetchData()
-    this.b = 1;
-
-
+  //  const userStore = useUserStore();
+  //  console.log(userStore.fetchData());
   },
 };
 </script>
