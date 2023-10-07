@@ -1,7 +1,7 @@
 <!-- ChatComponent.vue -->
 <template>
   <div class=" flex flex-col justify-between h-screen">
-    <div class=" flex flex-col mt-5 overflow-y-scroll" ref="scrollContainer">
+    <div class="  flex flex-col mt-5 overflow-y-scroll" ref="scrollContainer">
       <div
         v-for="message in messages"
         :class="{
@@ -16,7 +16,6 @@
             <span>{{ message.text }}</span>
           </div>
         </div>
- 
       </div>
     </div>
     <div class="flex ">
@@ -33,14 +32,10 @@
 </template>
 
 <script>
-import ChatChannelProfil from  './ChannelProfil.vue';
 import axios from "axios";
-import { useUserStore } from './../../stores/counter.js';
+import { useUserStore } from './../../stores/state.js';
 export default {
-  components:
-  {
-    ChatChannelProfil,
-  },
+
   props: {
     channel: {
       type: Object,
@@ -64,11 +59,24 @@ export default {
     }; 
   }, 
   methods: {
+
     async fetchData() { 
-      this.userStore.UpdateChannelId(this.channel.id)
-      await this.userStore.fetchChannelById();  
-      
-      console.log("ChannelData   " ,this.userStore. ActiveChannelData);
+      this.userStore.UpdateChannelId(this.channel.id);
+     
+      await this.userStore.fetchChannelById(); 
+       this.userStore.ActiveMessageChannelId.forEach((element) => {
+          var tye = "";
+          if (element.from.id != element.id)
+            tye = "sent";
+          else tye = "received";
+          this.messages.push({
+            
+            img: element.from.avatar,
+            type: tye,
+            text: element.message,
+          });
+        });
+        
     },
 
     sendMessage() {
@@ -82,23 +90,30 @@ export default {
           this.messages.push({
             // id: Date.now(),
             img: data.from.avatar,
-            type: "received",
+            type: "sent",
             text: data.message,
           });
         })
+        
+      
+        this.newMessage = "";
         this.$nextTick(() => {
           const scrollContainer = this.$refs.scrollContainer;
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
         });
-        this.newMessage = "";
+        
     },
   },
 
   mounted() {
+    this.userStore.UpdateChannelId(this.channel.id)
+
     this.fetchData();
-   // this.UserProfile = this.person;
-  //  const userStore = useUserStore();
-  //  console.log(userStore.fetchData());
+    this.$nextTick(() => {
+        console.log(" scrol ")
+          const scrollContainer = this.$refs.scrollContainer;
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        });
   },
 };
 </script>

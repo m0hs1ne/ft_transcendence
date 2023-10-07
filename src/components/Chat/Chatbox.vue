@@ -33,12 +33,9 @@
 </template>
 
 <script>
-import ChatUserProfile from  './UserProfile.vue';
+import axios from "axios";
+  import { useUserStore } from './../../stores/state.js';
 export default {
-  components:
-  {
-    ChatUserProfile,
-  },
   props: {
     person: {
       type: Object,
@@ -76,8 +73,6 @@ export default {
     this.$socket.emit("getDMMessages", { userId: this.person.id }, () => {});
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
-      console.log("This is my person: ", this.person);
-      
       if(data.type == "DM")
       {
         var tye = "";

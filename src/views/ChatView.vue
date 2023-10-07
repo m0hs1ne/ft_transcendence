@@ -94,15 +94,10 @@
 			this.displayTargetComponent = 0;
 			this.displayChatboxChannel = object.id;
 		  }
-	//    console.log(" display chat box channel " ,this.displayChatboxChannel)
-		this.ChannelObject = object;
+		  this.ChannelObject = object;
 	   // console.log(" This is obj: ", this.object)
-		//this.displayTargetComponent = object.id;
-		if(this.displayChatboxChannel)
-		{
-		  console.log("From here ")
-		  this.han(object)
-		}
+		  this.displayChatboxChannel = object.id;
+		
 	  },
    
 	  handleObject(object) {
