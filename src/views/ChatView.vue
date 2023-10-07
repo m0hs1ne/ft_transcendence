@@ -11,7 +11,7 @@
 	  </div>
 	  <div class="basis-1/4">
 		<ChatUserProfile :person="personObject" v-if="displayTargetComponent"/>
-		<ChatChannelProfil v-if="displayChatboxChannel"  :Channeldetails="members" @o-sent="han" />
+		<ChatChannelProfil v-if="displayChatboxChannel"/>
 	
 	  </div>
 	</div>

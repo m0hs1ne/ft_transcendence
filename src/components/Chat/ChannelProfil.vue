@@ -19,45 +19,20 @@
           <span class="ml-2 h-10">Block</span>
       </button>
       </div> -->
-      {{  this.Channeldetails }}
+     Hello
     </div>
   </template>
   
   <script>
   import axios from "axios";
+  import { useUserStore } from './../../stores/counter.js';
   export default {
     data() {
       return {
         friends: [{}],
       };
     },
-    props: {
-        Channeldetails: {
-        type: Object,
-        required: true,
-      },
-    },
     methods: {
-      fetchData() {
-        //     axios
-        //       .get("http://localhost:3000/api/users/friends/", { withCredentials: true })
-        //       .then((response) => {
-        //         this.responseData = response.data;
-        //         this.friends = this.responseData.friends
-        //         console.log(" i am here ", this.responseData.friends);
-        //         console.log(this.friends)
-        //       })
-        //       .catch((error) => {
-        //         console.error("Error fetching data:", error);
-        //       });
-        //   },
-        //   handleChatClick(Item) {
-        //     // Your click event logic here
-        //     console.log("Prop emitd ");
-        //     // console.log(Item)
-        //
-     
-      },
       Block()
         {
           console.log(" block user ")
@@ -68,7 +43,14 @@
         }
     },
     mounted() {
-      console.log(" mounted in ChannelProfile  ", this.Channeldetails);
+  
+
+  //     const userStore = useUserStore();
+  //  console.log(userStore);
+  //  console.log(" I am in Channel")
+  //  console.log(userStore.fetchData(1))
+  
+
     },
   };
   </script>
