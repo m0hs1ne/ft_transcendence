@@ -1,7 +1,7 @@
 import { Injectable, NotAcceptableException, NotFoundException, Options, Req, UseGuards } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, QueryFailedError, Repository } from 'typeorm';
+import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, In, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { verifyToken } from 'src/utils/guard';
 import { AddFriendDto } from './dto/add-friend.dto';
@@ -285,6 +285,7 @@ export class UsersService {
 
     const chatroom = await this.chatRoomRepository.find({
       where: {
+        privacy: In(['public', 'protected']),
         title: ILike(`%${query}%`),
       },
     });
