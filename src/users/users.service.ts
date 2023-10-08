@@ -5,6 +5,7 @@ import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, QueryFail
 import { User } from './entities/user.entity';
 import { verifyToken } from 'src/utils/guard';
 import { AddFriendDto } from './dto/add-friend.dto';
+import { ChatRoom } from 'src/chat_rooms/entities/chat_room.entity';
 
 
 
@@ -12,6 +13,7 @@ import { AddFriendDto } from './dto/add-friend.dto';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(User) private readonly chatRoomRepository: Repository<ChatRoom>
   ) { }
 
   async findAll() {
@@ -274,11 +276,19 @@ export class UsersService {
     return list;
   }
 
-  async search(query: string): Promise<User[]> {
-    return this.userRepository.find({
+  async search(query: string){
+    const user =  await this.userRepository.find({
       where: {
         username: ILike(`%${query}%`),
       },
     });
+
+    const chatroom = await this.chatRoomRepository.find({
+      where: {
+        title: ILike(`%${query}%`),
+      },
+    });
+
+    return {user, chatroom};
   }
 }

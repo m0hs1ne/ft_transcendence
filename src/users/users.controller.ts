@@ -125,7 +125,7 @@ export class UsersController {
   }
 
   @Get('search')
-  searchUsers(@Query('query') query: string) {
-    return this.usersService.search(query);
+  async searchUsers(@Query('query') query: string) {
+    return await this.usersService.search(query);
   }
 }
