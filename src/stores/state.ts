@@ -1,17 +1,16 @@
 
-
-
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
     MyId:null,
+
     ActiveChannelData: [],
     ActiveChannelId:null,
     ActiveMessageChannelId:{},
     ActiveMembersChannelId:{},
-    UserId:null,
+
     UserFriends:{}
   }),
   actions:
@@ -28,6 +27,7 @@ export const useUserStore = defineStore('user', {
     async fetchChannelById() {
       try {
         this.ActiveChannelData = await axios.get(`http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`, { withCredentials: true })
+        this.MyId = this.ActiveChannelData.data.id;
         this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
         this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
       } catch(error)
