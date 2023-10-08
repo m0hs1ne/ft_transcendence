@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { userAuthGuard, verifyToken } from 'src/utils/guard';
 import { ChatRoomsService } from './chat_rooms.service';
 
@@ -14,5 +14,11 @@ export class ChatRoomsController {
         const messages = await this.chatroomservice.getMessages('chat', id, payload)
         let details = {id:payload.sub, members, messages}
         return details
+    }
+
+    @Delete(':id')
+    async delChatroom(@Param('id') id, @Req() req){
+        const payload = verifyToken(req.headers.cookie)
+        await this.chatroomservice.remove(id, payload);
     }
 }

@@ -220,6 +220,19 @@ export class ChatRoomsService {
 
   async kickMemberFromChat(memberId, chatId, payload, clients)
   {
+    const member_count = await this.userChatRepository.createQueryBuilder('user_chat')
+    .where('"chatRoomId" = :id', {id: chatId})
+    .select([
+      'user_chat.id',
+      'user_chat.role',
+      'user_chat.userStatus',
+    ])
+    .getCount()
+    if (member_count == 1)
+    {
+      await this.remove(chatId, payload);
+      return false;
+    }
     const userChat = await this.userChatRepository.findOne({
       relations: ['user', 'chatRoom'],
       where: {userId: memberId, chatRoomId: chatId}

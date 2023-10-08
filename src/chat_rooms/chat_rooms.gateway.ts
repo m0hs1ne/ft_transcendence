@@ -216,6 +216,8 @@ export class ChatRoomsGateway{
       if (typeof memberId === 'number' && typeof chatId === 'number')
       {
         const kick = await this.chatRoomsService.kickMemberFromChat(memberId, chatId, payload, clients);
+        if (kick === false)
+          return;
         if (memberId != payload.sub)
           await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);
         else
