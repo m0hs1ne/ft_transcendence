@@ -15,7 +15,7 @@ var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEven
 @WebSocketGateway({
   cors : {
     credentials: true,
-    origin: "http://localhost:8000"
+    origin: "http://localhost:5173"
   }
 }
 )
