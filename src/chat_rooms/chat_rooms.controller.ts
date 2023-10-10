@@ -16,7 +16,7 @@ export class ChatRoomsController {
         return details
     }
 
-    @Get('/my')
+    @Get()
     async myChatRoom(@Req() req){
         const payload = verifyToken(req.headers.cookie)
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload);
