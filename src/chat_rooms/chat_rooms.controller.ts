@@ -7,6 +7,13 @@ import { ChatRoomsService } from './chat_rooms.service';
 export class ChatRoomsController {
     constructor(private readonly chatroomservice: ChatRoomsService) {}
 
+    @Get()
+    async myChatRoom(@Req() req){
+        const payload = verifyToken(req.headers.cookie)
+        const chatrooms = await this.chatroomservice.findMyChatRooms(payload);
+        return chatrooms
+    }
+    
     @Get(':id')
     async chatroomDetails(@Param('id') id, @Req() req){
         const payload = verifyToken(req.headers.cookie)
@@ -14,13 +21,6 @@ export class ChatRoomsController {
         const messages = await this.chatroomservice.getMessages('chat', id, payload)
         let details = {id:payload.sub, members, messages}
         return details
-    }
-
-    @Get()
-    async myChatRoom(@Req() req){
-        const payload = verifyToken(req.headers.cookie)
-        const chatrooms = await this.chatroomservice.findMyChatRooms(payload);
-        return chatrooms
     }
 
     @Delete(':id')
