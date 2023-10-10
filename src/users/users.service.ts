@@ -121,18 +121,18 @@ export class UsersService {
   //friends
   async getfriends(id: number)
   {
-    const blocked = await this.userRepository
+    const friends = await this.userRepository
     .createQueryBuilder('users')
-    .leftJoinAndSelect('users.friends', 'blocked')
+    .leftJoinAndSelect('users.friends', 'friends')
     .where('users.id = :id', { id })
     .select([
       'users.username',
-      'blocked.id',
-      'blocked.username',
-      'blocked.avatar',
+      'friends.id',
+      'friends.username',
+      'friends.avatar',
     ])
     .getOne()
-    return blocked;
+    return friends.friends;
   }
 
   async addfriends(id, @Req() req)

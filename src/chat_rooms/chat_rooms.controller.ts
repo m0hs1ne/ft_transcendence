@@ -21,10 +21,9 @@ export class ChatRoomsController {
         const payload = verifyToken(req.headers.cookie)
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload);
         const friends = await this.userservice.getfriends(payload.sub)
-        return {friends, chatrooms}
+        return friends.concat(chatrooms)
     }
     
-
     @Get(':id')
     async chatroomDetails(@Param('id') id, @Req() req){
         const payload = verifyToken(req.headers.cookie)
