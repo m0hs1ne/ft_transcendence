@@ -22,7 +22,7 @@ const confirmLogout = () => {
 			
 <!-- Sidebar.vue -->
 <template>
-	<aside class="fixed h-screen w-20 shadow-2xl text-black flex flex-col items-center
+	<aside class="fixed min-h-screen w-20 shadow-2xl text-black flex flex-col items-center
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">

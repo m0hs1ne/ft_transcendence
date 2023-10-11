@@ -56,14 +56,15 @@ export default {
       // handl friend 
 
       this.members = this.userStore.ActiveMembersChannelId;
-      // console.log("This is Members: " ,this.members)
-      this.userStore.UserFriends.data.friends.forEach(element => {
-        // to get friends not found in the channel
-        const foundObject = this.members.find(obj => obj.user.id == element.id);
-        if (!foundObject) {
-          this.friends.push(element);
-        }
+       console.log("This is Members: " ,this.userStore.UserFriends.data)
 
+      this.userStore.UserFriends.data.forEach(element => {
+        // to get friends not found in the channel
+        // const foundObject = this.members.find(obj => obj.user.id == element.id);
+        // if (!foundObject) {
+        //   this.friends.push(element);
+        // }
+        this.friends.push(element);
       });
     },
     openPopup() {

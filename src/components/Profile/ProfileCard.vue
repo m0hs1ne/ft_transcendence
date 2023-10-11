@@ -1,5 +1,6 @@
 <script setup>
 import ProfileStat from "./ProfileStat.vue"
+import { useUserStore } from './../../stores/state.ts';
 </script>
 
 <template>
