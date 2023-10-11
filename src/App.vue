@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     isSidebarVisible() {
-      const allowedPaths = ['/', '/chat', '/profile', '/search', '/setting'];
+      const allowedPaths = ['/', '/chat', '/profile', '/search', '/setting', '/leaderboard'];
       return allowedPaths.includes(this.$route.path);
     },
     async checkValidUser() {

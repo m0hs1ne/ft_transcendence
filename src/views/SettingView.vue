@@ -17,7 +17,7 @@
 								upload</span> or drag and drop</p>
 						<p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG</p>
 					</div>
-					<input id="dropzone-file" type="file" class="hidden" />
+					<input type="file" class="hidden" />
 				</label>
 			</div>
 
@@ -29,7 +29,7 @@
 						Name
 					</label>
 					<input
-						class="appearance-none block w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+						class="appearance-none focus:text-gray-800 w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 						type="text" placeholder="David goggins">
 				</div>
 			</div>
@@ -41,7 +41,7 @@
 						Title
 					</label>
 					<input
-						class="appearance-none block w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+						class="appearance-none  focus:text-gray-800 w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
 						type="text" placeholder="They don't know me son! You don't know me son!">
 					<p class="text-gray-600 dark:text-gray-300 italic">This is title will be displayed under your Name, Be
 						Creative!!</p>

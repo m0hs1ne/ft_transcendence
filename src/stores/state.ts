@@ -5,12 +5,10 @@ import axios from 'axios';
 export const useUserStore = defineStore('user', {
   state: () => ({
     MyId:null,
-
     ActiveChannelData: [],
     ActiveChannelId:null,
     ActiveMessageChannelId:{},
     ActiveMembersChannelId:{},
-
     UserFriends:{}
   }),
   actions:
