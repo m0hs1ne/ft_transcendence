@@ -49,13 +49,12 @@ export default {
       console.log("ChannelData   ", this.userStore.ActiveMessageChannelId[0]);
     },
     LeaveChannel() {
-      console.log(" I am leaving the channel")
+      console.log(" I am leaving the channel My id:",this.userStore.MyId, "Chatid:", this.userStore.ActiveChannelId )
       this.$socket.emit("kickMember",
         {
           "memberId": this.userStore.MyId,
           "chatId": this.userStore.ActiveChannelId
         })
-   
     }
 
   },
