@@ -55,7 +55,7 @@ export class UsersService {
       'users.wins',
       'users.losses',
       'users.avatar',
-      'users.is2fa',
+      'users.is2faEnabled',
       'friends.id',
       'friends.username',
       'friends.wins',
