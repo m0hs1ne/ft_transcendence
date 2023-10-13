@@ -28,7 +28,7 @@
     created() {
       console.log("Start here");
       window.addEventListener('keydown', this.handleKeyDown);
-      this.socket = io('http://localhost:3000'), {
+      this.socket = io('http://localhost:3000/game'), {
         withCredentials: true,
       };
       console.log(this.socket);

@@ -1,25 +1,29 @@
 import { Socket } from 'socket.io';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Namespace } from 'socket.io';
 import { Room } from './room';
 import { v4 as uuidv4 } from 'uuid';
 
 
 
-@WebSocketGateway({
-  // cors : {
-  //   credentials: true,
-  //   origin: "http://localhost:5173"
-  // }
-}
-)
+@WebSocketGateway({ namespace: '/game' })
 export class GameGateway {
   @WebSocketServer() server: Server;
+  // dashboardNamespace: Namespace = this.server.of('/dashboard');
   private rooms: Map<string, Room> = new Map();
   private roomsqueu: Socket[] = [];
 
   handleConnection(client: Socket) {
-    console.log(`A Client connected`);
+    console.log(`A Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: Socket)
+  {
+    console.log(`Client disconnected: ${client.id}`);
+    if(this.roomsqueu.at(0) == client)
+    {
+      this.roomsqueu.pop();
+    }
   }
 
 
