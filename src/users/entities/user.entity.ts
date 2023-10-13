@@ -10,13 +10,13 @@ export class User {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @Column({ nullable: true })
+    @Column({ default: false })
     tfaSecret: string;
 
-    @Column({ nullable: true })
+    @Column({ default: false })
     mailOTP: string;
 
-    @Column({ nullable: true })
+    @Column({ default: false })
     mailOTPExpire: Date;
 
     @Column({ type: 'varchar', unique: true, length: 50 })
@@ -25,16 +25,16 @@ export class User {
     @Column({ type: 'varchar', unique: true, length: 50 })
     username: string;
 
-    @Column({nullable: true})
+    @Column({default: 0})
     level: number;
 
-    @Column({nullable: true})
+    @Column({default: 0})
     wins: number;
 
-    @Column({nullable: true})
+    @Column({default: 0})
     losses: number;
 
-    @Column({nullable: true})
+    @Column({default: 0})
     winrate: number;
 
     @Column()

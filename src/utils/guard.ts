@@ -63,8 +63,10 @@ export function verifyToken(cookie: string): any {
     return payload;
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
+      console.log(cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1])
       throw new Error('Token has expired');
     } else {
+      console.log(cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1])
       throw new Error('Invalid token');
     }
   }
