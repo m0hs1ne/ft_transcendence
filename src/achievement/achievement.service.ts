@@ -11,9 +11,13 @@ export class AchievementService {
   {}
   async createAchievement(): Promise<Achievement[]> {
     const achievementToCreate = [
-      { title: 'Sniper', image:  `${process.env.DOMAIN}/public/img/achievement.png` },
-      { title: '10 Strike Wins', image: `${process.env.DOMAIN}/public/img/achievement.png` },
-      // Add more user objects here as needed
+      { title: 'Sniper', image:  `${process.env.DOMAIN}/public/img/achievement.png`, description: "Get 10 goals from first touch" },
+      { title: 'Clean Sheat', image:  `${process.env.DOMAIN}/public/img/achievement.png`, description: "Get 10 goals from first touch" },
+      { title: '10 Strike Wins', image: `${process.env.DOMAIN}/public/img/achievement.png`, description: 'Win 10 games in row'},
+      { title: 'Creator', image: `${process.env.DOMAIN}/public/img/achievement.png`, description: 'Create your own chat room' },
+      { title: 'Shield Man', image: `${process.env.DOMAIN}/public/img/achievement.png`, description: 'Active two factor authentication' },
+      { title: 'Feeling Pretty', image: `${process.env.DOMAIN}/public/img/achievement.png`, description: 'Change your profile picture' },
+      // Add more Achievements objects here as needed
     ];
 
     const createdAchievement = await Promise.all(
@@ -24,25 +28,5 @@ export class AchievementService {
     );
 
     return createdAchievement;
-  }
-
-  create(createAchievementDto: CreateAchievementDto) {
-    return 'This action adds a new achievement';
-  }
-
-  findAll() {
-    return `This action returns all achievement`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} achievement`;
-  }
-
-  update(id: number, updateAchievementDto: UpdateAchievementDto) {
-    return `This action updates a #${id} achievement`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} achievement`;
   }
 }

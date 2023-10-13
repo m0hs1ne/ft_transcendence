@@ -12,6 +12,9 @@ export class Achievement {
     @Column()
     image: string;
 
+    @Column()
+    description: string
+
     @ManyToMany(() => User, user => user.achievements)
     users: User[];
 }

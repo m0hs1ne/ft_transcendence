@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { verifyToken } from 'src/utils/guard';
 import { AddFriendDto } from './dto/add-friend.dto';
 import { ChatRoom } from 'src/chat_rooms/entities/chat_room.entity';
+import { Achievement } from 'src/achievement/entities/achievement.entity';
 
 
 
@@ -13,7 +14,8 @@ import { ChatRoom } from 'src/chat_rooms/entities/chat_room.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(User) private readonly chatRoomRepository: Repository<ChatRoom>
+    @InjectRepository(User) private readonly chatRoomRepository: Repository<ChatRoom>,
+    @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>
   ) { }
 
   async findAll() {
@@ -201,6 +203,15 @@ export class UsersService {
     ])
     .getOne()
     return blocked;
+  }
+
+  async addAchievement(title, id)
+  {
+    const user = await this.userRepository.findOne(id);
+    const role = await this.achievementRepository.findOne(title);
+
+    user.achievements.push(role);
+    return await this.userRepository.save(user);
   }
 
   async addblocked(id, @Req() req)
