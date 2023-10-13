@@ -31,6 +31,7 @@ export class ChatRoomsController {
     {
         const payload = verifyToken(req.headers.cookie)
         const role = await this.userchatservice.myrole(id, payload.sub)
+        return role
     }
     
     @Get(':id')

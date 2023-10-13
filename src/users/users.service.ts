@@ -132,6 +132,8 @@ export class UsersService {
       'friends.avatar',
     ])
     .getOne()
+    if (!friends)
+      return null
     return friends.friends;
   }
 

@@ -1,11 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserExistExceptionFilter } from 'src/exceptions/ExistException.filter';
 import { generateRandomString, userAuthGuard, verifyToken } from '../utils/guard'
-import { UserNotExistExceptionFilter } from 'src/exceptions/NotExistException.filter';
-import { AddFriendDto } from './dto/add-friend.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express'
 import { diskStorage } from 'multer';
