@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 export class AchievementService {
   constructor(@InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>)
   {}
+
+  
   async createAchievement(): Promise<Achievement[]> {
     const achievementToCreate = [
       { title: 'Sniper', image:  `${process.env.DOMAIN}/public/img/achievement.png`, description: "Get 10 goals from first touch" },

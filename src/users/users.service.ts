@@ -15,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(User) private readonly chatRoomRepository: Repository<ChatRoom>,
-    @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>
+    @InjectRepository(User) private readonly achievementRepository: Repository<Achievement>
   ) { }
 
   async findAll() {
