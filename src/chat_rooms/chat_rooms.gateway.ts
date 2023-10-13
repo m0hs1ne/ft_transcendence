@@ -1,13 +1,11 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { ChatRoomsService } from './chat_rooms.service';
-import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
-import { BadRequestException, Body, ForbiddenException, NotFoundException, OnModuleInit, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, NotFoundException, Req, UnauthorizedException } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { AuthMiddleware, checkPassword, userWSAuthGuard, verifyToken } from 'src/utils/guard';
+import { checkPassword, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { UsersService } from 'src/users/users.service';
-import { type } from 'os';
 
 
 var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()

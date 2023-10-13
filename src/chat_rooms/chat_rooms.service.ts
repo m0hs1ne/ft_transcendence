@@ -44,6 +44,7 @@ export class ChatRoomsService {
     const ownerObj = await this.userRepository.findOne({
       where: {id: payload.sub},
     });
+    ownerObj.creator = true;
     const userChatRel = await this.userChatRepository.create({
       userId: payload.sub,
       chatRoomId: newChat.id,
@@ -52,6 +53,7 @@ export class ChatRoomsService {
       user: ownerObj,
       chatRoom: newChat
     })
+    await this.userRepository.save(ownerObj);
     await this.userChatRepository.save(userChatRel)
 
       return {
@@ -78,7 +80,8 @@ export class ChatRoomsService {
     const userChats = await this.userChatRepository
     .createQueryBuilder('user_chat')
     .leftJoinAndSelect('user_chat.chatRoom', 'chatRoom')
-    .where('user_chat.userId = :id', { id })
+    .where('user_chat.userId = :id ', { id })
+    .where('user_chat.userStatus != :status', { status: 'banned' })
     .select([
       'user_chat.id',
       'chatRoom.id',
@@ -88,7 +91,7 @@ export class ChatRoomsService {
     ])
     .getMany();
     for(const userChat of userChats)
-      mychatRooms.push(userChat.chatRoom)
+        mychatRooms.push(userChat.chatRoom)
     if (!mychatRooms)
       throw new NotFoundException({message: `You didn't join any chat.`})
     return mychatRooms;

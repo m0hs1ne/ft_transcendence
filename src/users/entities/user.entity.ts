@@ -19,7 +19,6 @@ export class User {
     @Column({ nullable: true })
     mailOTPExpire: Date;
 
-
     @Column({ type: 'varchar', unique: true, length: 50 })
     email: string;
 
@@ -43,6 +42,9 @@ export class User {
 
     @Column()
     inGame: boolean;
+
+    @Column({ default: false })
+    creator: boolean;
 
     @Column({ default: false })
     is2faEnabled: boolean;
