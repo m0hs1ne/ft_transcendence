@@ -1,8 +1,9 @@
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { userAuthGuard, verifyToken } from 'src/utils/guard';
 import { ChatRoomsService } from './chat_rooms.service';
 import { UsersService } from 'src/users/users.service';
 import { UserChatService } from 'src/user_chat/user_chat.service';
+import { MessageBody } from '@nestjs/websockets';
 
 @UseGuards(userAuthGuard)
 @Controller('chat-rooms/')
@@ -33,6 +34,10 @@ export class ChatRoomsController {
         const role = await this.userchatservice.myrole(id, payload.sub)
         return role
     }
+
+    @Post('declineInvite')
+    delInvite(@MessageBody() body,@Req() req)
+    {}
     
     @Get(':id')
     async chatroomDetails(@Param('id') id, @Req() req){

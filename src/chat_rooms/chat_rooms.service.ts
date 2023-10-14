@@ -81,7 +81,7 @@ export class ChatRoomsService {
     .createQueryBuilder('user_chat')
     .leftJoinAndSelect('user_chat.chatRoom', 'chatRoom')
     .where('user_chat.userId = :id ', { id })
-    .where('user_chat.userStatus != :status', { status: 'banned' })
+    // .where('user_chat.userStatus != :status', { status: 'banned' })
     .select([
       'user_chat.id',
       'chatRoom.id',

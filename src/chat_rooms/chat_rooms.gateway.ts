@@ -71,13 +71,8 @@ export class ChatRoomsGateway{
       if (typeof title === 'string' && typeof privacy === 'string')
       {
         const chatroom = await this.chatRoomsService.create({title, privacy, owner,ifProtectedPass: password}, payload)
-        if(chatroom.privacy != 'private')
-        this.server.emit('ChatRoomList', {type: 'new', chatroom})
-        else
-          {
-            const client = clients.get(payload.sub)
-            client.emit('ChatRoomList', {type: 'new', chatroom})
-          }
+        const client = clients.get(payload.sub)
+        client.emit('ChatRoomList', {type: 'new', chatroom})
       }
     } catch(e) {
       const client = clients.get(payload.sub)
