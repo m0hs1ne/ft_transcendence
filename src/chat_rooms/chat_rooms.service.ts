@@ -374,11 +374,8 @@ export class ChatRoomsService {
       if (invite)
       {
         const inviteChat = await this.invitationRepository.save(invite)
-        return {
-          id: inviteChat.id,
-          title: chat.title,
-          from: fromUser
-        }
+        const invitation =  await this.getInvitationById(payload.sub)
+        return invitation
       }
     }
     else
