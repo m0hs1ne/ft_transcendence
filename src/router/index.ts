@@ -3,9 +3,13 @@ import HomeView from "../views/HomeView.vue";
 import ChatView from "../views/ChatView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import SearchView from "../views/SearchView.vue";
+import leaderboardView from "../views/LeaderboardView.vue";
 import SettingView from "../views/SettingView.vue";
 import SignInView from "../views/SignInView.vue";
 import SignUpView from "../views/SignUpView.vue";
+import GameView from "../views/GameView.vue";
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +30,11 @@ const router = createRouter({
       component: ProfileView
     },
     {
+      path: '/leaderboard',
+      name: 'leaderboard',
+      component: leaderboardView
+    },
+    {
       path: '/search',
       name: 'search',
       component: SearchView
@@ -44,6 +53,11 @@ const router = createRouter({
       path: '/signUp',
       name: 'signUp',
       component: SignUpView
+    },
+    {
+      path: '/game',
+      name: 'game',
+      component: GameView
     },
   ]
 })
