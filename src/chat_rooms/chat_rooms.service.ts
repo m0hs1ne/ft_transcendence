@@ -382,10 +382,10 @@ export class ChatRoomsService {
       return new ForbiddenException()
   }
 
-  async removeInvitation(id: string)
+  async removeInvitation(id: string, toId: number)
   {
     const options: FindOneOptions<ChatRoomInv> = {
-      where: {id},
+      where: {id, toUserId: toId},
     }
     const entityToRemove = await this.invitationRepository.findOne(options);
     this.invitationRepository.remove(entityToRemove)

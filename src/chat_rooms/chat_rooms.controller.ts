@@ -34,15 +34,6 @@ export class ChatRoomsController {
         const role = await this.userchatservice.myrole(id, payload.sub)
         return role
     }
-
-    @Post('declineInvite')
-    delInvite(@MessageBody() body,@Req() req)
-    {
-        const {
-            id 
-        } = body
-        this.chatroomservice.removeInvitation(id);
-    }
     
     @Get(':id')
     async chatroomDetails(@Param('id') id, @Req() req){

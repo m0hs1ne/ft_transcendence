@@ -374,11 +374,32 @@ export class ChatRoomsGateway{
       {
         await this.chatRoomsService.acceptInviteToChat(body, payload);
         const invitation = await this.chatRoomsService.getInvitationById(id)
-        await this.chatRoomsService.removeInvitation(id)
+        await this.chatRoomsService.removeInvitation(id, payload.sub)
         if (invitation)
         {
           await this.chatRoomsService.newChatMessage(invitation.fromUser.id, invitation.chatRoom.id, `${invitation.toUser.username} joined the chat.` , 'notification', clients);
         }
+      }
+      else
+        throw new BadRequestException('id should be a string.')
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Error', {error: e.message});
+    }
+  }
+
+  @SubscribeMessage('declineInvite')
+  async declineInvite(@MessageBody() body, @Req() req)
+  {
+    const {id} = body;
+    //expected params: id: invitation id
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try
+    {
+      if (typeof id === 'string')
+      {
+        await this.chatRoomsService.removeInvitation(id,payload.sub)
       }
       else
         throw new BadRequestException('id should be a string.')
