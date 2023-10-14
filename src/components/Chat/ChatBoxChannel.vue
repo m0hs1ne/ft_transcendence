@@ -60,8 +60,8 @@ export default {
 
     async fetchData() {
       // this.userStore.UpdateChannelId(this.channel.id);
-
       await this.userStore.fetchChannelById();
+      console.log('Hello is ',this.userStore.ActiveMessageChannelId)
       this.userStore.ActiveMessageChannelId.forEach((element) => {
         var tye = "";
         console.log("This is fffff " ,element)

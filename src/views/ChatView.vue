@@ -64,6 +64,7 @@ export default {
 
 		IsPerson(object) {
 			console.log(object)
+			this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
 				console.log(" I am here to ", object)
 				if (this.displayTargetComponent != 0) {
@@ -82,10 +83,12 @@ export default {
 		},
 
 		IsChannel(object) {
-			console.log(object)
+			console.log("This is an channel " ,object )
+			this.displayTargetComponent = false
 			if (object.id != this.displayChatboxChannel) {
-				console.log(" I am here to ", object)
-				if (this.displayChatboxChannel != 0) {
+				console.log(" I am here to ", object, this.displayChatboxChannel)
+				if (this.displayChatboxChannel) {
+					this.displayTargetComponent = false;
 					this.displayChatboxChannel = false;
 					this.$nextTick(() => {
 						// Code here will be executed after the next DOM update cycle
@@ -107,24 +110,21 @@ export default {
 				this.IsChannel(object)
 			//IsChannel(object)
 		},
-		han(obj) {
-			console.log("This************* ", obj)
-		}
 	},
 
 	mounted() {
 
-		this.$socket.on("Notification", (messages) => {
-			console.log("this is notification------------------");
-			console.log(messages);
-			this.userStore.UpdateInvitaion(messages);
-			messages.notifications.forEach((element) => {
-				if (element.type == "invitations") {
-					console.log("elements: ", element);
-					console.log("update notifications")
-				}
-			});
-		});
+		// this.$socket.on("Notification", (messages) => {
+		// 	console.log("this is notification------------------");
+		// 	console.log(messages);
+		// 	this.userStore.UpdateInvitaion(messages);
+		// 	messages.notifications.forEach((element) => {
+		// 		if (element.type == "invitations") {
+		// 			console.log("elements: ", element);
+		// 			console.log("update notifications")
+		// 		}
+		// 	});
+		// });
 		this.$socket.on("Error", (data) => {
 			console.log("Error ", data)
 		});

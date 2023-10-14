@@ -1,35 +1,16 @@
 <!-- FriendListComponent.vue -->
 <template>
-
-    <img @click="openPopup" class="m-2 h-10 rounded-full hover:bg-blue-800 text-white font-bold"
-        src="./../../assets/icons/add.svg">
-
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
-    <div class="bg-white rounded-lg p-6">
-      <h2 class="text-xl font-bold mb-4">Add friends:</h2>
-
-      <ul class="">
-        <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
-          <div class="flex-shrink-0">
-            <img :src="friend.avatar" alt="Avatar" class="h-12 rounded-full" />
-          </div>
-          <div class="flex-grow">
-            <span class="text-lg font-semibold">{{ friend.username }}</span>
-          </div>
-          <button @click="sendInvite(friend)"
-            class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Invite
-          </button>
-        </li>
-      </ul>
-
+    <div class="bg-blue-100 rounded-lg p-6">
+      <h2 class="text-xl font-bold mb-4">Time with minute:</h2>
+         
+      <input type="number" v-model="time" >
+      <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        save
+      </button>
       <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Close
       </button>
-      <!-- <button v-if="selectedOption != '' && ChannelName != ''" @click="SaveChannel"
-        class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Save
-      </button> -->
     </div>
   </div>
 </template>
@@ -45,11 +26,16 @@ export default {
   
   data() {
     return {
-      isOpend: false,
-      friends: [],
-      members: [],
-
+      isOpend: true,
+      time:0,
     };
+  },
+  props:
+  {
+    memberProp:{
+        type:Object,
+        required: true,
+    }
   },
   methods: {
     async fetchData() {
@@ -79,15 +65,12 @@ export default {
       });
     },
     async openPopup() {
-
-      // const role = await axios.get (`http://localhost:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`, 
-      //           { withCredentials: true },);
-
-      //   console.log(role)
         this.isOpend = true;
     },
     closePopup() {
       this.isOpend = false;
+     
+      console.log("I am pop up")
     },
     sendInvite(friend) {
       console.log(" ActiveChannelId ", this.userStore.ActiveChannelId)
@@ -99,7 +82,9 @@ export default {
     }
   },
   mounted() {
-    this.fetchData();
+    this.openPopup();
+    // console.log("Probs",this.memberProp)
+   // this.fetchData();
   },
 
 };

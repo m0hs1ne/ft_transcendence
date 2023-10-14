@@ -38,7 +38,12 @@
 </template>
 
 <script>
+import { useUserStore } from '../../stores/state.ts';
 export default {
+  setup() {
+		const userStore = useUserStore();
+		return { userStore };
+	},
   data() {
     return {
       ChannelName: '',
@@ -71,6 +76,8 @@ export default {
         this.$socket.on("ChatRoomList",(data)=>{
           console.log(" this what hello ")
           console.log(data)
+          
+
         });
         
         this.ChannelName = '';

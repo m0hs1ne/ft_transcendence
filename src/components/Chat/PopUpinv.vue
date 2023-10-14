@@ -12,17 +12,14 @@
             <div class="flex-shrink-0">
               <img :src="friend.fromUser.avatar" alt="Avatar" class="h-12 rounded-full" />
             </div>
+          
             <div class="flex-grow">
               <span class="text-lg font-normal ">{{ friend.fromUser.username }}: invite you to join {{ friend.chatRoom.title }} </span>
             </div>
-            <button @click="AccepteInvite(friend)"
-              class="m-2 bg-blue-500 h-10 rounded-full hover:bg-blue-700 text-white font-bold py-2 px-4">
-              Accepte
-            </button>
-            <button @click="DeclineInvite(friend)"
-              class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 h-10 rounded-full">
-              Decline
-            </button>
+            <img @click="AccepteInvite(friend)" class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-green-600 text-white font-bold py-2 px-4"
+             src="./../../assets/icons/checkmark.svg">
+             <img @click="DeclineInvite(friend)" class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-red-600 text-white font-bold py-2 px-4"
+             src="./../../assets/icons/cross.svg">
           </li>
         </ul>
         <button @click="closePopup" class="m-2  bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -67,6 +64,7 @@
         {
           id:friend.id,
         })
+        this.userStore.DmChatroomsList.data.push(friend.chatRoom);
         this.isOpend = false;
       },
       DeclineInvite(friend)
@@ -75,23 +73,38 @@
       },
     },
     mounted() {
+
       this.fetchData();
       this.$socket.on("Notification", (messages) => {
-        messages.notifications.forEach((element) => {
-          if (element.type == "invitations") {
-            if(element.invitation.length == 0)
-            {
-              this.message = " You don't have invitation"
+        console.log('Notification popinv ',messages)
+        console.log(" This is friends: befor " ,this.friends)
+        if(messages.type == 'invitation')
+        {
+          console.log("The problem of the form of json ")
+          // console.log("I am here in once invitation ", messages.invitation)
+          //   this.friends.push(messages.invitation)
+          //   console.log(" This is friends: " ,this.friends)
+          //   console.log(" This is friends: " ,this.friends[0].from.avatar)
+        }
+        else
+        {
+          messages.notifications.forEach((element) => {
+            if (element.type == "invitations") {
+              console.log("I am invt")
+              if(element.invitation.length == 0)
+              {
+                this.message = " You don't have any invitation"
+              }
+              else
+              {
+                element.invitation.forEach((invit)=>{
+                  console.log("This is invit: " ,invit);
+                  this.friends.push(invit); 
+                });
+              }
             }
-            else
-            {
-              element.invitation.forEach((invit)=>{
-                console.log("This is invit: " ,invit);
-                this.friends.push(invit); 
-              });
-            }
-          }
-        });
+          });
+        }
       });
     },
   
