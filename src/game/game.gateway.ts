@@ -15,49 +15,63 @@ export class GameGateway {
 
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
-  private clients: Map<number,Socket> = new Map()
+  private clients: Map<number, string> = new Map()
   private roomsqueu: Socket[] = [];
 
-  handleConnection(client: Socket) {
+  handleConnection(client: Socket) 
+  {
     const payload = verifyToken(client.handshake.headers.cookie);
-    if(payload.sub in this.clients)
+    if(this.clients.get(payload.sub) != undefined)
     {
       client.disconnect();
+      console.log(`Already COnnected => Client Got diconnected: ${client.id}`);
     }
     else
     {
-       this.clients[payload.sub] = client;
-       console.log(`A Client connected: ${client.id}`);
+      this.clients.set(payload.sub, null);
+      console.log(`Game Socket => A Client connected: ${client.id}`);
     }
   }
 
   handleDisconnect(client: Socket)
   {
-    console.log(`Client disconnected: ${client.id}`);
-    if(this.roomsqueu[0] == client)
+    const payload1 = verifyToken(client.handshake.headers.cookie);
+
+    if(this.rooms[this.clients[payload1.sub]] != undefined)
     {
-      this.roomsqueu.pop();
+      this.rooms[this.clients[payload1.sub]].closeroom = true;
+      // this.rooms.delete(this.clients.get(payload1.sub));
+      console.log("==> 1");
     }
+    if(this.roomsqueu.includes(client))
+    {
+      this.roomsqueu.splice(this.roomsqueu.indexOf(client), 1);
+      console.log("==> 2");
+
+    }
+    if(this.clients.get(payload1.sub) != undefined)
+    {
+      this.clients.delete(payload1.sub);
+      console.log("==> 3");
+    }
+    console.log(`Game Socket => Client disconnected: ${client.id}`);
   }
 
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(client: Socket, payload: any): void {
-    console.log("JOinRoom");
-    // let room = this.FindAvailableRoom();
-    // console.log(payload);
     this.roomsqueu.push(client);
-
     if(this.roomsqueu.length == 2)
-    {
-      let room: Room = new Room();
+    { 
       const { v4: uuidv4 } = require('uuid');
-
-      room.RightPlayer = this.roomsqueu.pop();
-      room.LeftPlayer = this.roomsqueu.pop();
-      console.log(room.RightPlayer.id);
-      console.log(room.LeftPlayer.id);
+      const payload1 = verifyToken(this.roomsqueu.at(0).handshake.headers.cookie);
+      const payload2 = verifyToken(this.roomsqueu.at(1).handshake.headers.cookie);
+      
+      let room: Room = new Room(this.roomsqueu.pop(),this.roomsqueu.pop());
       room.roomsId = uuidv4();
+      
+      this.clients[payload1.sub] = room.roomsId;
+      this.clients[payload2.sub] = room.roomsId;
       this.rooms[room.roomsId] = room;
       this.rooms[room.roomsId].Play();
       console.log("Game Started");
@@ -72,16 +86,16 @@ export class GameGateway {
   {
     if(payload.pos == "Left")
     {
-      this.rooms[payload.roomId].LeftPlayerPaddle = payload.Paddle;
-      this.rooms[payload.roomId].RightPlayer.emit('OpponentPaddle', {
+      this.rooms[payload.roomId].LeftPlayer.Paddle = payload.Paddle;
+      this.rooms[payload.roomId].RightPlayer.socket.emit('OpponentPaddle', {
         Paddle: payload.Paddle,
       })
       // console.log(payload.Paddle, payload.pos, payload.roomId);
     }
     else if(payload.pos == "Right")
     {
-      this.rooms[payload.roomId].RightPlayerPaddle = payload.Paddle;
-      this.rooms[payload.roomId].LeftPlayer.emit('OpponentPaddle', {
+      this.rooms[payload.roomId].RightPlayer.Paddle = payload.Paddle;
+      this.rooms[payload.roomId].LeftPlayer.socket.emit('OpponentPaddle', {
         Paddle: payload.Paddle,
       })
     }
