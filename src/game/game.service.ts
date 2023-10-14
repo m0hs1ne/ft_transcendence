@@ -4,9 +4,9 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
-//   create(createGameDto) {
-//     return 'This action adds a new game';
-//   }
+  create(createGameDto) {
+    return 'This action adds a new game';
+  }
 
 //   findAll() {
 //     return `This action returns all game`;

@@ -4,6 +4,7 @@ import { Server, Namespace } from 'socket.io';
 import { Room } from './room';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './game.service';
+import { verifyToken } from 'src/utils/guard';
 
 
 
@@ -15,9 +16,13 @@ export class GameGateway {
   @WebSocketServer() server: Server;
   // dashboardNamespace: Namespace = this.server.of('/dashboard');
   private rooms: Map<string, Room> = new Map();
+  private clients: Map<number,Socket> = new Map()
   private roomsqueu: Socket[] = [];
 
   handleConnection(client: Socket) {
+    const payload = verifyToken(client.handshake.headers.cookie);
+    this.clients.set(payload.sub, client)
+
     console.log(`A Client connected: ${client.id}`);
   }
 
