@@ -5,14 +5,15 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     MyId: null,
     ChannelList: [],
-
+    DmChatroomsList:[{}],
     ActiveChannelData: [],
     ActiveChannelId: null,
     ActiveMessageChannelId: {},
     ActiveMembersChannelId: {},
-
+    MyRoleInActiveChannelID:'',
     UserFriends: {},
     ChannelInvitation: {},
+
   }),
 
   actions: {
@@ -24,11 +25,8 @@ export const useUserStore = defineStore("user", {
       this.ChannelInvitation = list
     },
 
-    UpdateChannelId(id) {
-      this.ActiveChannelId = id;
-      console.log("update id ", id);
-    },
     async fetchChannelById() {
+      console.log("Up date the channnel")
       try {
         this.ActiveChannelData = await axios.get(
           `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`,
@@ -37,11 +35,18 @@ export const useUserStore = defineStore("user", {
         this.MyId = this.ActiveChannelData.data.id;
         this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
         this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
-          console.log("ActiveMembersChannelId", this.ActiveMembersChannelId);
+     
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }
     },
+
+    UpdateChannelId(id) {
+      this.ActiveChannelId = id;
+      console.log("update id ", id);
+      // this.fetchChannelById()
+    },
+ 
 
     async FetchFriend() {
       try {
@@ -60,7 +65,16 @@ export const useUserStore = defineStore("user", {
       this.ChannelList = await this.$socket.on("ChatRoomList");
       console.log("This is Channel list ", this.ChannelList);
     },
-
-    
+    async fetchDataForDmChatRooms() {
+        try {
+          this.DmChatroomsList = await axios.get(
+            `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
+            { withCredentials: true },
+          );
+        } catch (error) {
+          console.log("fetch friends by id error: ", error);
+        }
+     console.log( "The state in ",this.DmChatroomsList)
+    },
   },
 });
