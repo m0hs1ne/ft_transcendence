@@ -12,7 +12,7 @@ export class Achievement {
     @Column()
     image: string;
 
-    @Column()
+    @Column({nullable: true})
     description: string
 
     @ManyToMany(() => User, user => user.achievements)
