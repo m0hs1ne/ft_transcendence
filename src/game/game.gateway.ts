@@ -34,7 +34,7 @@ export class GameGateway {
   handleDisconnect(client: Socket)
   {
     console.log(`Client disconnected: ${client.id}`);
-    if(this.roomsqueu.at(0) == client)
+    if(this.roomsqueu[0] == client)
     {
       this.roomsqueu.pop();
     }
