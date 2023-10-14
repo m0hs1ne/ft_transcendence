@@ -1,29 +1,36 @@
-<script setup>
-import { useRouter } from 'vue-router';
-import { useDark, useToggle } from '@vueuse/core';
+<script>
 import { Icon } from '@iconify/vue';
 import SidebarTab from './SideBarTab.vue';
 import axios from 'axios';
+import { SharedData } from './../../stores/state.ts';
 
-const isDark = useDark();
-const toggleDark = useToggle(isDark);
-const router = useRouter()
 
-const confirmLogout = async () => {
-	const confirmed = window.confirm('Are you sure you want to log out?');
+export default {
+	setup(props) {
+		const state = SharedData();
+		return { state };
+	},
+	methods: {
+		async confirmLogout() {
+			const confirmed = window.confirm('Are you sure you want to log out?');
 
-	if (confirmed) {
-		await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true })
-			.then(() => {
-				router.push('/signIn');
-			})
-			.catch((error) => {
-				console.log("logdout error: ", error)
-			})
+			if (confirmed) {
+				await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true })
+					.then(() => {
+						router.push('/signIn');
+					})
+					.catch((error) => {
+						console.log("logdout error: ", error)
+					})
 
+			}
+		}
+	},
+	components: {
+		Icon,
+		SidebarTab,
 	}
-	// else: User canceled the logout
-};
+}
 
 </script>
 			
@@ -44,9 +51,6 @@ const confirmLogout = async () => {
 			<router-link to="/chat" title="Chat">
 				<SidebarTab iconName="teenyicons:chat-typing-solid" name="chat" />
 			</router-link>
-			<router-link to="/profile" title="Profile">
-				<SidebarTab iconName="teenyicons:user-solid" name="profile" />
-			</router-link>
 			<router-link to="/leaderboard" title="Leaderboard">
 				<SidebarTab iconName="material-symbols:leaderboard" name="leaderboard" />
 			</router-link>
@@ -60,12 +64,13 @@ const confirmLogout = async () => {
 
 		<!-- Bottom Icons -->
 		<div class="mt-auto p-4">
+			<router-link to="/profile" title="Profile" class="flex items-center p-3 m-3 cursor-pointer">
+				<div class="w-[28px] h-[28px] bg-gray-300 rounded-full shadow">
+					<img :src="this.state.userData.avatar" alt="Avatar" class=" object-cover rounded-full w-full">
+				</div>
+			</router-link>
 			<div title="Theme" @click="" class="flex items-center p-3 m-3 cursor-pointer">
-				<Icon class="text-gray-600 dark:text-gray-400" icon="mingcute:notification-fill" height="28"/>
-			</div>
-			<div title="Theme" @click="toggleDark()" class="flex items-center p-3 m-3 cursor-pointer">
-				<Icon v-if="isDark" class="text-gray-600 dark:text-gray-400" icon="teenyicons:sun-solid" height="28" />
-				<Icon v-else class="text-gray-600 dark:text-gray-400" icon="ic:round-dark-mode" height="28" />
+				<Icon class="text-gray-600 dark:text-gray-400" icon="mingcute:notification-fill" height="28" />
 			</div>
 			<div title="LogOut" @click="confirmLogout" class="flex items-center p-3 m-3 cursor-pointer">
 				<Icon class="text-gray-600 dark:text-gray-400" icon="ion:log-out" height="28" />

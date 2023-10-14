@@ -9,9 +9,7 @@ const achfs = ref([
 	{ icon: "ph:hand-fill", title: "Master", desc: "Win 100 games", state: 0 },
 	{ icon: "ph:fire-fill", title: "Grand Master", desc: "Win 1000 games", state: 0 },
 	{ icon: "solar:danger-bold", title: "Loser", desc: "Lose 10 games", state: 0 },
-	{ icon: "ion:game-controller", title: "Challenger", desc: "Challenge a friend", state: 0 },
 	{ icon: "ph:users-three-fill", title: "Squad", desc: "Add 3 friends", state: 0 },
-	{ icon: "uil:create-dashboard", title: "Creator", desc: "Create a channel", state: 0 },
 	{ icon: "icon-park-solid:protect", title: "Safety first", desc: "Enable 2FA", state: 0 },
 ]);
 

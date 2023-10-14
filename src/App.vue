@@ -1,5 +1,4 @@
 <script>
-import { onUpdated } from 'vue'
 import { RouterView } from 'vue-router'
 import Sidebar from './components/NavBar/Sidebar.vue';
 import Loading from './components/Loading/Loading.vue';
@@ -16,8 +15,7 @@ export default {
       const allowedPaths = ['/', '/chat', '/profile', '/search', '/setting', '/leaderboard'];
       return allowedPaths.includes(this.$route.path);
     },
-    routerGard()
-    {
+    routerGard() {
       const path = this.$route.path.toLowerCase();
       if (this.state.isLoggedIn && (path == '/signin' || path == '/signup'))
         this.$router.push('/');
