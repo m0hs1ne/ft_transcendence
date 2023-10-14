@@ -1,10 +1,10 @@
 <!-- CanvasComponent.vue -->
 <template>
-	<!-- <div class="flex dark:bg-slate-800 h-screen items-center justify-center">
+	<div class="flex dark:bg-slate-800 h-screen items-center justify-center">
 		<canvas ref="gameCanvas" width="800" height="400" class="rounded-xl">
 
 		</canvas>
-	</div> -->
+	</div>
 </template>
   
 <script>
@@ -25,7 +25,7 @@ export default {
 			this.drawRect(0, 0, canvas.width, canvas.height, "#1F173D");
 			this.drawRect(5, 120, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
 			this.drawRect(
-				canvas.width - 15,
+				canvas.width - 20,
 				120,
 				this.PaddleWidth,
 				this.PaddleHeight,

@@ -3,19 +3,26 @@ import { useRouter } from 'vue-router';
 import { useDark, useToggle } from '@vueuse/core';
 import { Icon } from '@iconify/vue';
 import SidebarTab from './SideBarTab.vue';
+import axios from 'axios';
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const router = useRouter()
 
-const confirmLogout = () => {
-  const confirmed = window.confirm('Are you sure you want to log out?');
+const confirmLogout = async () => {
+	const confirmed = window.confirm('Are you sure you want to log out?');
 
-  if (confirmed) {
-    // Use $router from the setup context
-    router.push('/signIn');
-  }
-  // else: User canceled the logout
+	if (confirmed) {
+		await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true })
+		.then(() => {
+			router.push('/signIn');
+		})
+		.catch((error) => {
+			console.log("logdout error: ", error)
+		})
+
+	}
+	// else: User canceled the logout
 };
 
 </script>
@@ -53,13 +60,11 @@ const confirmLogout = () => {
 
 		<!-- Bottom Icons -->
 		<div class="mt-auto p-4">
-			<div title="Theme" @click="toggleDark()"
-				 class="flex items-center p-3 m-3 cursor-pointer">
+			<div title="Theme" @click="toggleDark()" class="flex items-center p-3 m-3 cursor-pointer">
 				<Icon v-if="isDark" class="text-gray-600 dark:text-gray-400" icon="teenyicons:sun-solid" height="28" />
 				<Icon v-else class="text-gray-600 dark:text-gray-400" icon="ic:round-dark-mode" height="28" />
 			</div>
-			<div title="LogOut" @click="confirmLogout"
-				 class="flex items-center p-3 m-3 cursor-pointer">
+			<div title="LogOut" @click="confirmLogout" class="flex items-center p-3 m-3 cursor-pointer">
 				<Icon class="text-gray-600 dark:text-gray-400" icon="ion:log-out" height="28" />
 			</div>
 		</div>
