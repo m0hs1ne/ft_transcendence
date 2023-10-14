@@ -14,16 +14,21 @@ export class GameGateway {
   }
 
   @WebSocketServer() server: Server;
-  // dashboardNamespace: Namespace = this.server.of('/dashboard');
   private rooms: Map<string, Room> = new Map();
   private clients: Map<number,Socket> = new Map()
   private roomsqueu: Socket[] = [];
 
   handleConnection(client: Socket) {
     const payload = verifyToken(client.handshake.headers.cookie);
-    this.clients.set(payload.sub, client)
-
-    console.log(`A Client connected: ${client.id}`);
+    if(payload.sub in this.clients)
+    {
+      client.disconnect();
+    }
+    else
+    {
+       this.clients[payload.sub] = client;
+       console.log(`A Client connected: ${client.id}`);
+    }
   }
 
   handleDisconnect(client: Socket)
