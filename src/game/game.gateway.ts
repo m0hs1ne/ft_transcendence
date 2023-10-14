@@ -3,11 +3,15 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Namespace } from 'socket.io';
 import { Room } from './room';
 import { v4 as uuidv4 } from 'uuid';
+import { GameService } from './game.service';
 
 
 
 @WebSocketGateway({ namespace: '/game' })
 export class GameGateway {
+  constructor(private readonly gameService: GameService) {
+  }
+
   @WebSocketServer() server: Server;
   // dashboardNamespace: Namespace = this.server.of('/dashboard');
   private rooms: Map<string, Room> = new Map();
