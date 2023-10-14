@@ -14,12 +14,12 @@ const confirmLogout = async () => {
 
 	if (confirmed) {
 		await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true })
-		.then(() => {
-			router.push('/signIn');
-		})
-		.catch((error) => {
-			console.log("logdout error: ", error)
-		})
+			.then(() => {
+				router.push('/signIn');
+			})
+			.catch((error) => {
+				console.log("logdout error: ", error)
+			})
 
 	}
 	// else: User canceled the logout
@@ -60,6 +60,9 @@ const confirmLogout = async () => {
 
 		<!-- Bottom Icons -->
 		<div class="mt-auto p-4">
+			<div title="Theme" @click="" class="flex items-center p-3 m-3 cursor-pointer">
+				<Icon class="text-gray-600 dark:text-gray-400" icon="mingcute:notification-fill" height="28"/>
+			</div>
 			<div title="Theme" @click="toggleDark()" class="flex items-center p-3 m-3 cursor-pointer">
 				<Icon v-if="isDark" class="text-gray-600 dark:text-gray-400" icon="teenyicons:sun-solid" height="28" />
 				<Icon v-else class="text-gray-600 dark:text-gray-400" icon="ic:round-dark-mode" height="28" />
