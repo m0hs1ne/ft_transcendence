@@ -137,8 +137,9 @@ export class ChatRoomsService {
   async remove(chatId, payload) {
     
     const chat = await this.chatRoomRepository.findOne({
-      where: {id: chatId}})
-    if (chat && chat.owner == payload.sub)
+      where: {id: chatId, owner: payload.sub}
+    })
+    if (chat)
       return await this.chatRoomRepository.delete({id: chat.id})
     else
       throw new ForbiddenException()
