@@ -57,17 +57,20 @@ export class AuthMiddleware implements NestMiddleware {
 }
 
 export function verifyToken(cookie: string): any {
+  if (!cookie) {
+    throw new Error('Cookie is undefined');
+  }
   try {
     const jwtToken = cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1];
     const payload = jwt.verify(jwtToken, process.env.SESSION_SECRET);
     return payload;
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
-      console.log(cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1])
       throw new Error('Token has expired');
-    } else {
-      console.log(cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1])
+    } else if (err.name === 'JsonWebTokenError') {
       throw new Error('Invalid token');
+    } else {
+      throw err;
     }
   }
 }
