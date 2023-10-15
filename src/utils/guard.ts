@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { config } from "dotenv";
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt'
+import { ColdObservable } from "rxjs/internal/testing/ColdObservable";
 
 config()
 @Injectable()
@@ -57,6 +58,7 @@ export class AuthMiddleware implements NestMiddleware {
 }
 
 export function verifyToken(cookie: string): any {
+  console.log(cookie);
   if (!cookie) {
     throw new Error('Cookie is undefined');
   }
