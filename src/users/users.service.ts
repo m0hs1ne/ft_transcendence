@@ -276,14 +276,13 @@ export class UsersService {
   {
     const list = await this.userRepository
               .createQueryBuilder('user')
-              .orderBy('user.winrate')
+              .orderBy('user.wins / (user.wins + user.losses)', 'DESC')
               .select([
                 'user.id',
                 'user.username',
                 'user.avatar',
                 'user.win',
                 'user.losses',
-                'user.winrate',
               ])
               .take(10)
     return list;

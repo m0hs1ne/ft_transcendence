@@ -34,9 +34,6 @@ export class User {
     @Column({nullable: true})
     losses: number;
 
-    @Column({nullable: true})
-    winrate: number;
-
     @Column()
     statusOnline: boolean;
 
