@@ -8,23 +8,24 @@
   
 <script>
 
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
 export default {
   data() {
     return {
       x: 50,
       y: 50,
+      mode: 7,
       CurrentPlayerScore: 0,
       OpponentPLayerScore: 0,
       intervalId: null,
       RoomId: null,
       pos: null,
-      socket: null,
       PaddleHeight: 120,
       PaddleWidth: 15,
+
       PaddleY: 200,
-      OpponentPaddleY: 20,
+      OpponentPaddleY: 200,
       Context: null,
       Canvas: null,
     };
@@ -32,10 +33,7 @@ export default {
   created() {
     console.log("Start here");
     window.addEventListener('keydown', this.handleKeyDown);
-    this.socket = io('http://localhost:3000/game'), {
-      withCredentials: true,
-    };
-    console.log(this.socket);
+
   },
 
   methods: {
@@ -77,28 +75,37 @@ export default {
     },
 
     EventsHandler() {
-
-      this.socket.on('updateBall', (data) => {
+      this.$GameSocket.on('updateBall', (data) => {
         this.x = data.x;
         this.y = data.y;
       });
 
-      this.socket.on('OpponentPaddle', (data) => {
+      this.$GameSocket.on('OpponentPaddle', (data) => {
         this.OpponentPaddleY = data.Paddle;
       });
 
-      this.socket.on('startGame', (data) => {
+      this.$GameSocket.on('startGame', (data) => {
         this.RoomId = data.id;
         this.pos = data.pos;
       });
-      this.socket.on('Score', (data) => {
+      
+      this.$GameSocket.on('Score', (data) => {
         this.CurrentPlayerScore = data.Current;
         this.OpponentPLayerScore = data.Oponent;
+      });
+
+      
+      this.$GameSocket.on('Lose', (data) => {
+      });
+
+      this.$GameSocket.on('win', (data) => {
       });
     },
 
     JoinGameEvent() {
-      this.socket.emit("joinRoom");
+      this.$GameSocket.emit("joinRoom", {
+        mode: this.mode,
+      });
     },
 
     DrawScore(score1, score2) 
@@ -117,7 +124,7 @@ export default {
       const keyCode = event.keyCode;
       if (keyCode === 38 && this.PaddleY >= 0) {
         this.PaddleY -= 5;
-        this.socket.emit("PaddleUpdates", {
+        this.$GameSocket.emit("PaddleUpdates", {
           pos: this.pos,
           roomId: this.RoomId,
           Paddle: this.PaddleY - 5,
@@ -125,7 +132,7 @@ export default {
       }
       else if (keyCode === 40 && this.PaddleY + this.PaddleHeight <= 400) {
         this.PaddleY += 5
-        this.socket.emit("PaddleUpdates", {
+        this.$GameSocket.emit("PaddleUpdates", {
           pos: this.pos,
           roomId: this.RoomId,
           Paddle: this.PaddleY + 5,
@@ -135,20 +142,18 @@ export default {
   },
 
   mounted() {
-    // this.canvas = this.$refs.gameCanvas.getContext("2d");    ;
-    // this.context = canvas.getContext("2d");
     this.$refs.gameCanvas.focus();
     this.EventsHandler();
     this.JoinGameEvent();
     this.loopHook();
   },
   unmounted() {
-    console.log("Called");
-    this.socket.close();
+    this.$GameSocket.emit("PlayerLeave", {
+          roomId: this.RoomId,
+          Socket: this.pos,
+        });
     clearInterval(this.intervalId);
   }
-
-
 };
 </script>
   
