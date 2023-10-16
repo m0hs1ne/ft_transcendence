@@ -4,12 +4,19 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { ChatRoomsService } from 'src/chat_rooms/chat_rooms.service';
+import { Achievement } from 'src/achievement/entities/achievement.entity';;
+import { AchievementService } from 'src/achievement/achievement.service';
+import { ChatRoom } from 'src/chat_rooms/entities/chat_room.entity';
+import { UserChat } from 'src/user_chat/entities/user_chat.entity';
+import { ChatRoomInv } from 'src/chat_rooms/entities/invitation.entity';
+import { Message } from 'src/message/entities/message.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Achievement, ChatRoom, User, UserChat, ChatRoomInv, Message]),
   ],
   controllers: [UsersController],
-  providers: [UsersService,JwtService]
+  providers: [ChatRoomsService, AchievementService, UsersService,JwtService]
 })
 export class UsersModule {}

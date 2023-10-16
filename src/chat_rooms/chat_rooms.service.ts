@@ -3,7 +3,7 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoom } from './entities/chat_room.entity';
-import { FindManyOptions, FindOneOptions, In, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, ILike, In, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { ChatRoomInv } from './entities/invitation.entity';
@@ -683,5 +683,16 @@ export class ChatRoomsService {
   async uploadAvatar(avatar, chatId, payload)
   {
     await this.chatRoomRepository.update({id: chatId}, {avatar: process.env.DOMAIN_URL + avatar.path})
+  }
+
+  async search(query: string)
+  {
+    const chatrooms = await this.chatRoomRepository.find({
+      where: {
+        privacy: In(['public', 'protected']),
+        title: ILike(`%${query}%`),
+      }
+    });
+    return chatrooms
   }
 }

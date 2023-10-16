@@ -5,11 +5,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express'
 import { diskStorage } from 'multer';
 import { MessageBody } from '@nestjs/websockets';
+import { ChatRoomsService } from 'src/chat_rooms/chat_rooms.service';
 
 @UseGuards(userAuthGuard)
 @Controller('users/')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService,
+    private readonly chatroomservice: ChatRoomsService
+    ) {}
 
   @Get()
   findAll() {
@@ -94,7 +97,7 @@ export class UsersController {
     storage: diskStorage({
       destination: 'public/img',
       filename: (req, file, cb) => {
-        const filename = file.originalname + '_' + generateRandomString(10);
+        const filename = generateRandomString(10) + '_' + file.originalname;
         cb(null, filename);
         file.originalname = filename
       },
@@ -115,15 +118,17 @@ export class UsersController {
   }
   //Leaderboard
   @Get('leaderboard')
-  getleaderboard(@Req() req) {
+  getleaderboard() {
     return this.usersService.getleaders();
   }
 
   @Get('search')
-  async searchUsers(@Body() body) {
+  async search(@Body() body) {
     const {
       query
     } = body
-    return await this.usersService.search(query);
+    const users = await this.usersService.search(query);
+    const chatrooms = await this.chatroomservice.search(query)
+    return {users, chatrooms}
   }
 }

@@ -1,11 +1,8 @@
 import { Injectable, NotAcceptableException, NotFoundException, Options, Req, UseGuards } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, In, QueryFailedError, Repository } from 'typeorm';
+import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { verifyToken } from 'src/utils/guard';
-import { AddFriendDto } from './dto/add-friend.dto';
-import { ChatRoom } from 'src/chat_rooms/entities/chat_room.entity';
 import { Achievement } from 'src/achievement/entities/achievement.entity';
 
 
@@ -14,9 +11,8 @@ import { Achievement } from 'src/achievement/entities/achievement.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(User) private readonly chatRoomRepository: Repository<ChatRoom>,
-    @InjectRepository(User) private readonly achievementRepository: Repository<Achievement>
-  ) { }
+    // @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>
+  ) {}
 
   async findAll() {
     return await this.userRepository.find();
@@ -208,9 +204,9 @@ export class UsersService {
   async addAchievement(title, id)
   {
     const user = await this.userRepository.findOne(id);
-    const role = await this.achievementRepository.findOne(title);
+    // const role = await this.achievementRepository.findOne(title);
 
-    user.achievements.push(role);
+    // user.achievements.push(role);
     return await this.userRepository.save(user);
   }
 
@@ -290,18 +286,15 @@ export class UsersService {
 
   async search(query: string){
     const user =  await this.userRepository.find({
+      select:[
+        'id',
+        'avatar',
+        'username',
+      ],
       where: {
         username: ILike(`%${query}%`),
       },
     });
-
-    const chatroom = await this.chatRoomRepository.find({
-      where: {
-        privacy: In(['public', 'protected']),
-        title: ILike(`%${query}%`),
-      },
-    });
-
-    return {user, chatroom};
+    return user;
   }
 }
