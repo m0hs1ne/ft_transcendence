@@ -8,7 +8,13 @@ import { verifyToken } from 'src/utils/guard';
 
 
 
-@WebSocketGateway({ namespace: '/game' })
+@WebSocketGateway({
+  namespace: '/game',
+  cors: {
+    credentials: true,
+    origin: "http://localhost:5173"
+  }
+})
 export class GameGateway {
   constructor(private readonly gameService: GameService) {
   }
@@ -19,25 +25,32 @@ export class GameGateway {
   private roomsqueu: Socket[] = [];
 
   handleConnection(client: Socket) {
-  try{
-    const payload = verifyToken(client.handshake.headers.cookie);
-    if (this.clients.get(payload.sub) != undefined) {
+    if (client.handshake.headers.cookie == undefined) 
+    {
+      console.log("Undefined Player");
       client.disconnect();
-      console.log(`Already COnnected => Client Got diconnected: ${client.id}`);
     }
     else {
-      this.clients.set(payload.sub, null);
-      console.log(`Game Socket => A Client connected: ${client.id}`);
+      try {
+        console.log(client.handshake.headers);
+        const payload = verifyToken(client.handshake.headers.cookie);
+        if (this.clients.get(payload.sub) != undefined) {
+          client.disconnect();
+          console.log(`Already COnnected => Client Got diconnected: ${client.id}`);
+        }
+        else {
+          this.clients.set(payload.sub, null);
+          console.log(`Game Socket => A Client connected: ${client.id}`);
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
-  }catch(err)
-  {
-    console.log(err);
-  }
   }
 
   handleDisconnect(client: Socket) {
-    try 
-    {
+    try {
+      console.log(client.handshake.headers);
       const payload1 = verifyToken(client.handshake.headers.cookie);
       if (this.rooms[this.clients[payload1.sub]] != undefined) {
         this.rooms[this.clients[payload1.sub]].closeroom = true;
@@ -64,21 +77,20 @@ export class GameGateway {
   handleJoinRoom(client: Socket, payload: any): void {
     this.roomsqueu.push(client);
     if (this.roomsqueu.length == 2) {
-      try{
-      const { v4: uuidv4 } = require('uuid');
-      const payload1 = verifyToken(this.roomsqueu.at(0).handshake.headers.cookie);
-      const payload2 = verifyToken(this.roomsqueu.at(1).handshake.headers.cookie);
+      try {
+        const { v4: uuidv4 } = require('uuid');
+        const payload1 = verifyToken(this.roomsqueu.at(0).handshake.headers.cookie);
+        const payload2 = verifyToken(this.roomsqueu.at(1).handshake.headers.cookie);
 
-      let room: Room = new Room(this.roomsqueu.pop(), this.roomsqueu.pop());
-      room.roomsId = uuidv4();
+        let room: Room = new Room(this.roomsqueu.pop(), this.roomsqueu.pop());
+        room.roomsId = uuidv4();
 
-      this.clients[payload1.sub] = room.roomsId;
-      this.clients[payload2.sub] = room.roomsId;
-      this.rooms[room.roomsId] = room;
-      this.rooms[room.roomsId].Play();
-      console.log("Game Started");
-      }catch(err)
-      {
+        this.clients[payload1.sub] = room.roomsId;
+        this.clients[payload2.sub] = room.roomsId;
+        this.rooms[room.roomsId] = room;
+        this.rooms[room.roomsId].Play();
+        console.log("Game Started");
+      } catch (err) {
         console.log(err);
       }
     }
