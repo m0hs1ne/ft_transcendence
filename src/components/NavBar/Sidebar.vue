@@ -3,26 +3,29 @@ import { Icon } from '@iconify/vue';
 import SidebarTab from './SideBarTab.vue';
 import axios from 'axios';
 import { SharedData } from './../../stores/state.ts';
+import { useDark, useToggle } from '@vueuse/core';
 
 
 export default {
 	setup(props) {
+		const isDark = useDark();
+		const toggleDark = useToggle(isDark);
 		const state = SharedData();
-		return { state };
+		return { state, isDark, toggleDark };
 	},
 	methods: {
 		async confirmLogout() {
+			const tmp = this.isDark;
 			const confirmed = window.confirm('Are you sure you want to log out?');
-
 			if (confirmed) {
+				
 				await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true })
 					.then(() => {
-						router.push('/signIn');
+						this.$router.push('/signIn');
 					})
 					.catch((error) => {
 						console.log("logdout error: ", error)
 					})
-
 			}
 		}
 	},

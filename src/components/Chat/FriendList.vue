@@ -3,11 +3,11 @@
 
     <img @click="openPopup" class="m-2 h-10 rounded-full hover:bg-blue-800 text-white font-bold"
         src="./../../assets/icons/add.svg">
-
+  
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
     <div class="bg-white rounded-lg p-6">
       <h2 class="text-xl font-bold mb-4">Add friends:</h2>
-
+      <div>{{ this.message }}</div>
       <ul class="">
         <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
           <div class="flex-shrink-0">
@@ -48,6 +48,7 @@ export default {
       isOpend: false,
       friends: [],
       members: [],
+      message:''
 
     };
   },
@@ -59,7 +60,8 @@ export default {
       // handl friend 
 
        console.log("This Friends : " ,this.userStore.UserFriends.data)
-       console.log("This Members : " ,this.members)
+       console.log("This Members : " ,this.members);
+       
       this.userStore.UserFriends.data.forEach(element => {
         // to get friends not found in the channel
         var boool = true;
@@ -74,6 +76,12 @@ export default {
         }
         if (boool) {
           this.friends.push(element);
+        }
+        console.log("fff ", this.friends.length)
+        if(this.friends.length === 0)
+        {
+          this.message = "you don't have any friends to invite them";
+          console.log("you dont have any frineds to invite them ")
         }
         //this.friends.push(element);
       });

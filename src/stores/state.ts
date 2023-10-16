@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", {
     DmChatroomsList: [{}],
     ActiveChannelData: [],
     ActiveChannelId: null,
+    ActiveChannelTitle:'',
     ActiveMessageChannelId: {},
     ActiveMembersChannelId: {},
     MyRoleInActiveChannelID: "",
@@ -18,6 +19,7 @@ export const useUserStore = defineStore("user", {
   actions: {
     UserId(myId) {
       this.MyId = myId;
+    
     },
     UpdateInvitaion(list) {
       this.ChannelInvitation = list;
@@ -38,9 +40,10 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    UpdateChannelId(id) {
+    UpdateChannelId(id,title) {
       this.ActiveChannelId = id;
-      console.log("update id ", id);
+      this.ActiveChannelTitle = title
+      console.log("update Channel id ", id);
       // this.fetchChannelById()
     },
 
