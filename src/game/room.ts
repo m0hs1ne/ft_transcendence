@@ -7,12 +7,14 @@ export class Room {
     socket: Socket,
     Paddle: number;
     Score: number;
+    id: number;
   }
 
   LeftPlayer: {
     socket: Socket,
     Paddle: number;
     Score: number;
+    id: number;
   }
 
   PaddleHeight: number;
@@ -31,12 +33,14 @@ export class Room {
       socket: rightPlayerSocket,
       Paddle: 200,
       Score: 0,
+      id: null,
     };
 
     this.LeftPlayer = {
       socket: leftPlayerSocket,
       Paddle: 200,
       Score: 0,
+      id: null,
     };
     this.closeroom = false;
   }
@@ -105,21 +109,17 @@ export class Room {
     }
   }
   checkGoals(): void {
-    if (this.ballPosition.x <= 0) 
-    {
+    if (this.ballPosition.x <= 0) {
       this.RightPlayer.Score++;
-      if(this.RightPlayer.Score == this.GameMode)
-      {
+      if (this.RightPlayer.Score == this.GameMode) {
         this.EndTheGame();
       }
       else
         this.EmitScore();
     }
-    else if(this.ballPosition.x >= 800)
-    {
+    else if (this.ballPosition.x >= 800) {
       this.LeftPlayer.Score++;
-      if(this.LeftPlayer.Score == this.GameMode)
-      {
+      if (this.LeftPlayer.Score == this.GameMode) {
         this.EndTheGame();
       }
       else
@@ -127,24 +127,31 @@ export class Room {
     }
   }
 
-  EmitScore(): void
-  {
+  EmitScore(): void {
     this.RightPlayer.socket.emit("Score",
-    {
-      Current: this.RightPlayer.Score,
-      Oponent: this.LeftPlayer.Score
-    });
+      {
+        Current: this.RightPlayer.Score,
+        Oponent: this.LeftPlayer.Score
+      });
     this.LeftPlayer.socket.emit("Score",
-    {
-      Current: this.LeftPlayer.Score,
-      Oponent: this.RightPlayer.Score,
-    });
+      {
+        Current: this.LeftPlayer.Score,
+        Oponent: this.RightPlayer.Score,
+      });
     this.ballPosition.x = 400;
     this.ballPosition.y = 200;
   }
 
-  EndTheGame(): void
-  {
-
+  EndTheGame(): void {
+    if (this.RightPlayer.Score > this.LeftPlayer.Score) {
+      this.RightPlayer.socket.emit("Win");
+      this.LeftPlayer.socket.emit("Lose");
+    }
+    else
+    {
+      this.RightPlayer.socket.emit("Lose");
+      this.LeftPlayer.socket.emit("Win");
+    }
+    this.closeroom = true;
   }
 }

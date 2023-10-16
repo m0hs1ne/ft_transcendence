@@ -24,14 +24,12 @@ export class GameGateway {
   private clients: Map<number, string> = new Map()
   private roomsqueu: Socket[] = [];
 
-  
-  handleConnection(client: Socket)
-  {
-    console.log(`Client Connected ${client.id}`); 
+
+  handleConnection(client: Socket) {
+    console.log(`Client Connected ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) 
-  {
+  handleDisconnect(client: Socket) {
     try {
       const payload1 = verifyToken(client.handshake.headers.cookie);
       if (this.rooms[this.clients[payload1.sub]] != undefined) {
@@ -52,9 +50,8 @@ export class GameGateway {
 
 
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, payload: any): void 
-  {
-    if(this.ValidateClient(client, payload))
+  handleJoinRoom(client: Socket, payload: any): void {
+    if (this.ValidateClient(client, payload))
       this.roomsqueu.push(client);
     if (this.roomsqueu.length == 2) {
       try {
@@ -64,8 +61,9 @@ export class GameGateway {
 
         let room: Room = new Room(this.roomsqueu.pop(), this.roomsqueu.pop());
         room.roomsId = uuidv4();
-        room.GameMode = payload1.mode;
-
+        room.GameMode = payload.mode;
+        room.RightPlayer.id = payload2.id;
+        room.LeftPlayer.id = payload1.id;
         this.clients[payload1.sub] = room.roomsId;
         this.clients[payload2.sub] = room.roomsId;
         this.rooms[room.roomsId] = room;
@@ -80,8 +78,7 @@ export class GameGateway {
     }
   }
 
-  ValidateClient(client: Socket, payload: any): number
-  {
+  ValidateClient(client: Socket, payload: any): number {
     try {
       const payload = verifyToken(client.handshake.headers.cookie);
       if (this.clients.get(payload.sub) != undefined) {
@@ -105,7 +102,6 @@ export class GameGateway {
       this.rooms[payload.roomId].RightPlayer.socket.emit('OpponentPaddle', {
         Paddle: payload.Paddle,
       })
-      // console.log(payload.Paddle, payload.pos, payload.roomId);
     }
     else if (payload.pos == "Right") {
       this.rooms[payload.roomId].RightPlayer.Paddle = payload.Paddle;
@@ -117,10 +113,14 @@ export class GameGateway {
   }
 
   @SubscribeMessage('EndGame')
-  HandlePlayerLeave(client: any, payload: any): void
-  {
-
+  HandlePlayerLeave(client: any, payload: any): void {
+    try {
+      this.rooms[payload.roomId].EndTheGame();
+      this.clients.delete(this.rooms[payload.roomId].LeftPlayer.id);
+      this.clients.delete(this.rooms[payload.roomId].RightPlayer.id);
+      this.rooms.delete(payload.roomId);
+    } catch (err) {
+      console.log(err);
+    }
   }
-
-
 }
