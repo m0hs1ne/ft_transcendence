@@ -32,14 +32,14 @@ export class GameGateway {
     }
     else {
       try {
-        console.log(client.handshake.headers);
+        // console.log(client.handshake.headers);
         const payload = verifyToken(client.handshake.headers.cookie);
         if (this.clients.get(payload.sub) != undefined) {
           client.disconnect();
           console.log(`Already COnnected => Client Got diconnected: ${client.id}`);
         }
         else {
-          this.clients.set(payload.sub, null);
+          this.clients.set(payload.sub, "room");
           console.log(`Game Socket => A Client connected: ${client.id}`);
         }
       } catch (err) {
@@ -50,21 +50,17 @@ export class GameGateway {
 
   handleDisconnect(client: Socket) {
     try {
-      console.log(client.handshake.headers);
+      // console.log(client.handshake.headers);
       const payload1 = verifyToken(client.handshake.headers.cookie);
       if (this.rooms[this.clients[payload1.sub]] != undefined) {
         this.rooms[this.clients[payload1.sub]].closeroom = true;
         // this.rooms.delete(this.clients.get(payload1.sub));
-        console.log("==> 1");
       }
       if (this.roomsqueu.includes(client)) {
         this.roomsqueu.splice(this.roomsqueu.indexOf(client), 1);
-        console.log("==> 2");
-
       }
       if (this.clients.get(payload1.sub) != undefined) {
         this.clients.delete(payload1.sub);
-        console.log("==> 3");
       }
       console.log(`Game Socket => Client disconnected: ${client.id}`);
     } catch (err) {
