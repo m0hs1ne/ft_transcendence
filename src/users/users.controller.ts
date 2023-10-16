@@ -120,7 +120,10 @@ export class UsersController {
   }
 
   @Get('search')
-  async searchUsers(@Query('query') query: string) {
+  async searchUsers(@Body() body) {
+    const {
+      query
+    } = body
     return await this.usersService.search(query);
   }
 }
