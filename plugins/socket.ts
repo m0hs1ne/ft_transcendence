@@ -7,7 +7,7 @@ export default((app) => {
   });
   app.config.globalProperties.$socket = socket;
   // app.provide('socket', socket);
-  console.log( "Hello i", socket )
+  console.log( "Hello i", socket );
 });
 
 // export default defineSocketPlugin(nuxtApp =>{
