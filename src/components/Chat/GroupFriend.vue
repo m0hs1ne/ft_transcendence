@@ -40,8 +40,6 @@
     data() {
       return {
         friends: [
-          {
-          },
         ],
       };
     },
@@ -51,44 +49,32 @@
         await this.userStore.fetchDataForDmChatRooms();
         
         if(this.userStore.DmChatroomsList.length == 0 || this.userStore.DmChatroomsList.data == 0)
-        this.message = " 5liha 3la allah ";
+              this.message = " 5liha 3la allah ";
       else
       {
-        
             console.log(" this.userStore.DmChatroomsList ",  this.userStore.DmChatroomsList)
             this.friends = this.userStore.DmChatroomsList.data;
         }
-        // axios
-        //   .get("http://localhost:3000/api/chat-rooms/DM_chatrooms", { withCredentials: true })
-        //   .then((response) => {
-        //     console.log(" i am here fetsh ", response);
-        //     this.friends = response.data;
-        //     console.log(this.friends);
-          
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error fetching data:", error);
-        //   });
       },
       handleChatClick(Item) {
         // Your click event logic here
         console.log("Prop emitd");
         console.log(Item)
         this.$emit('object-sent', Item);
-        this.userStore.UpdateChannelId(Item.id)
+        this.userStore.UpdateChannelId(Item.id,Item.title)
       },
 
       GfetchData() {
-         console.log(" Noting ")
+        // console.log(" Noting ")
          this.$socket.on("ChatRoomList",(data)=>{
 
           console.log("This is data: ",  data)
           if(data.type == 'new')
           {
-            console.log("i am new channel");
-            console.log(data)
-            this.userStore.UpdateChannelId(data.chatroom.id)
-            console.log(this.userStore.DmChatroomsList)
+            // console.log("i am new channel");
+            // console.log(data)
+            this.userStore.UpdateChannelId(data.chatroom.id, data.chatroom.title)
+            //console.log(this.userStore.DmChatroomsList)
 
             this.userStore.DmChatroomsList.data.push(data.chatroom);
           }
