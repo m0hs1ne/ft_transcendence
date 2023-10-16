@@ -18,7 +18,10 @@ config();
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      rootPath: join(__dirname, '..', 'public/img'),
+      serveStaticOptions: {
+        index: false
+      }
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

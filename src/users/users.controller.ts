@@ -113,7 +113,7 @@ export class UsersController {
     this.usersService.uploadAvatar(file, payload)
     return {
       statusCode: 200,
-      data: file.path,
+      data: 'http://localhost:3000/' + file.filename,
     };
   }
   //Leaderboard
