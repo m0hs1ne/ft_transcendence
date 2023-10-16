@@ -18,21 +18,17 @@ export default {
 	},
 	methods:
 	{
-		setData()
-		{
-			this.username = this.state.userData.username;
-			this.avatar = this.state.userData.avatar;
-			this.wins = this.state.userData.wins;
-			this.battles = this.state.userData.wins + this.state.userData.losses;
-			this.winrat = "100%";
-		}
 	},
 	components:
 	{
 		ProfileStat,
 	},
-	mounted(){
-		this.setData();
+	mounted() {
+		this.username = this.state.userData.username;
+		this.avatar = this.state.userData.avatar;
+		this.wins = this.state.userData.wins;
+		this.battles = this.state.userData.wins + this.state.userData.losses;
+		this.winrat = "100%";
 	}
 }
 </script>

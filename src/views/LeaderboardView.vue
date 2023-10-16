@@ -1,36 +1,30 @@
-<script setup>
-import { ref } from 'vue';
+<script>
+import axios from 'axios';
 
-const players = ref([
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-	{ name: 'David goggins', winRate: 100 },
-]);
+export default {
+	data() {
+		return {
+			leaderboard: {},
+		}
+	},
+	methods: {
+		async getLeaderBoard() {
+			try {
+				this.leaderboard = await axios.get("http://localhost:3000/api/users/leaderboard", {
+					withCredentials: true,
+				});
+
+				console.log("leaderboard: ", leaderboard.data);
+
+			} catch (error) {
+				console.error('getLeaderBoard:', error);
+			}
+		},
+	},
+	async created() {
+		await this.getLeaderBoard();
+	},
+}
 </script>
 
 <template>
@@ -39,7 +33,7 @@ const players = ref([
 			<h1 class="mt-10 font-Poppins font-semibold text-4xl dark:text-white">
 				Leaderboard:
 			</h1>
-			<div v-for="(player, index) in players" :key="index" class="flex items-center justify-start my-5 px-5 py-3 rounded-2xl 
+			<div v-for="(player, index) in this.leaderboard" :key="index" class="flex items-center justify-start my-5 px-5 py-3 rounded-2xl 
 				custom-box-shadow dark:bg-slate-700 dark:text-white">
 				<div class="flex items-center justify-between min-w-full">
 					<div class="flex items-center">

@@ -2,7 +2,6 @@
 import { RouterView } from 'vue-router'
 import Sidebar from './components/NavBar/Sidebar.vue';
 import Loading from './components/Loading/Loading.vue';
-import axios from 'axios';
 import { SharedData } from './stores/state.ts';
 
 export default {

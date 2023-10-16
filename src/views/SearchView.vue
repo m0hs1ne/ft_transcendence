@@ -1,17 +1,20 @@
-<script setup>
-import TextField from "./../components/TextField.vue";
+<script>
+
+export default{
+	methods:{
+		
+	}
+}
 </script>
 
 <template>
 	<div class="flex justify-center items-start h-screen ml-20
 				dark:bg-slate-800 text-gray-700 dark:text-gray-300">
 
-		<!-- <div class="w-full py-10 px-10 max-w-[600px]">
-			<input
-				class="appearance-none block w- bg-gray-200 border border-gray-200 
-				rounded py-3 px-4 mb-3 leading-tight focus:text-gray-800 focus:outline-none focus:bg-white focus:border-gray-500"
-				type="text" placeholder="Search for ...">
-		</div> -->
-		<TextField/>
+		<div class="w-full max-w-[600px] px-10 py-5">
+			<input type="text" id="first_name"
+				class="bg-gray-200 font-Poppins font-light focus:font-bold py-2 px-4 rounded-lg w-full"
+				v-model="this.newName" placeholder="Search" required>
+		</div>
 	</div>
 </template>
