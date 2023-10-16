@@ -1,11 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Game } from './entities/game.entity';
+import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 // import { CreateGameDto } from './dto/create-game.dto';
 // import { UpdateGameDto } from './dto/update-game.dto';
 
 @Injectable()
 export class GameService {
-  create(createGameDto) {
-    return 'This action adds a new game';
+  constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>,
+  @InjectRepository(User) private readonly userRepository: Repository<User>)
+  {}
+  async create(user1Id, user2Id, winner, score, mode) {
+    const game = await this.gameRepository.create({
+      user1Id,
+      user2Id,
+      winner,
+      score,
+      mode
+    })
+    this.gameRepository.save(game);
+    this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ wins: () => "wins + 1" })
+      .where("id = :id", { id: winner })
+      .execute();
+      const loser = (winner == user1Id ? user1Id : user2Id)
+    this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ losses: () => "losses + 1" })
+      .where("id = :id", { id: loser })
+      .execute();
   }
 
 //   findAll() {

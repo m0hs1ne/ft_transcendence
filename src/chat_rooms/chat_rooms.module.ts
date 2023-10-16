@@ -11,10 +11,11 @@ import { ChatRoomsGateway } from './chat_rooms.gateway';
 import { ChatRoomInv } from './entities/invitation.entity';
 import { Message } from 'src/message/entities/message.entity';
 import { ChatRoomsController } from './chat_rooms.controller';
+import { Game } from 'src/game/entities/game.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatRoom, User, UserChat, ChatRoomInv, Message]),
+    TypeOrmModule.forFeature([Game, ChatRoom, User, UserChat, ChatRoomInv, Message]),
   ],
   controllers: [ChatRoomsController],
   providers: [UserChatService, ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
