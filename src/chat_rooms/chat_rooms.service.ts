@@ -679,4 +679,9 @@ export class ChatRoomsService {
     }
     return false;
   }
+
+  async uploadAvatar(avatar, chatId, payload)
+  {
+    await this.chatRoomRepository.update({id: chatId}, {avatar: process.env.DOMAIN_URL + avatar.path})
+  }
 }

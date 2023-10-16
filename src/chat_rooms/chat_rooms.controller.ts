@@ -1,9 +1,12 @@
-import { Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { userAuthGuard, verifyToken } from 'src/utils/guard';
+import { Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { generateRandomString, userAuthGuard, verifyToken } from 'src/utils/guard';
 import { ChatRoomsService } from './chat_rooms.service';
 import { UsersService } from 'src/users/users.service';
 import { UserChatService } from 'src/user_chat/user_chat.service';
 import { MessageBody } from '@nestjs/websockets';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+
 
 @UseGuards(userAuthGuard)
 @Controller('chat-rooms/')
@@ -49,4 +52,29 @@ export class ChatRoomsController {
         const payload = verifyToken(req.headers.cookie)
         await this.chatroomservice.remove(id, payload);
     }
+
+    @Post('upload_avatar/:id')
+    @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: 'public/img',
+      filename: (req, file, cb) => {
+        const filename = file.originalname + '_' + generateRandomString(10);
+        cb(null, filename);
+        file.originalname = filename
+      },
+    }),
+    }))
+    uploadFile(@UploadedFile(new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+        ],
+      }),) file: Express.Multer.File, @Param('id') id: number,@Req() req) {
+        const payload = verifyToken(req.headers.cookie);
+        this.chatroomservice.uploadAvatar(file, id, payload)
+        return {
+          statusCode: 200,
+          data: file.path,
+        };
+      }
 }
