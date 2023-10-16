@@ -61,13 +61,13 @@
         console.log("Prop emitd");
         console.log(Item)
         this.$emit('object-sent', Item);
-        this.userStore.UpdateChannelId(Item.id,Item.title)
+        this.userStore.UpdateChannelId(Item.id, Item.title)
       },
 
-      GfetchData() {
+      async GfetchData() {
         // console.log(" Noting ")
-         this.$socket.on("ChatRoomList",(data)=>{
-
+        this.$socket.on("ChatRoomList",(data)=>{
+          
           console.log("This is data: ",  data)
           if(data.type == 'new')
           {
@@ -75,11 +75,11 @@
             // console.log(data)
             this.userStore.UpdateChannelId(data.chatroom.id, data.chatroom.title)
             //console.log(this.userStore.DmChatroomsList)
-
             this.userStore.DmChatroomsList.data.push(data.chatroom);
           }
-          
         });
+        await this.userStore.fetchDataForDmChatRooms();
+        this.friends = this.userStore.DmChatroomsList.data;
     },
     
     },

@@ -39,7 +39,7 @@
             <span v-if="member.user.id == this.userStore.MyId" class="text-lg font-semibold">{{ member.user.username }}({{
               this.you }})</span>
             <span v-else class="text-lg font-semibold">{{ member.user.username }}</span>
-            <p class="text-sm text-green-700">{{ member.role }}</p>
+            <p class="text-sm text-green-700">{{ member.role }} ({{ member.userStatus }})</p>
           </div>
           <div class="flex-grow">
             <img v-if="member.role != 'owner' && member.user.id != this.userStore.MyId" @click="BanneUser(member)"
@@ -103,7 +103,7 @@ export default {
           "chatId": this.userStore.ActiveChannelId
         })
     },
-    RemoveChatRome() {
+    async RemoveChatRome() {
 
       //if the user is owner
       // {
@@ -111,6 +111,7 @@ export default {
       // }
       this.role =  axios.delete(`http://localhost:3000/api/chat-rooms/${this.userStore.ActiveChannelId}`,
         { withCredentials: true });
+      await this.userStore.fetchDataForDmChatRooms();
       console.log("Remove Chat Rome")
     },
     closePopup() {

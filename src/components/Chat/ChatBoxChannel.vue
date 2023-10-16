@@ -1,18 +1,18 @@
 <!-- ChatComponent.vue -->
 <template>
   <div class=" flex flex-col justify-between h-screen">
-    <div class="  flex flex-col mt-5 overflow-y-scroll overflow-x-hidden" ref="scrollContainer">
+    <div class="  flex flex-col mt-5 overflow-x-hidden overflow-y-scroll" ref="scrollContainer1">
       <div v-for="message in messages" class="min-w-full" :class="{
         message: true,
         received: message.type === 'received',
         sent: message.type === 'sent',
       }">
         <div class="flex flex-row justify-center rounded text-blue-900">
-          <span >{{ message.notificetion }}</span>
+          <span>{{ message.notificetion }}</span>
         </div>
 
-        <div v-if = "message.img" class="flex mb-4">
-          <img  :src="message.img" alt="Avatar" class="circle avatar mr-1 " />
+        <div v-if="message.img" class="flex mb-4">
+          <img :src="message.img" alt="Avatar" class="circle avatar mr-1 " />
           <div class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
             <span>{{ message.text }}</span>
           </div>
@@ -61,12 +61,12 @@ export default {
     async fetchData() {
       // this.userStore.UpdateChannelId(this.channel.id);
       await this.userStore.fetchChannelById();
-      console.log('Hello is ',this.userStore.ActiveMessageChannelId)
+      console.log('Hello is ', this.userStore.ActiveMessageChannelId)
       this.userStore.ActiveMessageChannelId.forEach((element) => {
         var tye = "";
-        console.log("This is fffff " ,element)
+        console.log("This is fffff ", element)
         if (element.type === "notification") {
-        //  console.log("this is notif" ,element.type)
+          //  console.log("this is notif" ,element.type)
           this.messages.push({ notificetion: element.message, });
         }
         else {
@@ -93,33 +93,35 @@ export default {
         () => { },
       );
       this.$socket.on("receiveMessage", (data) => {
-        this.messages.push({
-          // id: Date.now(),
-          img: data.from.avatar,
-          type: "sent",
-          text: data.message,
-        });
+        if (data.type != "DMMessages") {
+          this.messages.push({
+            // id: Date.now(),
+            img: data.from.avatar,
+            type: "sent",
+            text: data.message,
+          });
+        }
       })
 
-
-      this.newMessage = "";
       this.$nextTick(() => {
-        const scrollContainer = this.$refs.scrollContainer;
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        const scrollContainer = this.$refs.scrollContainer1;
+        if (scrollContainer)
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
       });
 
+      this.newMessage = "";
     },
   },
 
   mounted() {
     //this.userStore.UpdateChannelId(this.channel.id)
-   console.log("I am in mounted", this.userStore.ActiveChannelId)
+    console.log("I am in mounted", this.userStore.ActiveChannelId)
     this.fetchData();
-    this.$nextTick(() => {
-      console.log(" scrol ")
-      const scrollContainer = this.$refs.scrollContainer;
-      scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    });
+    // this.$nextTick(() => {
+    //   console.log(" scrol ")
+    //   const scrollContainer = this.$refs.scrollContainer;
+    //   scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    // });
   },
 };
 </script>
@@ -169,8 +171,8 @@ export default {
 .sent {
   align-self: flex-end;
 }
-.notification
-{
+
+.notification {
   align-self: center;
 }
 

@@ -54,25 +54,37 @@ export default {
 
     },
     openPopup() {
+      if(this.friends.length == 0)
+        this.message = "You don't have any invitation"
       this.isOpend = true;
     },
     closePopup() {
       this.isOpend = false;
     },
-    AccepteInvite(frien) {
+    DeleteFromArray(frien)
+    {
+      const friendIndex = this.friends.findIndex((friend) => friend.id === frien.id);
+      if (friendIndex !== -1) {
+        this.friends.splice(friendIndex, 1);
+        console.log("",friendIndex)
+      }
+    },
+     AccepteInvite(frien) {
       console.log("This is what is you accept ", frien)
 
       this.$socket.emit('acceptInvite',
         {
           id: frien.id,
         })
-      this.userStore.DmChatroomsList.data.push(frien.chatRoom);
+      this.$socket.on("receiveMessage",(data) =>
+      {
+        console.log("data//////////////////////////////// ", data);
+      })
+      //this.userStore.DmChatroomsList.data.push(frien.chatRoom);
+       this.userStore.fetchDataForDmChatRooms();
+        console.log(" I am update in pop inv ", this.userStore.DmChatroomsList)
       this.isOpend = false;
-      const friendIndex = this.friends.findIndex((friend) => friend.id === frien);
-      if (friendIndex !== -1) {
-        this.friends.splice(friendIndex, 1);
-        console.log("",friendIndex)
-      }
+      this.DeleteFromArray(frien);
     },
     DeclineInvite(friend) {
       this.$socket.emit('Declin',
@@ -80,16 +92,16 @@ export default {
           id: friend.id,
         })
       console.log(" I am decline this invitation Ask mroin \n");
-      
-
+      this.DeleteFromArray(friend);
+      isOpend = false;
     },
   },
   mounted() {
-
+    console.log(" I am in");
     this.fetchData();
     this.$socket.on("Notification", (messages) => {
-      console.log('Notification popinv ', messages)
-      console.log(" This is friends: befor ", this.friends)
+      // console.log('Notification popinv ', messages)
+      // console.log(" This is friends: befor ", this.friends)
       if (messages.type == 'invitation') {
         console.log("The problem of the form of json ")
         this.message = '';

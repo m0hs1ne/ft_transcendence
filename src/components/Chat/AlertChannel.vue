@@ -76,14 +76,12 @@ export default {
         this.$socket.on("ChatRoomList",(data)=>{
           console.log(" this what hello ")
           console.log(data)
-          
 
-        });
+        }); 
         
         this.ChannelName = '';
         this.password = '';
         this.selectedOption = '';
-
       }
     },
 

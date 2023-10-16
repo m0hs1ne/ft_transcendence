@@ -64,10 +64,10 @@ export default {
 
 		IsPerson(object) {
 			console.log(object)
-			this.displayChatboxChannel = false;
+			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
-				console.log(" I am here to ", object)
-				if (this.displayTargetComponent != 0) {
+				console.log(" I am here In person ", object)
+				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
 					this.displayTargetComponent = false;
 					this.$nextTick(() => {
 						// Code here will be executed after the next DOM update cycle

@@ -40,10 +40,13 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    UpdateChannelId(id,title) {
-      this.ActiveChannelId = id;
-      this.ActiveChannelTitle = title
-      console.log("update Channel id ", id);
+    UpdateChannelId(id, title) {
+      if(title)
+      {
+        this.ActiveChannelId = id;
+        this.ActiveChannelTitle = title
+        console.log("update Channel id ", id);
+      }
       // this.fetchChannelById()
     },
 
