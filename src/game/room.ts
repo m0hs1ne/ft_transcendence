@@ -6,11 +6,13 @@ export class Room {
   RightPlayer: {
     socket: Socket,
     Paddle: number;
+    Score: number;
   }
 
   LeftPlayer: {
     socket: Socket,
     Paddle: number;
+    Score: number;
   }
 
   PaddleHeight: number;
@@ -27,11 +29,13 @@ export class Room {
     this.RightPlayer = {
       socket: rightPlayerSocket,
       Paddle: 200,
+      Score: 0,
     };
 
     this.LeftPlayer = {
       socket: leftPlayerSocket,
       Paddle: 200,
+      Score: 0,
     };
 
     this.closeroom = false;
@@ -101,7 +105,35 @@ export class Room {
     }
   }
   checkGoals(): void {
-    if (this.ballPosition.x <= 0 || this.ballPosition.x >= 800) {
+    if (this.ballPosition.x <= 0) 
+    {
+      this.RightPlayer.Score++;
+      this.LeftPlayer.socket.emit("Score",
+      {
+        Current: this.LeftPlayer.Score,
+        Oponent: this.RightPlayer.Score,
+      });
+      this.RightPlayer.socket.emit("Score",
+      {
+        Current: this.RightPlayer.Score,
+        Oponent: this.LeftPlayer.Score
+      });
+      this.ballPosition.x = 400;
+      this.ballPosition.y = 200;
+    }
+    else if(this.ballPosition.x >= 800)
+    {
+      this.LeftPlayer.Score++;
+      this.RightPlayer.socket.emit("Score",
+      {
+        Current: this.RightPlayer.Score,
+        Oponent: this.LeftPlayer.Score
+      });
+      this.LeftPlayer.socket.emit("Score",
+      {
+        Current: this.LeftPlayer.Score,
+        Oponent: this.RightPlayer.Score,
+      });
       this.ballPosition.x = 400;
       this.ballPosition.y = 200;
     }
