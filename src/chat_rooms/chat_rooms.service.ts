@@ -247,7 +247,7 @@ export class ChatRoomsService {
     {
       if (userChat.role == 'owner' || (userChat.role == 'admin' && userChat.chatRoom.owner != payload.sub) || !this.isAdmin(payload.sub, chatId))
         throw new UnauthorizedException()
-      this.newChatMessage(payload.sub, chatId, `${userChat.user.username} left the chat.` , 'notification', clients);
+      this.newChatMessage(payload.sub, chatId, `${userChat.user.username} left the chat.` , 'notification', clients, "kick");
       this.userChatRepository.remove(userChat);
       return;
     }
@@ -274,7 +274,7 @@ export class ChatRoomsService {
             break;
           }
         }
-        this.newChatMessage(payload.sub, chatId, `${userChat.user.username} left the chat.` , 'notification', clients);
+        this.newChatMessage(payload.sub, chatId, `${userChat.user.username} left the chat.` , 'notification', clients, "kick");
         this.userChatRepository.remove(userChat);
         return userChat;
       }
@@ -285,7 +285,7 @@ export class ChatRoomsService {
         relations:['user'],
         where: {userId: payload.sub, chatRoomId: chatId, userStatus: In(['normal', 'muted'])}
       })
-      this.newChatMessage(payload.sub, chatId, `${member.user.username} left the chat.` , 'notification', clients);
+      this.newChatMessage(payload.sub, chatId, `${member.user.username} left the chat.` , 'notification', clients, "kick");
       this.userChatRepository.remove(member)
       return member
     }
@@ -442,7 +442,7 @@ export class ChatRoomsService {
   }
 
   /* ---------message handler------------ */
-  async newChatMessage(fromId, chatId, messageContent, type, clients)
+  async newChatMessage(fromId, chatId, messageContent, type, clients, action)
   {
     const options : FindManyOptions<UserChat> = {
       select: ['id', 'mutedTill', 'userId', 'userStatus', 'role', 'chatRoom'],
@@ -492,6 +492,7 @@ export class ChatRoomsService {
         delete from.blocked
         client.emit('receiveMessage', {
             type,
+            action,
             message: messageContent,
             from,
             chatRoomId: chatId

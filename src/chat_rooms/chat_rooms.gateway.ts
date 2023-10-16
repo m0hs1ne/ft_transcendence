@@ -157,9 +157,9 @@ export class ChatRoomsGateway{
       {
         const updatedMember = await this.chatRoomsService.updateMemberRole(memberId, chatId, role, payload)
         if (updatedMember.role == 'admin')
-          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is an ${updatedMember.role} now.` , 'notification', clients);
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is an ${updatedMember.role} now.` , 'notification', clients, "role");
         else
-          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is a normal ${updatedMember.role} now.` , 'notification', clients);
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is a normal ${updatedMember.role} now.` , 'notification', clients, "role");
       }
       else  
         throw new BadRequestException()
@@ -185,7 +185,7 @@ export class ChatRoomsGateway{
       if (typeof memberId === 'number' && typeof chatId === 'number' && typeof status === 'string')
       {
         const updatedMember = await this.chatRoomsService.updateMemberStatus(memberId, chatId, status, mutedFor, payload)
-        await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is ${updatedMember.userStatus}.` , 'notification', clients);
+        await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${updatedMember.user.username} is ${updatedMember.userStatus}.` , 'notification', clients, "status");
       }
       else
         throw new BadRequestException()
@@ -212,9 +212,9 @@ export class ChatRoomsGateway{
         if (kick === false)
           return;
         if (memberId != payload.sub)
-          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients);
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} was kicked from chat.` , 'notification', clients, "kick");
         else
-          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} left the chat.` , 'notification', clients);        
+          await this.chatRoomsService.newChatMessage(payload.sub, chatId, `${kick.user.username} left the chat.` , 'notification', clients, "kick");        
       }
       else
         throw new BadRequestException()
@@ -249,7 +249,7 @@ export class ChatRoomsGateway{
           else if (chat.privacy == 'public' || (chat.privacy == 'protected' && checked))
           {
             const member = await this.chatRoomsService.addMemberToChat(chatId, payload.sub)
-            await this.chatRoomsService.newChatMessage(chat.owner, chatId, `${member.username} joined the chat.` , 'notification', clients);
+            await this.chatRoomsService.newChatMessage(chat.owner, chatId, `${member.username} joined the chat.` , 'notification', clients, 'joined');
           }
           else if (!checked)
             throw new UnauthorizedException()
@@ -377,7 +377,7 @@ export class ChatRoomsGateway{
         await this.chatRoomsService.removeInvitation(id, payload.sub)
         if (invitation)
         {
-          await this.chatRoomsService.newChatMessage(invitation.fromUser.id, invitation.chatRoom.id, `${invitation.toUser.username} joined the chat.` , 'notification', clients);
+          await this.chatRoomsService.newChatMessage(invitation.fromUser.id, invitation.chatRoom.id, `${invitation.toUser.username} joined the chat.` , 'notification', clients, "joined");
         }
       }
       else
@@ -424,7 +424,7 @@ export class ChatRoomsGateway{
     try
     {
       if (chatId && message)
-        await this.chatRoomsService.newChatMessage(payload.sub, chatId, message, "message", clients)
+        await this.chatRoomsService.newChatMessage(payload.sub, chatId, message, "message", clients, "message")
       else
         throw new BadRequestException()
     } catch(e) {
