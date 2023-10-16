@@ -15,7 +15,7 @@ export class ChatRoom {
     @Column()
     owner: number;
 
-    @Column()
+    @Column({nullable: true})
     avatar: string;
 
     @Column()
