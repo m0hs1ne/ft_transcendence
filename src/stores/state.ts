@@ -5,16 +5,15 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     MyId: null,
     ChannelList: [],
-    DmChatroomsList:[{}],
+    DmChatroomsList: [{}],
     ActiveChannelData: [],
     ActiveChannelId: null,
     ActiveChannelTitle:'',
     ActiveMessageChannelId: {},
     ActiveMembersChannelId: {},
-    MyRoleInActiveChannelID:'',
+    MyRoleInActiveChannelID: "",
     UserFriends: {},
     ChannelInvitation: {},
-
   }),
 
   actions: {
@@ -22,22 +21,20 @@ export const useUserStore = defineStore("user", {
       this.MyId = myId;
     
     },
-    UpdateInvitaion(list)
-    {
-      this.ChannelInvitation = list
+    UpdateInvitaion(list) {
+      this.ChannelInvitation = list;
     },
 
     async fetchChannelById() {
-      console.log("Up date the channnel")
+      console.log("Up date the channnel");
       try {
         this.ActiveChannelData = await axios.get(
           `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`,
-          { withCredentials: true },
+          { withCredentials: true }
         );
         this.MyId = this.ActiveChannelData.data.id;
         this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
         this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
-     
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }
@@ -49,13 +46,12 @@ export const useUserStore = defineStore("user", {
       console.log("update Channel id ", id);
       // this.fetchChannelById()
     },
- 
 
     async FetchFriend() {
       try {
         this.UserFriends = await axios.get(
           `http://localhost:3000/api/users/friends/`,
-          { withCredentials: true },
+          { withCredentials: true }
         );
       } catch (error) {
         console.log("fetch friends by id error: ", error);
@@ -69,15 +65,64 @@ export const useUserStore = defineStore("user", {
       console.log("This is Channel list ", this.ChannelList);
     },
     async fetchDataForDmChatRooms() {
+      try {
+        this.DmChatroomsList = await axios.get(
+          `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.log("fetch friends by id error: ", error);
+      }
+      console.log("The state in ", this.DmChatroomsList);
+    },
+  },
+});
+
+export const SharedData = defineStore("Shard", {
+  state: () => ({
+    isLoggedIn: false,
+    isError: false,
+    isLoading: false,
+    userData: {},
+    friends: [],
+    blocked: [],
+  }),
+  getters: {},
+  actions: {
+    async fetchData() {
+      this.isError = false;
+      this.isLoading = true;
+      try {
+        await axios.get("http://localhost:3000/api/auth/success", {
+          withCredentials: true,
+        });
+
+        // Get user profile data
         try {
-          this.DmChatroomsList = await axios.get(
-            `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
-            { withCredentials: true },
+          const res = await axios.get(
+            "http://localhost:3000/api/users/profile/",
+            {
+              withCredentials: true,
+            }
           );
+          this.userData = res.data;
+          this.friends = res.data.friends;
+          this.blocked = res.data.blocked;
+          console.log("userData: \n", this.userData);
+          console.log("friends: \n", this.friends);
+          console.log("blocked: \n", this.blocked);
         } catch (error) {
-          console.log("fetch friends by id error: ", error);
+          console.log("Getting user profile error\n", error);
+          this.isError = true;
         }
-     console.log( "The state in ",this.DmChatroomsList)
+
+        console.log("logged In");
+        this.isLoggedIn = true;
+      } catch (error) {
+        console.log("logged Out");
+        this.isLoggedIn = false;
+      }
+      this.isLoading = false;
     },
   },
 });

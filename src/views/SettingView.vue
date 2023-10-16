@@ -1,64 +1,164 @@
-<script setup>
+<script>
+import { ref } from 'vue';
+import { SharedData } from './../stores/state.ts';
+import { useDark, useToggle } from '@vueuse/core';
+import { Icon } from '@iconify/vue';
+import axios from 'axios';
+
+
+export default {
+	data() {
+		return {
+			username: String,
+			avatar: String,
+			selectedFile: null,
+			newName: '',
+			updateNameDialog: false,
+		}
+	},
+	setup(props) {
+		const isDark = useDark();
+		const toggleDark = useToggle(isDark);
+		const state = SharedData();
+		return { state, isDark, toggleDark };
+	},
+	methods:
+	{
+		async updateAvatar() {
+			this.selectedFile = event.target.files[0];
+			console.log("selectedFile: ", this.selectedFile)
+			try {
+				// Check if a file is selected
+				if (!this.selectedFile) {
+					console.error('No file selected.');
+					return;
+				}
+
+				// Create a FormData object to send the file
+				const formData = new FormData();
+				formData.append('avatar', this.selectedFile, this.selectedFile.name);
+
+				// Log each entry in the FormData object
+				for (const entry of formData.entries()) {
+					console.log(entry);
+				}
+
+				// Replace 'http://localhost:3000/api/users/upload_avatar/' with your server-side endpoint
+				const response = await axios.post('http://localhost:3000/api/users/upload_avatar/', formData, {
+					withCredentials: true,
+				});
+
+				// Update the local state with the new avatar URL
+				await this.state.fetchData();
+
+			} catch (error) {
+				console.error('Error updating avatar:', error);
+			}
+		},
+		async updateName() {
+			try {
+				// Make a PATCH request to update the username
+				const response = await axios.patch('http://localhost:3000/api/users/profile/update/', {
+					username: this.newName,
+				}, {
+					withCredentials: true,
+				});
+
+				// Handle the response accordingly
+				console.log("updateName: ", response.data);
+
+				// Update the local state with the new avatar URL
+				await this.state.fetchData();
+				this.revDialog();
+
+			} catch (error) {
+				console.error('Error updateName:', error);
+			}
+		},
+		revDialog() {
+			this.updateNameDialog = !this.updateNameDialog;
+		}
+	},
+	components:
+	{
+		Icon,
+	},
+	mounted() {
+		this.username = this.state.userData.username;
+		this.avatar = this.state.userData.avatar;
+	},
+}
 </script>
 
 <template>
-	<main class="m-auto flex items-center justify-center h-screen w-screen dark:bg-slate-800">
-		<form class="max-w-lg text-gray-700 dark:text-gray-300 px-5 ml-20">
-
-			<!-- Profile Picture -->
-			<div class="flex flex-col justify-center w-full my-6">
-				<label class="block uppercase tracking-wide font-bold mb-2" for="grid-first-name">
-					Profile Picture
-				</label>
-				<label for="dropzone-file"
-					class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-					<div class="flex flex-col items-center justify-center pt-5 pb-6">
-						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to
-								upload</span> or drag and drop</p>
-						<p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG</p>
-					</div>
-					<input type="file" class="hidden" />
-				</label>
+	<div class="relative m-auto flex items-center justify-center h-screen ml-20 dark:bg-slate-800">
+		<div v-if="!this.updateNameDialog"
+			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] py-20 rounded-2xl custom-box-shadow dark:bg-slate-900">
+			<label class="relative w-36 h-36 bg-gray-300 rounded-full shadow-lg cursor-pointer">
+				<img :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-full opacity-70">
+				<Icon icon="fluent:image-edit-20-filled" height="40"
+					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-800 shadow-xl" />
+				<input type="file" @change="updateAvatar" class="hidden" accept=".png, .jpeg, .jpg">
+			</label>
+			<div class="flex gap-2 items-center justify-center">
+				<p class="font-Poppins font-semibold text-2xl tracking-wide dark:text-white">
+					{{ this.username }}
+				</p>
+				<Icon @click="this.revDialog" icon="ri:edit-fill" height="30" data-te-toggle="modal"
+					data-te-target="#exampleModal" data-te-ripple-init data-te-ripple-color="light"
+					class="dark:text-white" />
 			</div>
-
-
-			<!-- Name -->
-			<div class="flex flex-wrap -mx-3 mb-6">
-				<div class="w-full px-3">
-					<label class="block uppercase tracking-wide font-bold mb-2" for="grid-password">
-						Name
-					</label>
-					<input
-						class="appearance-none focus:text-gray-800 w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-						type="text" placeholder="David goggins">
-				</div>
-			</div>
-
-			<!-- Title -->
-			<div class="flex flex-wrap -mx-3 mb-6">
-				<div class="w-full px-3">
-					<label class="block uppercase tracking-wide font-bold mb-2" for="grid-password">
-						Title
-					</label>
-					<input
-						class="appearance-none  focus:text-gray-800 w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-						type="text" placeholder="They don't know me son! You don't know me son!">
-					<p class="text-gray-600 dark:text-gray-300 italic">This is title will be displayed under your Name, Be
-						Creative!!</p>
-				</div>
-			</div>
-
-			<!-- Enable 2FA -->
-			<div class="flex items-center mb-6">
+			<div class="flex items-center">
 				<input class="mr-2 leading-normal" type="checkbox">
-				<span class="font-Poppins font-semibold tracking-wide text-xl">
+				<span class="font-Poppins font-semibold tracking-wide text-xl dark:text-white">
 					Enable 2FA
 				</span>
 			</div>
-			<button
-				class="font-Poppins bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-3 px-5 tracking-wider rounded-lg focus:outline-none focus:shadow-outline"
-				type="button">
-				Save Changes
-			</button>
+
+			<div class="flex items-center justify-center gap-3">
+				<div v-if="this.isDark"
+					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow ring">
+					Dark
+				</div>
+				<div v-else @click="toggleDark()"
+					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow">
+					Dark
+				</div>
+				<div v-if="!this.isDark"
+					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow ring">
+					Light
+				</div>
+				<div v-else @click="toggleDark()"
+					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow">
+					Light
+				</div>
+			</div>
+		</div>
+
+		<!-- Model -->
+		<form v-else
+			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
+			<div class="flex w-full justify-start items-center pl-10 pt-7 font-Poppins font-bold text-2xl dark:text-white">
+				Change your Name:
+			</div>
+			<div class="w-full px-10 py-5">
+				<input 
+					type="text"
+					id="first_name" 
+					class="bg-gray-200 font-Poppins font-light focus:font-bold py-2 px-4 rounded-lg w-full"
+					v-model="this.newName"
+					placeholder="Your new Name" required>
+			</div>
+			<div class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5">
+				<button type="submit" @click="this.updateName"
+					class="text-gray-100 dark:text-white shadow py-2 px-5 bg-blue-500 rounded-lg">
+					Save
+				</button>
+				<button @click="this.revDialog"
+					class="dark:text-white shadow py-2 px-5 bg-gray-400 dark:bg-slate-700 rounded-lg">
+					Cancel
+				</button>
+			</div>
 		</form>
-</main></template>
+	</div>
+</template>

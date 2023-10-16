@@ -1,41 +1,43 @@
-<script setup>
-import { RouterView, useRoute } from 'vue-router'
+<script>
+import { RouterView } from 'vue-router'
 import Sidebar from './components/NavBar/Sidebar.vue';
-import { useUserStore } from './stores/state.ts';
-import Loading1 from './components/Loading/Loading1.vue';
-import Loading2 from './components/Loading/Loading2.vue';
-import axios from 'axios';
+import Loading from './components/Loading/Loading.vue';
+import { SharedData } from './stores/state.ts';
 
-const route = useRoute()
-
-const isLoading = false;
-
-const isSidebarVisible = () => {
-  console.log("router path: ", route.path)
-  const allowedPaths = ['/', '/chat', '/profile', '/search', '/setting', '/leaderboard'];
-  return allowedPaths.includes(route.path);
-};
-
-const checkValidUser = async () => {
-  this.loading = true;
-  await axios.get('http://localhost:3000/api/auth/success', { withCredentials: true })
-    .then(() => {
-      if (router.path.toLowerCase() == '/signin' || router.path.toLowerCase() == '/signup')
-        router.push('/');
-    })
-    .catch((error) => {
-      if (router.path.toLowerCase() != '/signin' && router.path.toLowerCase() != '/signup')
-        router.push('/signIn')
-    })
-  this.loading = false;
-};
-
+export default {
+  setup(props) {
+    const state = SharedData();
+    return { state };
+  },
+  methods: {
+    isSidebarVisible() {
+      const allowedPaths = ['/', '/chat', '/profile', '/search', '/setting', '/leaderboard'];
+      return allowedPaths.includes(this.$route.path);
+    },
+    routerGard() {
+      const path = this.$route.path.toLowerCase();
+      if (this.state.isLoggedIn && (path == '/signin' || path == '/signup'))
+        this.$router.push('/');
+      else if (!this.state.isLoggedIn && path != '/signin' && path != '/signup')
+        this.$router.push('/signIn');
+    }
+  },
+  async created() {
+    await this.state.fetchData();
+    this.routerGard();
+  },
+  components: {
+    Loading,
+    Sidebar,
+    RouterView,
+  }
+}
 </script>
 
 <template>
   <main>
-    <Loading1 v-if="isLoading" />
-    <Sidebar v-if="isSidebarVisible() && !isLoading" />
-    <RouterView v-if="!isLoading" />
+    <Loading v-if="this.state.isLoading" />
+    <Sidebar v-if="isSidebarVisible() && !this.state.isLoading" />
+    <RouterView v-if="!this.state.isLoading" />
   </main>
 </template>

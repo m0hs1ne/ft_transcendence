@@ -1,29 +1,55 @@
-<script setup>
+<script>
 import ProfileStat from "./ProfileStat.vue"
-import { useUserStore } from './../../stores/state.ts';
+import { SharedData } from './../../stores/state.ts';
+
+export default {
+	data() {
+		return {
+			username: String,
+			avatar: String,
+			wins: String,
+			battles: String,
+			winrat: String,
+		}
+	},
+	setup(props) {
+		const state = SharedData();
+		return { state };
+	},
+	methods:
+	{
+	},
+	components:
+	{
+		ProfileStat,
+	},
+	mounted() {
+		this.username = this.state.userData.username;
+		this.avatar = this.state.userData.avatar;
+		this.wins = this.state.userData.wins;
+		this.battles = this.state.userData.wins + this.state.userData.losses;
+		this.winrat = "100%";
+	}
+}
 </script>
 
 <template>
 	<div class="relative h-[380px] md:h-[480px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
-		<div 
-			class="absolute w-full h-[100px] md:h-[120px] bg-blue-200 rounded-t-2xl top-0 left-0 right-0">
+		<div class="absolute w-full h-[120px] md:h-[150px] bg-blue-200 rounded-t-2xl top-0 left-0 right-0">
 		</div>
-		<div class="absolute flex flex-col gap-5 items-center rounded-2xl top-[50px] md:top-[60px]">
+		<div class="absolute flex flex-col gap-5 items-center rounded-2xl top-[65px] md:top-[75px]">
 			<div class="w-36 h-36 bg-gray-300 rounded-full shadow">
+				<img :src="this.avatar" alt="Avatar" class=" object-cover rounded-full w-full">
 			</div>
 			<p class="font-Poppins font-semibold text-2xl tracking-wide mx-5 dark:text-white">
-				David goggins
-			</p>
-			<p class="font-Poppins font-light text-lg tracking-wide mx-7 text-center 
-					text-gray-500 dark:text-gray-400">
-				They don't know me son! You don't know me son!
+				{{ this.username }}
 			</p>
 			<div class="flex items-center">
-				<ProfileStat title="75" description="Battles" />
+				<ProfileStat :title="this.battles" description="Battles" />
 				<div class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"></div>
-				<ProfileStat title="75" description="Wins" />
+				<ProfileStat :title="this.wins" description="Wins" />
 				<div class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"></div>
-				<ProfileStat title="100%" description="Win-rat" />
+				<ProfileStat :title="this.winrat" description="Win-rat" />
 			</div>
 		</div>
 	</div>
