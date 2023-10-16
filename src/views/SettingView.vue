@@ -24,7 +24,7 @@ export default {
 	},
 	methods:
 	{
-		async updateAvatar() {
+		async updateAvatar(event) {
 			this.selectedFile = event.target.files[0];
 			console.log("selectedFile: ", this.selectedFile)
 			try {
@@ -98,7 +98,7 @@ export default {
 				<img :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-full opacity-70">
 				<Icon icon="fluent:image-edit-20-filled" height="40"
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-800 shadow-xl" />
-				<input type="file" @change="updateAvatar" class="hidden" accept=".png, .jpeg, .jpg">
+				<input type="file" @change="this.updateAvatar" class="hidden" accept=".png, .jpeg, .jpg">
 			</label>
 			<div class="flex gap-2 items-center justify-center">
 				<p class="font-Poppins font-semibold text-2xl tracking-wide dark:text-white">
@@ -142,12 +142,9 @@ export default {
 				Change your Name:
 			</div>
 			<div class="w-full px-10 py-5">
-				<input 
-					type="text"
-					id="first_name" 
-					class="bg-gray-200 font-Poppins font-light focus:font-bold py-2 px-4 rounded-lg w-full"
-					v-model="this.newName"
-					placeholder="Your new Name" required>
+				<input type="text" id="first_name"
+					class="font-Poppins font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
+					v-model="this.newName" placeholder="Your new Name" required>
 			</div>
 			<div class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5">
 				<button type="submit" @click="this.updateName"
