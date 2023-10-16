@@ -39,7 +39,7 @@ export default {
 		</div>
 		<div class="absolute flex flex-col gap-5 items-center rounded-2xl top-[65px] md:top-[75px]">
 			<div class="w-36 h-36 bg-gray-300 rounded-full shadow">
-				<img :src="this.avatar" alt="Avatar" class=" object-cover rounded-full w-full">
+				<img :src="this.avatar" alt="Avatar" class=" object-cover rounded-full w-36 h-36">
 			</div>
 			<p class="font-Poppins font-semibold text-2xl tracking-wide mx-5 dark:text-white">
 				{{ this.username }}
