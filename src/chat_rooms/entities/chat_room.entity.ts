@@ -16,6 +16,9 @@ export class ChatRoom {
     owner: number;
 
     @Column()
+    avatar: string;
+
+    @Column()
     privacy: string;
 
     @Column({nullable: true})
