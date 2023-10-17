@@ -91,6 +91,7 @@
 
 ```json
 {
+    "chatId": number,
     "title": "string"
     "privacy": "protected | public | private"
     "password": "present a password if privacy is protected, if not this will be ignored"
