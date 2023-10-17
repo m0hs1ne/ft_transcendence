@@ -7,12 +7,14 @@ export class Room {
     socket: Socket,
     Paddle: number;
     Score: number;
+    id: number;
   }
 
   LeftPlayer: {
     socket: Socket,
     Paddle: number;
     Score: number;
+    id: number;
   }
 
   PaddleHeight: number;
@@ -20,6 +22,7 @@ export class Room {
 
   closeroom: boolean;
   IntervalId: any;
+  GameMode: number;
 
   roomsId: number;
   ballPosition: { x: number; y: number } = { x: 400, y: 200 };
@@ -30,14 +33,15 @@ export class Room {
       socket: rightPlayerSocket,
       Paddle: 200,
       Score: 0,
+      id: null,
     };
 
     this.LeftPlayer = {
       socket: leftPlayerSocket,
       Paddle: 200,
       Score: 0,
+      id: null,
     };
-
     this.closeroom = false;
   }
 
@@ -105,37 +109,49 @@ export class Room {
     }
   }
   checkGoals(): void {
-    if (this.ballPosition.x <= 0) 
-    {
+    if (this.ballPosition.x <= 0) {
       this.RightPlayer.Score++;
-      this.LeftPlayer.socket.emit("Score",
-      {
-        Current: this.LeftPlayer.Score,
-        Oponent: this.RightPlayer.Score,
-      });
-      this.RightPlayer.socket.emit("Score",
-      {
-        Current: this.RightPlayer.Score,
-        Oponent: this.LeftPlayer.Score
-      });
-      this.ballPosition.x = 400;
-      this.ballPosition.y = 200;
+      if (this.RightPlayer.Score == this.GameMode) {
+        this.EndTheGame();
+      }
+      else
+        this.EmitScore();
     }
-    else if(this.ballPosition.x >= 800)
-    {
+    else if (this.ballPosition.x >= 800) {
       this.LeftPlayer.Score++;
-      this.RightPlayer.socket.emit("Score",
+      if (this.LeftPlayer.Score == this.GameMode) {
+        this.EndTheGame();
+      }
+      else
+        this.EmitScore();
+    }
+  }
+
+  EmitScore(): void {
+    this.RightPlayer.socket.emit("Score",
       {
         Current: this.RightPlayer.Score,
         Oponent: this.LeftPlayer.Score
       });
-      this.LeftPlayer.socket.emit("Score",
+    this.LeftPlayer.socket.emit("Score",
       {
         Current: this.LeftPlayer.Score,
         Oponent: this.RightPlayer.Score,
       });
-      this.ballPosition.x = 400;
-      this.ballPosition.y = 200;
+    this.ballPosition.x = 400;
+    this.ballPosition.y = 200;
+  }
+
+  EndTheGame(): void {
+    if (this.RightPlayer.Score > this.LeftPlayer.Score) {
+      this.RightPlayer.socket.emit("Win");
+      this.LeftPlayer.socket.emit("Lose");
     }
+    else
+    {
+      this.RightPlayer.socket.emit("Lose");
+      this.LeftPlayer.socket.emit("Win");
+    }
+    this.closeroom = true;
   }
 }
