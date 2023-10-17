@@ -1,6 +1,6 @@
 <template>
 	<router-link to="/game" class="relative rounded-2xl shadow-xl cursor-pointer">
-			<img 
+			<img referrerpolicy="no-referrer" 
 				:src="src"
 				class="w-full h-full rounded-2xl shadow-xl object-cover">
 			<div class="absolute bottom-10 left-10 font-Poppins text-white">

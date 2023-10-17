@@ -7,9 +7,10 @@ export default {
 		return {
 			username: String,
 			avatar: String,
-			wins: String,
-			battles: String,
-			winrat: String,
+			wins: 1,
+			losses: 1,
+			battles: 2,
+			winrat: 50,
 		}
 	},
 	setup(props) {
@@ -27,8 +28,11 @@ export default {
 		this.username = this.state.userData.username;
 		this.avatar = this.state.userData.avatar;
 		this.wins = this.state.userData.wins;
-		this.battles = this.state.userData.wins + this.state.userData.losses;
-		this.winrat = "100%";
+		this.losses = this.state.userData.losses;
+		this.battles = this.wins + this.losses;
+		this.winrat =(this.wins / (this.wins + this.losses)) * 100 + '%';
+		this.wins -= 1;
+		this.battles -= 2;
 	}
 }
 </script>
@@ -38,10 +42,10 @@ export default {
 		<div class="absolute w-full h-[120px] md:h-[150px] bg-blue-200 rounded-t-2xl top-0 left-0 right-0">
 		</div>
 		<div class="absolute flex flex-col gap-5 items-center rounded-2xl top-[65px] md:top-[75px]">
-			<div class="w-36 h-36 bg-gray-300 rounded-full shadow">
-				<img :src="this.avatar" alt="Avatar" class=" object-cover rounded-full w-36 h-36">
+			<div class="w-44 h-44 bg-gray-300 rounded-full shadow">
+				<img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class=" object-cover rounded-full w-44 h-44">
 			</div>
-			<p class="font-Poppins font-semibold text-2xl tracking-wide mx-5 dark:text-white">
+			<p class="font-Poppins font-semibold text-3xl tracking-wide mx-5 dark:text-white">
 				{{ this.username }}
 			</p>
 			<div class="flex items-center">

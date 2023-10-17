@@ -10,17 +10,17 @@
       <ul class="">{{ this.message }}
         <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
           <div class="flex-shrink-0">
-            <img :src="friend.fromUser.avatar" alt="Avatar" class="h-12 rounded-full" />
+            <img referrerpolicy="no-referrer" :src="friend.fromUser.avatar" alt="Avatar" class="h-12 rounded-full" />
           </div>
 
           <div class="flex-grow">
             <span class="text-lg font-normal ">{{ friend.fromUser.username }}: invite you to join {{ friend.chatRoom.title
             }} </span>
           </div>
-          <img @click="AccepteInvite(friend)"
+          <img referrerpolicy="no-referrer" @click="AccepteInvite(friend)"
             class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-green-600 text-white font-bold py-2 px-4"
             src="./../../assets/icons/checkmark.svg">
-          <img @click="DeclineInvite(friend)"
+          <img referrerpolicy="no-referrer" @click="DeclineInvite(friend)"
             class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-red-600 text-white font-bold py-2 px-4"
             src="./../../assets/icons/cross.svg">
         </li>

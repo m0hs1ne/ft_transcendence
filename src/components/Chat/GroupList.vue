@@ -8,7 +8,7 @@
           @click="handleChannelClick(friend)"
           >
           <div class="flex-shrink-0">
-            <img src="https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png"
+            <img referrerpolicy="no-referrer" src="https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png"
                     alt="Avatar" class=" h-12 rounded-full" />
             <div class="status text-xs py-1 px-2 rounded-full capitalize" :class="{
               'bg-green-500 text-white': friend.status === 'Online',

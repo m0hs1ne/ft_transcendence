@@ -6,9 +6,9 @@
     </div>
     <div class="flex flex-row">
       <FriendList v-if="AddFriend" />
-      <img @click="LeaveChannel" class="m-2 h-10 rounded-full  hover:bg-red-500 text-white font-bold py-2 px-4"
+      <img referrerpolicy="no-referrer" @click="LeaveChannel" class="m-2 h-10 rounded-full  hover:bg-red-500 text-white font-bold py-2 px-4"
         src="./../../assets/icons/exit.svg">
-      <img v-if="DeletePermission" @click="RemoveChatRome"
+      <img referrerpolicy="no-referrer" v-if="DeletePermission" @click="RemoveChatRome"
         class=" m-2 h-10 rounded-full hover:bg-red-200 text-white font-bold py-2 px-4"
         src="./../../assets/icons/delet.svg">
     </div>
@@ -33,7 +33,7 @@
               </div>
             </div>
             <!--  end pop up -->
-            <img :src="member.user.avatar" alt="Avatar" class=" h-8 rounded-full" />
+            <img referrerpolicy="no-referrer" :src="member.user.avatar" alt="Avatar" class=" h-8 rounded-full" />
           </div>
           <div class="flex-grow">
             <span v-if="member.user.id == this.userStore.MyId" class="text-lg font-semibold">{{ member.user.username }}({{
@@ -42,10 +42,10 @@
             <p class="text-sm text-green-700">{{ member.role }}</p>
           </div>
           <div class="flex-grow">
-            <img v-if="member.role != 'owner' && member.user.id != this.userStore.MyId" @click="BanneUser(member)"
+            <img referrerpolicy="no-referrer" v-if="member.role != 'owner' && member.user.id != this.userStore.MyId" @click="BanneUser(member)"
               class=" m-2 h-10 rounded-full hover:bg-red-700 text-white font-bold py-2 px-4"
               src="./../../assets/icons/blocked.svg">
-            <img v-if="member.role != 'owner' && member.user.id != this.userStore.MyId" @click="muteMember(member)"
+            <img referrerpolicy="no-referrer" v-if="member.role != 'owner' && member.user.id != this.userStore.MyId" @click="muteMember(member)"
               class=" m-2 h-10 rounded-full hover:bg-red-200 text-white font-bold py-2 px-4"
               src="./../../assets/icons/mute2.svg">
           </div>

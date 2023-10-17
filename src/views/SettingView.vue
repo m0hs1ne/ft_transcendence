@@ -90,7 +90,7 @@ export default {
 		<div v-if="!this.updateNameDialog"
 			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] py-20 rounded-2xl custom-box-shadow dark:bg-slate-900">
 			<label class="relative w-36 h-36 bg-gray-300 rounded-full shadow-lg cursor-pointer">
-				<img :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-36 h-36 opacity-70">
+				<img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-36 h-36 opacity-70">
 				<Icon icon="fluent:image-edit-20-filled" height="40"
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-800 shadow-xl" />
 				<input type="file" @change="this.updateAvatar" class="hidden" accept=".png, .jpeg, .jpg">

@@ -12,7 +12,7 @@
         }"
       >
         <div class="flex mb-4">
-          <img :src="message.img" alt="Avatar" class="circle avatar mr-1 " />
+          <img referrerpolicy="no-referrer" :src="message.img" alt="Avatar" class="circle avatar mr-1 " />
           <div class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">  
             <span>{{ message.text }}</span>
           </div>
