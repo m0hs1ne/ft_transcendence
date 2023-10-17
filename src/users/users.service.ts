@@ -291,6 +291,8 @@ export class UsersService {
         'id',
         'avatar',
         'username',
+        'wins',
+        'losses'
       ],
       where: {
         username: ILike(`%${query}%`),
