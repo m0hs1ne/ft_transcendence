@@ -122,8 +122,8 @@ export class UsersController {
     return this.usersService.getleaders();
   }
 
-  @Get('search')
-  async search(@Body() body) {
+  @Post('search')
+  async search(@MessageBody() body) {
     const {
       query
     } = body
