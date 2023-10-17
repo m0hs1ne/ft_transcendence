@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards, UseInterceptors } from "@nestjs/common";
 import { TwoFactorAuthenticationService } from "./2fa.service";
 import {  Response } from 'express';
 import {  userAuthGuard } from "./Guards";
@@ -19,7 +19,7 @@ export class TwoFactorAuthenticationController {
      * Generate a secret and a otpauthUrl then pipe the qrcode to the response
      * @returns the qrcode
      */
-    @Post('generate')
+    @Get('generate')
     @UseGuards(userAuthGuard)
     async register(@Req() req: RequestWithUser, @Res() res) {
         const user = await this.authService.getUserFromJwt(req);
