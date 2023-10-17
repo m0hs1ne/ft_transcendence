@@ -76,12 +76,10 @@ export default {
         {
           id: frien.id,
         })
-      this.$socket.on("receiveMessage",(data) =>
-      {
-        console.log("data//////////////////////////////// ", data);
-      })
+       
+     
       //this.userStore.DmChatroomsList.data.push(frien.chatRoom);
-       this.userStore.fetchDataForDmChatRooms();
+  
         console.log(" I am update in pop inv ", this.userStore.DmChatroomsList)
       this.isOpend = false;
       this.DeleteFromArray(frien);

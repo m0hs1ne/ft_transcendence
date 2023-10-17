@@ -1,8 +1,14 @@
 <!-- FriendListComponent.vue -->
 <template>
   <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
-    <div class="italic text-2xl">
-      {{ this.userStore.ActiveChannelTitle }}
+    <div class="flex-shrink-0">
+      <img src="https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png" alt="Avatar"
+      class="h-40 rounded-full  hover:bg-red-500" @click="updateChanellSetting" />
+      <!-- <input  type="file" @change="updateAvatar" class="hidden" accept=".png, .jpeg, .jpg"> -->
+      <EditeProfile v-if="EditChannel" />
+    </div>
+    <div class=" flex italic text-2xl">
+      <span class="text-lg font-semibold">{{ this.userStore.ActiveChannelTitle }}</span>
     </div>
     <div class="flex flex-row">
       <FriendList v-if="AddFriend" />
@@ -22,14 +28,15 @@
                 <h2 class="text-xl font-bold mb-4">Time with minute:</h2>
 
                 <input type="number" v-model="time">
-                <button v-if="this.time" @click="MuteThisUser(member)"
-                  class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  save
-                </button>
                 <button @click="closePopup"
                   class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                   Close
                 </button>
+                <button v-if="this.time" @click="MuteThisUser(member)"
+                  class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  save
+                </button>
+
               </div>
             </div>
             <!--  end pop up -->
@@ -57,14 +64,19 @@
   
 <script>
 import axios from "axios";
+import EditeProfile from "./EditeProfile.vue"
 import { useUserStore } from './../../stores/state.ts';
 import FriendList from "./FriendList.vue";
 import MutePopUp from "./MutePopUp.vue";
+
 export default {
+
+  components: { EditeProfile, FriendList, MutePopUp },
   setup() {
     const userStore = useUserStore();
     return { userStore };
   },
+ 
   data() {
     return {
       members: [],
@@ -76,8 +88,8 @@ export default {
       isOpend: false,
       you: 'You',
       time: "",
-      role:'',
-
+      role: '',
+      EditChannel: true,
     };
   },
   methods: {
@@ -109,7 +121,7 @@ export default {
       // {
       //   "chatId": "number"
       // }
-      this.role =  axios.delete(`http://localhost:3000/api/chat-rooms/${this.userStore.ActiveChannelId}`,
+      this.role = axios.delete(`http://localhost:3000/api/chat-rooms/${this.userStore.ActiveChannelId}`,
         { withCredentials: true });
       await this.userStore.fetchDataForDmChatRooms();
       console.log("Remove Chat Rome")
@@ -128,43 +140,49 @@ export default {
       this.isOpend = true
     },
     MuteThisUser(member) {
-      console.log('Muste this user:', member, " for time: ", this.time, 'status ' ,member.userStatus);
+      console.log('Muste this user:', member, " for time: ", this.time, 'status ', member.userStatus);
       this.$socket.emit("updateMemberStatus",
         {
-          
+
           "memberId": member.user.id,
           "chatId": this.userStore.ActiveChannelId,
           "status": "muted",
           "mutedFor": this.time
-        
-        });
-      this.$socket.on("receiveMessage",(data) =>{
-        console.log("This is data In Must ",data)
-      })
-    this.isOpend = false;
-    this.time = '';
-  },
 
-  BanneUser(member)  //
-  {
-    console.log("this user is banned: ", member)
-    this.$socket.emit("updateMemberStatus",
+        });
+      this.$socket.on("receiveMessage", (data) => {
+        console.log("This is data In Must ", data)
+      })
+      this.isOpend = false;
+      this.time = '';
+    },
+
+    BanneUser(member)  //
+    {
+      console.log("this user is banned: ", member)
+      this.$socket.emit("updateMemberStatus",
         {
           "memberId": member.user.id,
           "chatId": this.userStore.ActiveChannelId,
           "status": "banned",
           "mutedFor": this.time
-        
+
         });
-  }
+    },
+    updateChanellSetting()
+    {
+      
+      console.log("Can u update this ")
+    },
 
 
-},
-mounted() {
-  this.fetchData();
-},
+  },
+  mounted() {
+    
+    this.fetchData();
+  },
 
-components: { FriendList, MutePopUp }
+
 };
 </script>
   
