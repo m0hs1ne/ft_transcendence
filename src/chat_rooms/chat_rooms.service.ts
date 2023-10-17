@@ -683,7 +683,7 @@ export class ChatRoomsService {
 
   async uploadAvatar(avatar, chatId, payload)
   {
-    await this.chatRoomRepository.update({id: chatId}, {avatar: process.env.DOMAIN_URL + avatar.path})
+    await this.chatRoomRepository.update({id: chatId}, {avatar: 'http://localhost:3000/' + avatar.filename})
   }
 
   async search(query: string)

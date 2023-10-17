@@ -25,13 +25,13 @@ export class User {
     @Column({ type: 'varchar', unique: true, length: 50 })
     username: string;
 
-    @Column({nullable: true})
+    @Column({default: 0})
     level: number;
 
-    @Column({nullable: true})
+    @Column({default: 1})
     wins: number;
 
-    @Column({nullable: true})
+    @Column({default: 1})
     losses: number;
 
     @Column()
