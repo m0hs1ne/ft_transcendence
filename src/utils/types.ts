@@ -5,9 +5,6 @@ export type UserDetails = {
     email: string;
     username: string;
     avatar: string;
-    level: number;
-    wins: number;
-    losses: number;
     statusOnline: boolean;
     inGame: boolean;
     is2fa: boolean;

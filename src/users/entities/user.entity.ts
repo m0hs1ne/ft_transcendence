@@ -25,14 +25,6 @@ export class User {
     @Column({ type: 'varchar', unique: true, length: 50 })
     username: string;
 
-    @Column({default: 0})
-    level: number;
-
-    @Column({default: 1})
-    wins: number;
-
-    @Column({default: 1})
-    losses: number;
 
     @Column()
     statusOnline: boolean;
@@ -139,4 +131,14 @@ export class User {
     updateUpdatedAt() {
       this.updatedAt = new Date();
     }
+
+
+    @Column({default: 0})
+    level: number;
+
+    @Column({default: 1})
+    wins: number;
+
+    @Column({default: 1})
+    losses: number;
 }
