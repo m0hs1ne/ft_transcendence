@@ -51,7 +51,9 @@ export class AuthService {
         // console.log(details);
         const user = await this.userRepository.findOneBy({ email: details.email })
         if (user) return user;
-        // console.log('Creating new user...');
+        const user_name = await this.userRepository.findOneBy({ username: details.username })
+        if (user_name)
+            details.username = details.username + Math.floor(Math.random() * 1000);
         const newUser = this.userRepository.create(details);
         return this.userRepository.save(newUser)
     }
