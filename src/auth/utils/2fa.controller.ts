@@ -26,6 +26,7 @@ export class TwoFactorAuthenticationController {
         if(user.is2faEnabled) return { message: '2fa is already enabled'}
         if (!user) return res.redirect('/login');
         const { otpauthUrl } = await this.twoAuth.generateTwoFactorAuthenticationSecret(user);
+        res.set('Content-Type', 'image/png');
         await this.twoAuth.pipeQrCodeStream(otpauthUrl, res);
     }
 
