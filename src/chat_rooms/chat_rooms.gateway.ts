@@ -122,15 +122,15 @@ export class ChatRoomsGateway{
 
   @SubscribeMessage('removeChatRoom')
   async remove(@MessageBody() body, @Req() req) {
-    const {chatId} = body;
-    if (!chatId)
+    const {id} = body;
+    if (!id)
       return;
     const payload = verifyToken(req.handshake.headers.cookie);
     try 
     {
-      if (chatId && typeof chatId === 'number')
+      if (id && typeof id === 'number')
       {
-        const chatroom = await this.chatRoomsService.remove(chatId, payload);
+        const chatroom = await this.chatRoomsService.remove(id, payload,clients);
         const client = clients.get(payload.sub)
         client.emit('Notification', {type: 'info', message: `${chatroom.affected} has been deleted.`})
       }

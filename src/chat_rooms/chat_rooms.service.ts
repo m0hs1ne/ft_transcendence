@@ -134,11 +134,25 @@ export class ChatRoomsService {
       throw new NotFoundException({message: 'Chat not found'})
   }
 
-  async remove(chatId, payload) {
+  async remove(chatId, payload, clients) {
     
     const chat = await this.chatRoomRepository.findOne({
       where: {id: chatId, owner: payload.sub}
     })
+
+    const options : FindManyOptions<UserChat> = {
+      select: ['id', 'mutedTill', 'userId', 'userStatus', 'role', 'chatRoom'],
+      where: {chatRoomId: chatId}
+    }
+    const chatmembers = await this.userChatRepository.find(options)
+    for (const member of chatmembers)
+    {
+      const client = clients.get(member.userId)
+      client.emit('ChatRoomList', {
+        chatId,
+        type: 'remove'
+      })
+    }
     if (chat)
       return await this.chatRoomRepository.delete({id: chat.id})
     else
@@ -234,7 +248,7 @@ export class ChatRoomsService {
     .getCount()
     if (member_count == 1)
     {
-      await this.remove(chatId, payload);
+      await this.remove(chatId, payload, clients);
       return false;
     }
     const userChat = await this.userChatRepository.findOne({

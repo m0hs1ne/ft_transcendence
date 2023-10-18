@@ -47,11 +47,11 @@ export class ChatRoomsController {
         return details
     }
 
-    @Delete(':id')
-    async delChatroom(@Param('id') id, @Req() req){
-        const payload = verifyToken(req.headers.cookie)
-        await this.chatroomservice.remove(id, payload);
-    }
+    // @Delete(':id')
+    // async delChatroom(@Param('id') id, @Req() req){
+    //     const payload = verifyToken(req.headers.cookie)
+    //     await this.chatroomservice.remove(id, payload);
+    // }
 
     @Post('upload_avatar/:id')
     @UseInterceptors(FileInterceptor('file', {
