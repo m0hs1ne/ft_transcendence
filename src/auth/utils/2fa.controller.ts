@@ -66,9 +66,9 @@ export class TwoFactorAuthenticationController {
         if (!user) return { message: 'User not found' };
         const isCodeValid = await this.twoAuth.isTwoFactorAuthenticationCodeValid(tfaCode, user);
         if (!isCodeValid) throw new UnauthorizedException('Invalid code');
-        const jwt = await this.authService.getCookiesWithJwtToken(user.id);
+        const payload = await this.authService.login(user, true);
         res.clearCookie('jwt');
-        req.res.setHeader('Set-Cookie', jwt);
+        res.cookie('jwt', payload, { httpOnly: true });
         return user;
     }
 

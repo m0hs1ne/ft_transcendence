@@ -72,8 +72,13 @@ export class AuthService {
      * @param user the user to login
      * @returns a jwt token with the user id and email
      */
-    async login(user: any) {
-        const payload = { email: user.email, sub: user.id };
+    async login(user: any, is2faV: boolean) {
+        if(!is2faV)
+        {
+            const payload = { email: user.email, sub: user.id, is2faV: false };
+            return this.jwtService.sign(payload);
+        }
+        const payload = { email: user.email, sub: user.id , is2faV: true};
         return this.jwtService.sign(payload);
     }
 

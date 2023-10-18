@@ -27,7 +27,7 @@ export class AuthController {
     @Get('42/callback')
     @UseGuards(FortyTwoAuthGuard)
     async callback(@Req() req: RequestWithUser, @Res() res) {
-        const payload = await this.authService.login(req.user);
+        const payload = await this.authService.login(req.user, false);
         res.cookie('jwt', payload, { httpOnly: true });
         res.redirect('http://localhost:5173/');
     }
@@ -72,7 +72,7 @@ export class AuthController {
     @Get('google/callback')
     @UseGuards(googleAuthGuard)
     async googleCallback(@Req() req: RequestWithUser, @Res() res) {
-        const payload = await this.authService.login(req.user);
+        const payload = await this.authService.login(req.user, false);
         res.cookie('jwt', payload, { httpOnly: true });
         res.redirect('http://localhost:5173/');
     }
