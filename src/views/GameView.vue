@@ -6,14 +6,12 @@
 </template>
   
   
-<script>
+<script >
 
-// import { io } from 'socket.io-client';
 
 export default {
   data() {
     return {
-      c: 0,
       x: 50,
       y: 50,
       mode: 7,
@@ -24,38 +22,34 @@ export default {
       pos: null,
       PaddleHeight: 120,
       PaddleWidth: 15,
-
       PaddleY: 200,
       OpponentPaddleY: 200,
       Context: null,
       Canvas: null,
     };
   },
-  created() {
-    console.log("Start here");
-    window.addEventListener('keydown', this.handleKeyDown);
 
+  created() {
+    window.addEventListener('keydown', this.handleKeyDown);
   },
 
   methods: {
     loopHook() {
-      console.log("LoopHook");
       this.draw();
       this.intervalId = setInterval(this.draw, 10);
     },
+
     draw() {
-      const canvas = this.Canvas;
-      const context = this.Context;
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      this.drawRect(0, 0, canvas.width, canvas.height, "#1F173D");
+      this.Context.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+      this.drawRect(0, 0, this.Canvas.width, this.Canvas.height, "#1F173D");
       if (this.pos == "Left") {
         this.drawRect(5, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.drawRect(canvas.width - 15, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        this.drawRect(this.Canvas.width - 20, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
         this.DrawScore(this.CurrentPlayerScore, this.OpponentPLayerScore);
       }
       else if (this.pos == "Right") {
         this.drawRect(5, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.drawRect(canvas.width - 15, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        this.drawRect(this.Canvas.width - 20, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
         this.DrawScore(this.OpponentPLayerScore, this.CurrentPlayerScore);
       }
       this.drawBall(this.x, this.y, 10, "#A33A6F");
@@ -83,15 +77,11 @@ export default {
 
       this.$GameSocket.on('OpponentPaddle', (data) => {
         this.OpponentPaddleY = data.Paddle;
-        // console.log(data.id);
       });
 
-      this.$GameSocket.on('startGame', (data) => 
-      {
-        this.c++;
+      this.$GameSocket.on('startGame', (data) => {
         this.RoomId = data.id;
         this.pos = data.pos;
-        console.log(`=> ${this.RoomId} => ${this.pos}, ==> ${this.c}`);
       });
 
       this.$GameSocket.on('Score', (data) => {
@@ -100,33 +90,30 @@ export default {
       });
 
 
-      this.$GameSocket.on('Lose', (data) => 
+      this.$GameSocket.on('Lose', (data) =>
       {
         clearInterval(this.intervalId);
         const context = this.Context;
-        console.log("Lose");
         this.drawRect(0, 0, context.canvas.width, context.canvas.height, "#1F173D");
         context.font = "30px Arial";
         context.fillStyle = "#A33A6F";
         context.fillText("You Lose", 400, 200);
         setTimeout(() => {
-          this.$router.go();
-        }, 1000);
+          this.$router.push("/");
+        }, 2000);
 
       });
-      this.$GameSocket.on('Win', (data) => {
+      this.$GameSocket.on('Win', (data) => 
+      {
         clearInterval(this.intervalId);
         const context = this.Context;
-        console.log("Win");
-        clearInterval(this.intervalId);
         this.drawRect(0, 0, context.canvas.width, context.canvas.height, "#1F173D");
         context.font = "30px Arial";
         context.fillStyle = "#A33A6F";
-        context.fillText("You Win", 400, 200);
+        context.fillText("You Win", 370, 170);
         setTimeout(() => {
-          // this.PaddleY = 100;
-          this.$router.go(-1);
-        }, 1000);
+          this.$router.push("/");
+        }, 2000);
       });
 
       this.$GameSocket.on('DeleteRoom', (data) => {
@@ -135,6 +122,16 @@ export default {
         })
       });
 
+    },
+
+    EventsKiller() {
+      this.$GameSocket.removeEventListener("startGame");
+      this.$GameSocket.removeEventListener("Lose");
+      this.$GameSocket.removeEventListener("Win");
+      this.$GameSocket.removeEventListener("DeleteRoom");
+      this.$GameSocket.removeEventListener("updateBall");
+      this.$GameSocket.removeEventListener("Score");
+      this.$GameSocket.removeEventListener("OpponentPaddle");
     },
 
     JoinGameEvent() {
@@ -175,8 +172,7 @@ export default {
     },
   },
 
-  mounted() 
-  {
+  mounted() {
     console.log("mounted ");
     this.Canvas = this.$refs.gameCanvas;
     this.Context = this.Canvas.getContext("2d");
@@ -187,12 +183,13 @@ export default {
   },
   unmounted() 
   {
-    console.log("unmounted ", this.c);
-    // this.$GameSocket.emit("PlayerLeave", {
-    //   roomId: this.RoomId,
-    //   pos: this.pos,
-    // });
-    // clearInterval(this.intervalId);
+    this.EventsKiller();
+    // console.log("unmounted ", this.c);
+    this.$GameSocket.emit("PlayerLeave", {
+      roomId: this.RoomId,
+      pos: this.pos,
+    });
+    clearInterval(this.intervalId);
   }
 };
 </script>
