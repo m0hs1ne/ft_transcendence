@@ -73,7 +73,7 @@ export class AuthService {
      * @returns a jwt token with the user id and email
      */
     async login(user: any, is2faV: boolean) {
-        if(!is2faV)
+        if(user.is2faEnabled && !is2faV)
         {
             const payload = { email: user.email, sub: user.id, is2faV: false };
             return this.jwtService.sign(payload);
