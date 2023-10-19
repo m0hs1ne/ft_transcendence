@@ -24,7 +24,7 @@ export class Room {
   IntervalId: any;
   GameMode: number;
 
-  roomsId: number;
+  roomId: string;
   ballPosition: { x: number; y: number } = { x: 400, y: 200 };
   ballDirection: { x: number; y: number } = { x: 1, y: 1 };
 
@@ -47,11 +47,11 @@ export class Room {
 
   Play(): void {
     this.RightPlayer.socket.emit('startGame', {
-      id: this.roomsId,
+      id: this.roomId,
       pos: "Right",
     })
     this.LeftPlayer.socket.emit('startGame', {
-      id: this.roomsId,
+      id: this.roomId,
       pos: "Left",
     })
     this.startGameLoop();
@@ -59,22 +59,27 @@ export class Room {
 
   startGameLoop() {
     this.IntervalId = setInterval(() => {
-      this.ballPosition.x += this.ballDirection.x * 4;
-      this.ballPosition.y += this.ballDirection.y * 4;
-
-      this.CheckBall();
-      this.LeftPlayer.socket.emit('updateBall', {
-        x: this.ballPosition.x,
-        y: this.ballPosition.y,
-      });
-
-      this.RightPlayer.socket.emit('updateBall', {
-        x: this.ballPosition.x,
-        y: this.ballPosition.y,
-      });
       if (this.closeroom == true) {
         clearInterval(this.IntervalId);
         console.log("It should stop know");
+      }
+      else {
+
+        this.ballPosition.x += this.ballDirection.x * 4;
+        this.ballPosition.y += this.ballDirection.y * 4;
+
+        this.CheckBall();
+        this.LeftPlayer.socket.emit('updateBall', 
+        {
+          
+          x: this.ballPosition.x,
+          y: this.ballPosition.y,
+        });
+
+        this.RightPlayer.socket.emit('updateBall', {
+          x: this.ballPosition.x,
+          y: this.ballPosition.y,
+        });
       }
     }, 1000 / 60);
   }
@@ -108,6 +113,7 @@ export class Room {
       this.ballDirection.y *= -this.ballDirection.y;
     }
   }
+  
   checkGoals(): void {
     if (this.ballPosition.x <= 0) {
       this.RightPlayer.Score++;
@@ -146,11 +152,26 @@ export class Room {
     if (this.RightPlayer.Score > this.LeftPlayer.Score) {
       this.RightPlayer.socket.emit("Win");
       this.LeftPlayer.socket.emit("Lose");
+      this.RightPlayer.socket.emit("DeleteRoom", {
+        roomId: this.roomId,
+      });
     }
-    else
-    {
+    else {
       this.RightPlayer.socket.emit("Lose");
       this.LeftPlayer.socket.emit("Win");
+      this.LeftPlayer.socket.emit("DeleteRoom", {
+        roomId: this.roomId,
+      });
+    }
+    this.closeroom = true;
+  }
+
+  PlayerLeaves(pos: string): void {
+    if (pos == "Right") {
+      this.LeftPlayer.socket.emit("Win");
+    }
+    else {
+      this.RightPlayer.socket.emit("Win");
     }
     this.closeroom = true;
   }
