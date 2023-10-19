@@ -1,7 +1,7 @@
 <!-- CanvasComponent.vue -->
 <template>
   <div class="flex bg-slate-800 h-screen items-center justify-center">
-    <canvas ref="gameCanvas" width="800" height="400" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
+    <canvas ref="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
   </div>
 </template>
   
@@ -12,18 +12,18 @@
 export default {
   data() {
     return {
-      x: 50,
-      y: 50,
+      BallX: null,
+      BallY: null,
       mode: 7,
       CurrentPlayerScore: 0,
       OpponentPLayerScore: 0,
       intervalId: null,
       RoomId: null,
       pos: null,
-      PaddleHeight: 120,
-      PaddleWidth: 15,
-      PaddleY: 200,
-      OpponentPaddleY: 200,
+      PaddleHeight: null,
+      PaddleWidth: null,
+      PaddleY: null,
+      OpponentPaddleY: null,
       Context: null,
       Canvas: null,
     };
@@ -31,6 +31,7 @@ export default {
 
   created() {
     window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('resize', this.CanvasResize);
   },
 
   methods: {
@@ -42,17 +43,27 @@ export default {
     draw() {
       this.Context.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
       this.drawRect(0, 0, this.Canvas.width, this.Canvas.height, "#1F173D");
-      if (this.pos == "Left") {
-        this.drawRect(5, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.drawRect(this.Canvas.width - 20, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.DrawScore(this.CurrentPlayerScore, this.OpponentPLayerScore);
+      var x = this.PaddleWidth * 0.2;
+      if (this.pos == "Left") 
+      {
+        this.drawRect(x, this.PaddleY * this.Canvas.height , this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        this.drawRect(this.Canvas.width - (this.PaddleWidth + x), this.OpponentPaddleY * this.Canvas.height, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        // this.DrawScore(this.CurrentPlayerScore, this.OpponentPLayerScore);
       }
-      else if (this.pos == "Right") {
-        this.drawRect(5, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.drawRect(this.Canvas.width - 20, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.DrawScore(this.OpponentPLayerScore, this.CurrentPlayerScore);
+      else if (this.pos == "Right") 
+      {
+        this.drawRect(x, this.OpponentPaddleY * this.Canvas.height, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        this.drawRect(this.Canvas.width - (this.PaddleWidth + x), this.PaddleY *  this.Canvas.height, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        // this.DrawScore(this.OpponentPLayerScore, this.CurrentPlayerScore);
       }
-      this.drawBall(this.x, this.y, 10, "#A33A6F");
+      this.drawBall(this.BallX * this.Canvas.width, this.BallY * this.Canvas.height, 10, "#A33A6F");
+    },
+
+    CanvasResize() {
+      this.Canvas.width = window.innerWidth * 0.8;
+      this.Canvas.height = this.Canvas.width * 0.5;
+      this.PaddleHeight = this.Canvas.height * 0.2;
+      this.PaddleWidth = this.Canvas.width * 0.02;
     },
 
     drawBall(x, y, radius, color) {
@@ -64,19 +75,19 @@ export default {
     },
 
     drawRect(x, y, width, height, color) {
-      const context = this.Context;
-      context.fillStyle = color;
-      context.fillRect(x, y, width, height);
+      this.Context.fillStyle = color;
+      this.Context.fillRect(x, y, width, height);
     },
 
     EventsHandler() {
       this.$GameSocket.on('updateBall', (data) => {
-        this.x = data.x;
-        this.y = data.y;
+        this.BallX = data.x;
+        this.BallY = data.y;
       });
 
-      this.$GameSocket.on('OpponentPaddle', (data) => {
-        this.OpponentPaddleY = data.Paddle;
+      this.$GameSocket.on('OpponentPaddle', (data) => 
+      {
+        this.OpponentPaddleY += data.Paddle;
       });
 
       this.$GameSocket.on('startGame', (data) => {
@@ -153,20 +164,20 @@ export default {
 
     handleKeyDown(event) {
       const keyCode = event.keyCode;
-      if (keyCode === 38 && this.PaddleY >= 0) {
-        this.PaddleY -= 8;
+      if (keyCode == 38 && this.PaddleY > 0) {
+        this.PaddleY -= 0.01;
         this.$GameSocket.emit("PaddleUpdates", {
           pos: this.pos,
           roomId: this.RoomId,
-          Paddle: this.PaddleY,
+          Paddle: -0.01,
         });
       }
-      else if (keyCode === 40 && this.PaddleY + this.PaddleHeight <= 400) {
-        this.PaddleY += 8;
+      else if (keyCode == 40 && this.PaddleY + 0.2  < 1) {
+        this.PaddleY += 0.01;
         this.$GameSocket.emit("PaddleUpdates", {
           pos: this.pos,
           roomId: this.RoomId,
-          Paddle: this.PaddleY,
+          Paddle: 0.01,
         });
       }
     },
@@ -176,6 +187,14 @@ export default {
     console.log("mounted ");
     this.Canvas = this.$refs.gameCanvas;
     this.Context = this.Canvas.getContext("2d");
+    this.Canvas.width = window.innerWidth * 0.8;
+    this.Canvas.height = this.Canvas.width * 0.5;
+    this.PaddleHeight = this.Canvas.height * 0.2;
+    this.PaddleWidth = this.Canvas.width * 0.02;
+    this.PaddleY = 0.4;
+    this.OpponentPaddleY = 0.4;
+    this.BallX = 0.5;
+    this.BallY = 0.5;
     this.$refs.gameCanvas.focus();
     this.EventsHandler();
     this.JoinGameEvent();
@@ -184,7 +203,6 @@ export default {
   unmounted() 
   {
     this.EventsKiller();
-    // console.log("unmounted ", this.c);
     this.$GameSocket.emit("PlayerLeave", {
       roomId: this.RoomId,
       pos: this.pos,
