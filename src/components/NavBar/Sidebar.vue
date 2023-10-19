@@ -18,14 +18,13 @@ export default {
 			const tmp = this.isDark;
 			const confirmed = window.confirm('Are you sure you want to log out?');
 			if (confirmed) {
-				
-				await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true })
-					.then(() => {
-						this.$router.push('/signIn');
-					})
-					.catch((error) => {
-						console.log("logdout error: ", error)
-					})
+				try {
+					await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
+					this.$router.push('/signIn');
+				}
+				catch (error) {
+					console.log("logdout error: ", error)
+				}
 			}
 		}
 	},
@@ -69,9 +68,11 @@ export default {
 		<div class="mt-auto p-4">
 			<router-link to="/profile" title="Profile" class="flex items-center p-3 m-3 cursor-pointer">
 				<div class="w-[28px] h-[28px] bg-gray-300 rounded-full shadow">
-					<img referrerpolicy="no-referrer" v-if="this.$route.path == '/profile'" :src="this.state.userData.avatar" alt="Avatar" 
+					<img referrerpolicy="no-referrer" v-if="this.$route.path == '/profile'"
+						:src="this.state.userData.avatar" alt="Avatar"
 						class="object-cover rounded-full w-[28px] h-[28px] ring ring-cyan-500">
-					<img referrerpolicy="no-referrer" v-else :src="this.state.userData.avatar" alt="Avatar" class="object-cover w-[28px] h-[28px] rounded-full">
+					<img referrerpolicy="no-referrer" v-else :src="this.state.userData.avatar" alt="Avatar"
+						class="object-cover w-[28px] h-[28px] rounded-full">
 				</div>
 			</router-link>
 			<div title="Theme" @click="" class="flex items-center p-3 m-3 cursor-pointer">

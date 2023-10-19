@@ -8,7 +8,7 @@ export const useUserStore = defineStore("user", {
     DmChatroomsList: [{}],
     ActiveChannelData: [],
     ActiveChannelId: null,
-    ActiveChannelTitle:'',
+    ActiveChannelTitle: "",
     ActiveMessageChannelId: {},
     ActiveMembersChannelId: {},
     MyRoleInActiveChannelID: "",
@@ -19,7 +19,6 @@ export const useUserStore = defineStore("user", {
   actions: {
     UserId(myId) {
       this.MyId = myId;
-    
     },
     UpdateInvitaion(list) {
       this.ChannelInvitation = list;
@@ -40,9 +39,9 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    UpdateChannelId(id,title) {
+    UpdateChannelId(id, title) {
       this.ActiveChannelId = id;
-      this.ActiveChannelTitle = title
+      this.ActiveChannelTitle = title;
       console.log("update Channel id ", id);
       // this.fetchChannelById()
     },
@@ -92,36 +91,40 @@ export const SharedData = defineStore("Shard", {
     async fetchData() {
       this.isError = false;
       this.isLoading = true;
+      // Get user profile data
       try {
-        await axios.get("http://localhost:3000/api/auth/success", {
-          withCredentials: true,
-        });
-
-        // Get user profile data
-        try {
-          const res = await axios.get(
-            "http://localhost:3000/api/users/profile/",
-            {
-              withCredentials: true,
-            }
-          );
-          this.userData = res.data;
-          this.friends = res.data.friends;
-          this.blocked = res.data.blocked;
-          console.log("userData: \n", this.userData);
-          // console.log("friends: \n", this.friends);
-          // console.log("blocked: \n", this.blocked);
-        } catch (error) {
-          console.log("Getting user profile error\n", error);
-          this.isError = true;
-        }
-
-        console.log("logged In");
+        const res = await axios.get(
+          "http://localhost:3000/api/users/profile/",
+          {
+            withCredentials: true,
+          }
+        );
+        this.userData = res.data;
+        this.friends = res.data.friends;
+        this.blocked = res.data.blocked;
         this.isLoggedIn = true;
+        console.log("userData: \n", this.userData);
+        // console.log("friends: \n", this.friends);
+        // console.log("blocked: \n", this.blocked);
       } catch (error) {
-        console.log("logged Out");
+        console.log("Getting user profile error\n", error);
+        this.isError = true;
         this.isLoggedIn = false;
+
       }
+
+      // Log state
+      // try {
+      //   await axios.get("http://localhost:3000/api/auth/success", {
+      //     withCredentials: true,
+      //   });
+
+      //   console.log("logged In");
+      //   this.isLoggedIn = true;
+      // } catch (error) {
+      //   console.log("logged Out");
+      //   this.isLoggedIn = false;
+      // }
       this.isLoading = false;
     },
   },

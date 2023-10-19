@@ -280,12 +280,12 @@ export default {
       class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
     >
       <img src="http://localhost:3000/api/2fa/generate" alt="" class="w-64 h-64" />
-      <h2
+      <p
         class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500"
       >
         Install Google Authenticator app, and scan the above qrcode and enter the given
         number to turn on 2FA.
-      </h2>
+      </p>
       <div class="flex flex-col justify-center items-center text-center">
         <input
           v-model="this.otpCode"
