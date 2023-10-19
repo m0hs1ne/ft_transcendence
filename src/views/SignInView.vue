@@ -33,22 +33,22 @@ export default {
 				<p class="font-Poppins text-gray-800 dark:text-gray-400">Sign in with Intra</p>
 			</a>
 			<div class="flex items-center justify-center gap-3">
-				<div v-if="this.isDark"
+				<button v-if="this.isDark"
 					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-900 rounded-md shadow ring">
 					Dark
-				</div>
-				<div v-else @click="toggleDark()"
+				</button>
+				<button v-else @click="toggleDark()"
 					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-900 rounded-md shadow">
 					Dark
-				</div>
-				<div v-if="!this.isDark"
+				</button>
+				<button v-if="!this.isDark"
 					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-900 rounded-md shadow ring">
 					Light
-				</div>
-				<div v-else @click="toggleDark()"
+				</button>
+				<button v-else @click="toggleDark()"
 					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-900 rounded-md shadow">
 					Light
-				</div>
+				</button>
 			</div>
 		</div>
 	</div>

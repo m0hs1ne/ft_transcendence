@@ -8,7 +8,7 @@
             class="flex items-center p-2 space-x-4 border-b"
            >
             <div class="flex-shrink-0">
-              <img referrerpolicy="no-referrer" :src="friend.avatar ? friend.avatar :
+              <img :src="friend.avatar ? friend.avatar :
                'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'" 
                 @click="handleChatClick(friend)"  alt="Avatar" class=" h-12 rounded-full" />
             </div>

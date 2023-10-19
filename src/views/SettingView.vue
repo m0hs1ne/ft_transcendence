@@ -1,156 +1,355 @@
 <script>
-import { ref } from 'vue';
-import { SharedData } from './../stores/state.ts';
-import { useDark, useToggle } from '@vueuse/core';
-import { Icon } from '@iconify/vue';
-import axios from 'axios';
-
+import { ref } from "vue";
+import { SharedData } from "./../stores/state.ts";
+import { useDark, useToggle } from "@vueuse/core";
+import { Icon } from "@iconify/vue";
+import axios from "axios";
 
 export default {
-	data() {
-		return {
-			username: String,
-			avatar: String,
-			selectedFile: null,
-			newName: '',
-			updateNameDialog: false,
-		}
-	},
-	setup(props) {
-		const isDark = useDark();
-		const toggleDark = useToggle(isDark);
-		const state = SharedData();
-		return { state, isDark, toggleDark };
-	},
-	methods:
-	{
-		async updateAvatar(event) {
-			this.selectedFile = event.target.files[0];
-			console.log("selectedFile: ", this.selectedFile)
-			try {
-				// Check if a file is selected
-				if (!this.selectedFile) {
-					console.error('No file selected.');
-					return;
-				}
+  data() {
+    return {
+      username: String,
+      avatar: String,
+      selectedFile: null,
+      newName: "",
+      is2FA: false,
+      otpCode: "",
+      currentCard: 0,
+    };
+  },
+  setup(props) {
+    const isDark = useDark();
+    const toggleDark = useToggle(isDark);
+    const state = SharedData();
+    return { state, isDark, toggleDark };
+  },
+  methods: {
+    // For Info Card
+    async updateAvatar(event) {
+      this.selectedFile = event.target.files[0];
+      console.log("selectedFile: ", this.selectedFile);
+      try {
+        // Check if a file is selected
+        if (!this.selectedFile) {
+          console.error("No file selected.");
+          return;
+        }
 
-				// Create a FormData object to send the file
-				const formData = new FormData();
-				formData.append('file', this.selectedFile, this.selectedFile.name);
+        // Create a FormData object to send the file
+        const formData = new FormData();
+        formData.append("file", this.selectedFile, this.selectedFile.name);
 
-				// Replace 'http://localhost:3000/api/users/upload_avatar/' with your server-side endpoint
-				const response = await axios.post('http://localhost:3000/api/users/upload_avatar/', formData, {
-					withCredentials: true,
-				});
+        // Replace 'http://localhost:3000/api/users/upload_avatar/' with your server-side endpoint
+        const response = await axios.post(
+          "http://localhost:3000/api/users/upload_avatar/",
+          formData,
+          {
+            withCredentials: true,
+          }
+        );
 
-				// Update the local state with the new avatar URL
-				await this.state.fetchData();
+        // Update the local state with the new avatar URL
+        // await this.state.fetchData();
+      } catch (error) {
+        console.error("Error updating avatar:", error);
+      }
+    },
+    async updateName() {
+      try {
+        // Make a PATCH request to update the username
+        const response = await axios.patch(
+          "http://localhost:3000/api/users/profile/update/",
+          {
+            username: this.newName,
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
-			} catch (error) {
-				console.error('Error updating avatar:', error);
-			}
-		},
-		async updateName() {
-			try {
-				// Make a PATCH request to update the username
-				const response = await axios.patch('http://localhost:3000/api/users/profile/update/', {
-					username: this.newName,
-				}, {
-					withCredentials: true,
-				});
+        // Handle the response accordingly
+        console.log("updateName: ", response.data);
+        //this.revDialog();
+      } catch (error) {
+        console.error("Error updateName:", error);
+      }
+    },
 
-				// Handle the response accordingly
-				console.log("updateName: ", response.data);
+    // For Enbling and daisbing 2FA
+    handleInput() {
+      // Remove non-numeric characters
+      this.otpCode = this.otpCode.replace(/\D/g, "");
+    },
+    async enable2FA() {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/2fa/turn-on/",
+          { tfaCode: this.otpCode },
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("enable2FA res", response);
 
-				// Update the local state with the new avatar URL
-				await this.state.fetchData();
-				this.revDialog();
+        // Update the local state with the new avatar URL
+        await this.state.fetchData();
+		this.changeCard(0);
+      } catch (error) {
+        console.error("Error enable2FA:", error);
+      }
+    },
+	async disable2FA() {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/2fa/turn-off/",
+          { tfaCode: this.otpCode },
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("disable2FA res", response);
 
-			} catch (error) {
-				console.error('Error updateName:', error);
-			}
-		},
-		revDialog() {
-			this.updateNameDialog = !this.updateNameDialog;
-		}
-	},
-	components:
-	{
-		Icon,
-	},
-	mounted() {
-		this.username = this.state.userData.username;
-		this.avatar = this.state.userData.avatar;
-	},
-}
+        // Update the local state with the new avatar URL
+        await this.state.fetchData();
+		this.changeCard(0);
+      } catch (error) {
+        console.error("Error disable2FA:", error);
+      }
+    },
+
+	// Shared Function
+    changeCard(card) {
+      this.currentCard = card;
+    },
+  },
+  components: {
+    Icon,
+  },
+  mounted() {
+    this.username = this.state.userData.username;
+    this.avatar = this.state.userData.avatar;
+    this.is2FA = this.state.userData.is2faEnabled;
+  },
+};
 </script>
 
 <template>
-	<div class="relative m-auto flex items-center justify-center h-screen ml-20 dark:bg-slate-800">
-		<div v-if="!this.updateNameDialog"
-			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] py-20 rounded-2xl custom-box-shadow dark:bg-slate-900">
-			<label class="relative w-36 h-36 bg-gray-300 rounded-full shadow-lg cursor-pointer">
-				<img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-36 h-36 opacity-70">
-				<Icon icon="fluent:image-edit-20-filled" height="40"
-					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-800 shadow-xl" />
-				<input type="file" @change="this.updateAvatar" class="hidden" accept=".png, .jpeg, .jpg">
-			</label>
-			<div class="flex gap-2 items-center justify-center">
-				<p class="font-Poppins font-semibold text-2xl tracking-wide dark:text-white">
-					{{ this.username }}
-				</p>
-				<Icon @click="this.revDialog" icon="ri:edit-fill" height="30" data-te-toggle="modal"
-					data-te-target="#exampleModal" data-te-ripple-init data-te-ripple-color="light"
-					class="dark:text-white" />
-			</div>
-			<div class="flex items-center">
-				<input class="mr-2 leading-normal" type="checkbox">
-				<span class="font-Poppins font-semibold tracking-wide text-xl dark:text-white">
-					Enable 2FA
-				</span>
-			</div>
+  <div class="m-auto flex items-center justify-center h-screen ml-20 dark:bg-slate-800">
+    <!-- Info Card -->
+    <div
+      v-if="this.currentCard == 0"
+      class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] py-20 rounded-2xl custom-box-shadow dark:bg-slate-900"
+    >
+      <div></div>
+      <label class="relative w-36 h-36 bg-gray-300 rounded-full shadow-lg cursor-pointer">
+        <img
+          referrerpolicy="no-referrer"
+          :src="this.avatar"
+          alt="Avatar"
+          class="object-cover rounded-full w-36 h-36 opacity-70"
+        />
+        <Icon
+          icon="fluent:image-edit-20-filled"
+          height="40"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-800 shadow-xl"
+        />
+        <input
+          type="file"
+          @change="this.updateAvatar"
+          class="hidden"
+          accept=".png, .jpeg, .jpg"
+        />
+      </label>
+      <div class="flex gap-2 items-center justify-center">
+        <p class="font-Poppins font-semibold text-2xl tracking-wide dark:text-white">
+          {{ this.username }}
+        </p>
+        <Icon
+          @click="this.changeCard(1)"
+          icon="ri:edit-fill"
+          height="30"
+          data-te-toggle="modal"
+          data-te-target="#exampleModal"
+          data-te-ripple-init
+          data-te-ripple-color="light"
+          class="dark:text-white"
+        />
+      </div>
+      <div class="flex items-center">
+          <button
+		   v-if="this.is2FA"
+		   @click="this.changeCard(3)"
+            class="px-10 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
+          >
+            Disable 2FA
+          </button>
+		  <button v-else
+		  @click="this.changeCard(2)"
 
-			<div class="flex items-center justify-center gap-3">
-				<div v-if="this.isDark"
-					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow ring">
-					Dark
-				</div>
-				<div v-else @click="toggleDark()"
-					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow">
-					Dark
-				</div>
-				<div v-if="!this.isDark"
-					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow ring">
-					Light
-				</div>
-				<div v-else @click="toggleDark()"
-					class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow">
-					Light
-				</div>
-			</div>
-		</div>
+            class="px-10 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
+          >
+            Enable 2FA
+          </button>
+      </div>
 
-		<!-- Model -->
-		<form v-else
-			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-			<div class="flex w-full justify-start items-center pl-10 pt-7 font-Poppins font-bold text-2xl dark:text-white">
-				Change your Name:
-			</div>
-			<div class="w-full px-10 py-5">
-				<input type="text" id="first_name"
-					class="font-Poppins font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
-					v-model="this.newName" placeholder="Your new Name" required>
-			</div>
-			<div class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5">
-				<button type="submit" @click="this.updateName"
-					class="text-gray-100 dark:text-white shadow py-2 px-5 bg-blue-500 rounded-lg">
-					Save
-				</button>
-				<button @click="this.revDialog"
-					class="dark:text-white shadow py-2 px-5 bg-gray-400 dark:bg-slate-700 rounded-lg">
-					Cancel
-				</button>
-			</div>
-		</form>
-	</div>
+      <div class="flex items-center justify-center gap-3">
+        <button
+          v-if="this.isDark"
+          class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow ring"
+        >
+          Dark
+        </button>
+        <button
+          v-else
+          @click="toggleDark()"
+          class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
+        >
+          Dark
+        </button>
+        <button
+          v-if="!this.isDark"
+          class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow ring"
+        >
+          Light
+        </button>
+        <button
+          v-else
+          @click="toggleDark()"
+          class="px-5 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
+        >
+          Light
+        </button>
+      </div>
+    </div>
+
+    <!-- Update Name Card -->
+    <form
+      v-else-if="this.currentCard == 1"
+      class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
+    >
+      <div
+        class="flex w-full justify-start items-center pl-10 pt-7 font-Poppins font-bold text-2xl dark:text-white"
+      >
+        Change your Name:
+      </div>
+      <div class="w-full px-10 py-5">
+        <input
+          type="text"
+          id="first_name"
+          class="font-Poppins font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
+          v-model="this.newName"
+          placeholder="Your new Name"
+          required
+        />
+      </div>
+      <div
+        class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5"
+      >
+        <button
+          type="submit"
+          @click="this.updateName"
+          class="text-gray-100 dark:text-white shadow py-2 px-5 bg-blue-500 rounded-lg"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          @click="this.changeCard(0)"
+          class="dark:text-white shadow py-2 px-5 bg-gray-400 dark:bg-slate-700 rounded-lg"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <!-- Enabling 2fa Card -->
+    <div
+      v-else-if="this.currentCard == 2"
+      class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
+    >
+      <img src="http://localhost:3000/api/2fa/generate" alt="" class="w-64 h-64" />
+      <h2
+        class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500"
+      >
+        Install Google Authenticator app, and scan the above qrcode and enter the given
+        number to turn on 2FA.
+      </h2>
+      <div class="flex flex-col justify-center items-center text-center">
+        <input
+          v-model="this.otpCode"
+          class="bg-gray-200 shadow m-2 border h-10 w-full text-center rounded placeholder-gray-500"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="******"
+          @input="handleInput"
+        />
+        <p class="text-red-500 pb-5">
+          {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }}
+        </p>
+        <div
+          class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5"
+        >
+          <button
+            @click="this.enable2FA()"
+            :disabled="this.otpCode.length < 6"
+            class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg"
+          >
+            Enable 2FA
+          </button>
+          <button
+            type="button"
+            @click="this.changeCard(0)"
+            class="dark:text-white shadow py-2 px-5 bg-gray-400 dark:bg-slate-700 rounded-lg"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disable 2fa Card -->
+    <div
+      v-else-if="this.currentCard == 3"
+      class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
+    >
+      <h2
+        class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500"
+      >
+        Enter virifcation code from Google Authenticator app.
+      </h2>
+      <div class="flex flex-col justify-center items-center text-center">
+        <input
+          v-model="this.otpCode"
+          class="bg-gray-200 shadow m-2 border h-10 w-full text-center rounded placeholder-gray-500"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="******"
+          @input="handleInput"
+        />
+        <p class="text-red-500 pb-5">
+          {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }}
+        </p>
+        <div
+          class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5"
+        >
+          <button
+            @click="this.disable2FA()"
+            :disabled="this.otpCode.length < 6"
+            class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg"
+          >
+            Disable 2FA
+          </button>
+          <button
+            type="button"
+            @click="this.changeCard(0)"
+            class="dark:text-white shadow py-2 px-5 bg-gray-400 dark:bg-slate-700 rounded-lg"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

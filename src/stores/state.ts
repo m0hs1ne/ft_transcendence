@@ -109,8 +109,8 @@ export const SharedData = defineStore("Shard", {
           this.friends = res.data.friends;
           this.blocked = res.data.blocked;
           console.log("userData: \n", this.userData);
-          console.log("friends: \n", this.friends);
-          console.log("blocked: \n", this.blocked);
+          // console.log("friends: \n", this.friends);
+          // console.log("blocked: \n", this.blocked);
         } catch (error) {
           console.log("Getting user profile error\n", error);
           this.isError = true;
