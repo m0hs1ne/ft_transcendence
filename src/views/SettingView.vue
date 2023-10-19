@@ -15,6 +15,7 @@ export default {
       is2FA: false,
       otpCode: "",
       currentCard: 0,
+	  error: '',
     };
   },
   setup(props) {
@@ -77,9 +78,11 @@ export default {
 
     // For Enbling and daisbing 2FA
     handleInput() {
+      this.error = "";
       // Remove non-numeric characters
       this.otpCode = this.otpCode.replace(/\D/g, "");
     },
+
     async enable2FA() {
       try {
         const response = await axios.post(
@@ -89,16 +92,20 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("enable2FA res", response);
+		console.log("enable2FA res", response.data.message);
+        if (response.data.message !== "2fa is now enabled") {
+          this.error = response.data.message;
+          return;
+        }
 
         // Update the local state with the new avatar URL
         await this.state.fetchData();
-		this.changeCard(0);
+        this.changeCard(0);
       } catch (error) {
         console.error("Error enable2FA:", error);
       }
     },
-	async disable2FA() {
+    async disable2FA() {
       try {
         const response = await axios.post(
           "http://localhost:3000/api/2fa/turn-off/",
@@ -107,18 +114,23 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("disable2FA res", response);
+		console.log("disable2FA res", response.data.message);
+        if (response.data.message !== "2fa is now disabled") {
+          this.error = response.data.message;
+          return;
+        }
 
         // Update the local state with the new avatar URL
         await this.state.fetchData();
-		this.changeCard(0);
+        this.changeCard(0);
       } catch (error) {
         console.error("Error disable2FA:", error);
       }
     },
 
-	// Shared Function
+    // Shared Function
     changeCard(card) {
+      this.error = "";
       this.currentCard = card;
     },
   },
@@ -176,20 +188,20 @@ export default {
         />
       </div>
       <div class="flex items-center">
-          <button
-		   v-if="this.is2FA"
-		   @click="this.changeCard(3)"
-            class="px-10 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
-          >
-            Disable 2FA
-          </button>
-		  <button v-else
-		  @click="this.changeCard(2)"
-
-            class="px-10 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
-          >
-            Enable 2FA
-          </button>
+        <button
+          v-if="this.is2FA"
+          @click="this.changeCard(3)"
+          class="px-10 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
+        >
+          Disable 2FA
+        </button>
+        <button
+          v-else
+          @click="this.changeCard(2)"
+          class="px-10 py-2 font-Poppins font-bold dark:text-white bg-gray-300 dark:bg-slate-800 rounded-md shadow"
+        >
+          Enable 2FA
+        </button>
       </div>
 
       <div class="flex items-center justify-center gap-3">
@@ -284,7 +296,12 @@ export default {
           placeholder="******"
           @input="handleInput"
         />
-        <p class="text-red-500 pb-5">
+		<p v-if="this.error"
+		 class="text-red-500 pb-5">
+		 {{ this.error }}
+        </p>
+        <p v-else
+		class="text-red-500 pb-5">
           {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }}
         </p>
         <div
@@ -328,7 +345,12 @@ export default {
           placeholder="******"
           @input="handleInput"
         />
-        <p class="text-red-500 pb-5">
+		<p v-if="this.error"
+		 class="text-red-500 pb-5">
+          {{ this.error }}
+        </p>
+        <p v-else
+		class="text-red-500 pb-5">
           {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }}
         </p>
         <div
