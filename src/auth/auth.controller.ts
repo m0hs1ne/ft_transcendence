@@ -5,11 +5,13 @@ import { AuthService } from './auth.service';
 import RequestWithUser from 'src/utils/reqWithUser';
 import { verify } from 'crypto';
 import { verifyToken } from 'src/utils/guard';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
 
     constructor(private readonly authService: AuthService,
+        private readonly userService: UsersService
     ) { }
 
     /**
@@ -52,9 +54,11 @@ export class AuthController {
     @Get('logout')
     // @UseGuards(userAuthGuard)
     logout(@Req() req: Request, @Res() res) {
+        const payload = verifyToken(req.headers.cookie)
         res.clearCookie('jwt');
         res.clearCookie('game');
         res.send('Logged out');
+        this.userService.updatesession(payload.sub, false)
     }
 
     /**
