@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 
 
 export class Room {
-
+  id: number;
   RightPlayer: {
     socket: Socket,
     Paddle: number;
@@ -25,20 +25,20 @@ export class Room {
   GameMode: number;
 
   roomId: string;
-  ballPosition: { x: number; y: number } = { x: 400, y: 200 };
-  ballDirection: { x: number; y: number } = { x: 1, y: 1 };
+  ballPosition: { x: number; y: number } = { x: 0.5, y: 0.5 };
+  ballDirection: { x: number; y: number } = { x: 1.2, y: 1.1 };
 
   constructor(rightPlayerSocket: Socket, leftPlayerSocket: Socket) {
     this.RightPlayer = {
       socket: rightPlayerSocket,
-      Paddle: 200,
+      Paddle: 0.4,
       Score: 0,
       id: null,
     };
 
     this.LeftPlayer = {
       socket: leftPlayerSocket,
-      Paddle: 200,
+      Paddle: 0.4,
       Score: 0,
       id: null,
     };
@@ -63,15 +63,13 @@ export class Room {
         clearInterval(this.IntervalId);
         console.log("It should stop know");
       }
-      else {
-
-        this.ballPosition.x += this.ballDirection.x * 4;
-        this.ballPosition.y += this.ballDirection.y * 4;
-
+      else 
+      {
+        this.ballPosition.x += this.ballDirection.x * 0.002;
+        this.ballPosition.y += this.ballDirection.y * 0.002;
         this.CheckBall();
         this.LeftPlayer.socket.emit('updateBall', 
         {
-          
           x: this.ballPosition.x,
           y: this.ballPosition.y,
         });
@@ -91,26 +89,29 @@ export class Room {
     this.checkGoals();
   }
 
-  checkLeftPadlleCollision(): void {
-    if (this.ballPosition.x <= 20 && this.LeftPlayer.Paddle <= this.ballPosition.y
-      && this.LeftPlayer.Paddle + 120 >= this.ballPosition.y) {
-      this.ballDirection.x *= +this.ballDirection.x;
+  checkLeftPadlleCollision(): void 
+  {
+    if (this.ballPosition.x <= 0.03 && this.LeftPlayer.Paddle < this.ballPosition.y 
+        && this.LeftPlayer.Paddle + 0.2 > this.ballPosition.y)
+    {
+      this.ballDirection.x *= -1;
     }
   }
 
   checkRightPadlleCollision(): void {
-    if (this.ballPosition.x >= 780 && this.RightPlayer.Paddle <= this.ballPosition.y
-      && this.RightPlayer.Paddle + 120 >= this.ballPosition.y) {
-      this.ballDirection.x *= -this.ballDirection.x;
+    if (this.ballPosition.x >= 0.97 && this.RightPlayer.Paddle < this.ballPosition.y 
+      && this.RightPlayer.Paddle + 0.2 > this.ballPosition.y)   
+    {
+      this.ballDirection.x *= -1;
     }
   }
 
   checkWallCollision(): void {
-    if (this.ballPosition.y <= 0) {
-      this.ballDirection.y *= +this.ballDirection.y;
+    if (this.ballPosition.y <= 0.01) {
+      this.ballDirection.y *= -1;
     }
-    else if (this.ballPosition.y >= 400) {
-      this.ballDirection.y *= -this.ballDirection.y;
+    else if (this.ballPosition.y >= 0.99) {
+      this.ballDirection.y *= -1;
     }
   }
   
@@ -123,7 +124,7 @@ export class Room {
       else
         this.EmitScore();
     }
-    else if (this.ballPosition.x >= 800) {
+    else if (this.ballPosition.x >= 1) {
       this.LeftPlayer.Score++;
       if (this.LeftPlayer.Score == this.GameMode) {
         this.EndTheGame();
@@ -144,8 +145,8 @@ export class Room {
         Current: this.LeftPlayer.Score,
         Oponent: this.RightPlayer.Score,
       });
-    this.ballPosition.x = 400;
-    this.ballPosition.y = 200;
+    this.ballPosition.x = 0.5;
+    this.ballPosition.y = 0.5;
   }
 
   EndTheGame(): void {

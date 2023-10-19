@@ -102,32 +102,31 @@ export class GameGateway {
 
   @SubscribeMessage('PaddleUpdates')
   HandlePaddlesData(client: any, payload: any): void {
-    if (payload.pos == "Left") 
-    {
+    if (payload.pos == "Left") {
       if (this.rooms.has(payload.roomId)) {
-      this.rooms.get(payload.roomId).LeftPlayer.Paddle = payload.Paddle;
-      this.rooms.get(payload.roomId).RightPlayer.socket.emit('OpponentPaddle', {
-        Paddle: payload.Paddle,
-        id: this.rooms.get(payload.roomId).roomId,
-      })
-    }
+        this.rooms.get(payload.roomId).LeftPlayer.Paddle += payload.Paddle;
+        this.rooms.get(payload.roomId).RightPlayer.socket.emit('OpponentPaddle', 
+        {
+          Paddle: payload.Paddle,
+        })
+      }
+
     }
     else if (payload.pos == "Right") {
       if (this.rooms.has(payload.roomId)) {
-        this.rooms.get(payload.roomId).RightPlayer.Paddle = payload.Paddle;
+        this.rooms.get(payload.roomId).RightPlayer.Paddle += payload.Paddle;
         this.rooms.get(payload.roomId).LeftPlayer.socket.emit('OpponentPaddle', {
           Paddle: payload.Paddle,
-          id: this.rooms.get(payload.roomId).roomId,
         })
       }
+      // console.log("----> ",this.rooms.get(payload.roomId).LeftPlayer.Paddle);
+
     }
   }
 
   @SubscribeMessage('PlayerLeave')
-  HandlePlayerLeave(client: any, payload: any): void 
-  {
-    if (this.rooms.has(payload.roomId)) 
-    {
+  HandlePlayerLeave(client: any, payload: any): void {
+    if (this.rooms.has(payload.roomId)) {
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
       this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
@@ -139,12 +138,11 @@ export class GameGateway {
   }
 
   @SubscribeMessage('DeleteRoom')
-  DeleteRoom(client: any, payload: any): void 
-  {
+  DeleteRoom(client: any, payload: any): void {
     if (this.rooms.has(payload.roomId)) {
       console.log("Delete room");
-      if(this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
-          console.log("Delete Client");
+      if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
+        console.log("Delete Client");
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
       this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
       let room: Room = this.rooms[payload.roomId];
