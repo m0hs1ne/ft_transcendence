@@ -54,9 +54,9 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("validate2FA res", response.data.message);
-        if (response.data.message !== "2fa is now disabled") {
-          this.error = response.data.message;
+        console.log("validate2FA res", response.data);
+        if (response.data !== "Logged in") {
+          this.error = response.data;
           return;
         }
 
@@ -71,6 +71,7 @@ export default {
         );
         // Update the local state with the new avatar URL
         await this.state.fetchData();
+        this.twoFA = false;
       } catch (error) {
         console.error("Error validate2FA:", error);
       }
