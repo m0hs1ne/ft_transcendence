@@ -82,7 +82,6 @@ export class UsersService {
       'users.id',
       'users.username',
       'users.wins',
-      'users.validSession',
       'users.losses',
       'users.avatar',
       'friends.id',
