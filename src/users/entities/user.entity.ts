@@ -141,4 +141,7 @@ export class User {
 
     @Column({default: 1})
     losses: number;
+
+    @Column({default: false})
+    validSession: boolean
 }

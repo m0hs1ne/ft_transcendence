@@ -109,6 +109,16 @@ export class UsersService {
     return updatedUser;
   }
 
+  async updatesession(id: number, validSession) {
+    const options: FindOneOptions<User> = {
+      where: { id },
+    };
+    const updatedUser = await this.userRepository.update({id}, {
+      validSession,
+    });
+    return updatedUser;
+  }
+
   async remove(id: number, @Req() req) {
     const payload = verifyToken(req.headers.cookie);
     if (id != payload.sub)

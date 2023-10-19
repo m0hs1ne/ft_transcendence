@@ -43,6 +43,18 @@ export class UsersController {
     return await this.usersService.update(payload.sub, username);
   }
 
+  @Patch('profile/validsession')
+  async updatevalidsession(@MessageBody() body,@Req() req) 
+  {
+    const {
+      validSession
+    } = body;
+    if (typeof validSession != 'boolean')
+      return;
+    const payload = verifyToken(req.headers.cookie);
+    return await this.usersService.updatesession(payload.sub, validSession);
+  }
+
   //friends
   @Get('friends')
   getFriends(@Req() req) {
