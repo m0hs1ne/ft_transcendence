@@ -11,6 +11,7 @@ import { googleStrategy } from './utils/googleStrategy';
 import { TwoFactorAuthenticationController } from './utils/2fa.controller';
 import { TwoFactorAuthenticationService } from './utils/2fa.service';
 import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 config();
 
@@ -34,6 +35,6 @@ config();
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService,
-    }, AuthService, JwtStrategy, googleStrategy, TwoFactorAuthenticationService],
+    }, AuthService, UsersService, JwtStrategy, googleStrategy, TwoFactorAuthenticationService],
 })
 export class AuthModule { }
