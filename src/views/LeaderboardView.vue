@@ -10,11 +10,11 @@ export default {
 	methods: {
 		async getLeaderBoard() {
 			try {
-				this.leaderboard = await axios.get("http://localhost:3000/api/users/leaderboard", {
+				const response = await axios.get("http://localhost:3000/api/users/leaderboard", {
 					withCredentials: true,
 				});
-
-				console.log("leaderboard: ", leaderboard.data);
+				this.leaderboard = response.data;
+				console.log("leaderboard: ", this.leaderboard);
 
 			} catch (error) {
 				console.error('getLeaderBoard:', error);
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <template>
-	<div class="flex flex-col justify-center items-center min-h-screen ml-20 dark:bg-slate-800">
+	<div class="flex flex-col justify-start items-center min-h-screen ml-20 dark:bg-slate-800">
 		<div class="px-10">
 			<h1 class="mt-10 font-Poppins font-semibold text-4xl dark:text-white">
 				Leaderboard:
@@ -41,14 +41,15 @@ export default {
 							{{ index + 1 }}.
 						</p>
 						<div class="w-14 h-14 md:w-20 md:h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
+							<img referrerpolicy="no-referrer" :src="player.avatar" alt="Avatar" class="object-cover rounded-full w-14 h-14 md:w-20 md:h-20">
 						</div>
 						<p class="w-36 md:w-56 overflow-ellipsis line-clamp-1
 							font-Poppins font-semibold md:text-xl tracking-wide dark:text-white">
-							{{ player.name }}
+							{{ player.username }}
 						</p>
 					</div>
 					<p class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
-						{{ player.winRate - index * index }}%
+						{{ (player.wins / (player.wins + player.losses)) * 100 }}%
 					</p>
 				</div>
 			</div>

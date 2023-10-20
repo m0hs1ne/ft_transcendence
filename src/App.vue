@@ -16,9 +16,9 @@ export default {
     },
     routerGard() {
       const path = this.$route.path.toLowerCase();
-      if (this.state.isLoggedIn && (path == '/signin' || path == '/signup'))
+      if (this.state.isLoggedIn && (path == '/signin'))
         this.$router.push('/');
-      else if (!this.state.isLoggedIn && path != '/signin' && path != '/signup')
+      else if (!this.state.isLoggedIn && path != '/signin')
         this.$router.push('/signIn');
     }
   },

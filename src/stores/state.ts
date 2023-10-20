@@ -14,6 +14,8 @@ export const useUserStore = defineStore("user", {
     MyRoleInActiveChannelID: "",
     UserFriends: {},
     ChannelInvitation: {},
+    Action:"",
+    MemberRoleStatus:''
   }),
 
   actions: {
@@ -73,10 +75,18 @@ export const useUserStore = defineStore("user", {
           `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
           { withCredentials: true }
         );
+        this.DmChatroomsList = this.DmChatroomsList.data;
       } catch (error) {
         console.log("fetch friends by id error: ", error);
       }
       console.log("The state in ", this.DmChatroomsList);
+    },
+
+    async RemoveChatRome() {
+        const t = await axios.delete(`http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}`,
+        { withCredentials: true });
+     //await this.fetchDataForDmChatRooms();
+      
     },
   },
 });

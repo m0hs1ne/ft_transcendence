@@ -1,7 +1,7 @@
 <!-- FriendListComponent.vue -->
 <template>
 
-    <img @click="openPopup" class="m-2 h-10 rounded-full hover:bg-blue-800 text-white font-bold"
+    <img referrerpolicy="no-referrer" @click="openPopup" title = "Add Friend " class="m-2 h-10 rounded-full hover:scale-150 text-white font-bold"
         src="./../../assets/icons/add.svg">
   
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
@@ -11,7 +11,7 @@
       <ul class="">
         <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
           <div class="flex-shrink-0">
-            <img :src="friend.avatar" alt="Avatar" class="h-12 rounded-full" />
+            <img referrerpolicy="no-referrer" :src="friend.avatar" alt="Avatar" class="h-12 rounded-full" />
           </div>
           <div class="flex-grow">
             <span class="text-lg font-semibold">{{ friend.username }}</span>

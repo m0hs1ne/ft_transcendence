@@ -4,9 +4,10 @@
     <AlertChannel />
     <PopUpinv />
     <ul class="">
-      <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
+      <li v-for="friend in this.userStore.DmChatroomsList " :key="friend.id"
+        class="flex items-center p-2 space-x-4 border-b">
         <div class="flex-shrink-0">
-          <img :src="friend.avatar ? friend.avatar :
+          <img referrerpolicy="no-referrer" :src="friend.avatar ? friend.avatar :
             'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
             @click="handleChatClick(friend)" alt="Avatar" class=" h-12 rounded-full" />
         </div>
@@ -61,46 +62,41 @@ export default {
       this.userStore.UpdateChannelId(Item.id, Item.title)
     },
 
-    async GfetchData() {
+    async SocketNoti() {
       // console.log(" Noting ")
-      this.$socket.on("ChatRoomList", (data) => {
-
+      // await this.userStore.fetchDataForDmChatRooms();
+      await this.$socket.on("ChatRoomList", (data) => {
         console.log("This is data: ", data)
         if (data.type == 'new') {
-          // console.log("i am new channel");
-          // console.log(data)
-          this.userStore.UpdateChannelId(data.chatroom.id, data.chatroom.title)
-          //console.log(this.userStore.DmChatroomsList)
-          this.userStore.DmChatroomsList.data.push(data.chatroom);
+          this.userStore.fetchDataForDmChatRooms();
+
         }
-      });
-      await this.userStore.fetchDataForDmChatRooms();
-      this.friends = this.userStore.DmChatroomsList.data;
-      console.log(this.friends)
-      if(this.friends.length != 0)
-       {
-        // const av = {
-        //   id:this.friends[0].id,
-        //   title : this.friends[0].title
-        // }
-        console.log()
-        this.handleChatClick(this.friends[0])
-       }
+        if (data.type == 'remove') {
+          this.userStore.fetchDataForDmChatRooms();
+          if (this.userStore.DmChatroomsList.length != 0)
+            this.handleChatClick(this.userStore.DmChatroomsList[0])
+        }
+      }
+      );
+
+      if (this.userStore.DmChatroomsList.length != 0)
+        this.handleChatClick(this.userStore.DmChatroomsList[0])
     },
 
   },
+
   mounted() {
     this.fetchData();
-    this.GfetchData();
+    this.SocketNoti();
+
     this.$socket.on("receiveMessage", (data) => {
-      if (data.action == 'joined') {
-          console.log(' I -------------------------------------------------------------------')
-          this.fetchData();
-          this.GfetchData();
-        }
-        console.log("--------data action ", data.action);
-        console.log("--------data: ", data);
-      })
+      console.log("data from ", data)
+      this.userStore.fetchDataForDmChatRooms();
+      // if (data.type != 'notification' || data.) {
+      // }
+
+    },);
+
   },
 };
 </script>

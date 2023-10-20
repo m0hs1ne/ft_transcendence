@@ -6,7 +6,6 @@ import SearchView from "../views/SearchView.vue";
 import leaderboardView from "../views/LeaderboardView.vue";
 import SettingView from "../views/SettingView.vue";
 import SignInView from "../views/SignInView.vue";
-import SignUpView from "../views/SignUpView.vue";
 import GameView from "../views/GameView.vue";
 
 
@@ -48,11 +47,6 @@ const router = createRouter({
       path: '/signIn',
       name: 'signIn',
       component: SignInView
-    },
-    {
-      path: '/signUp',
-      name: 'signUp',
-      component: SignUpView
     },
     {
       path: '/game',

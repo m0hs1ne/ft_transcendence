@@ -12,7 +12,6 @@
 		<div class="basis-1/4">
 			<ChatUserProfile :person="personObject" v-if="displayTargetComponent" />
 			<ChatChannelProfil v-if="displayChatboxChannel" />
-
 		</div>
 	</div>
 </template>
@@ -83,7 +82,7 @@ export default {
 		},
 
 		IsChannel(object) {
-			console.log("This is an channel " ,object )
+			console.log("This is an channel ", object)
 			this.displayTargetComponent = false
 			if (object.id != this.displayChatboxChannel) {
 				console.log(" I am here to ", object, this.displayChatboxChannel)
@@ -112,7 +111,7 @@ export default {
 		},
 	},
 
-	mounted() {
+	async mounted() {
 
 		// this.$socket.on("Notification", (messages) => {
 		// 	console.log("this is notification------------------");
@@ -125,6 +124,38 @@ export default {
 		// 		}
 		// 	});
 		// });
+		 this.$socket.on("receiveMessage", (data) => {
+			console.log("data from ", data)
+			if (data.type != 'DMMessages')
+			{
+				console.log("I am here: ")    
+				//this.userStore.fetchDataForDmChatRooms();
+			}
+			  if (data.action == 'kick') {
+				console.log(" kicked >>>>>>>>")
+				this.$nextTick(() => {
+					this.displayTargetComponent = false;
+					this.displayChatboxChannel = false;
+					
+					});
+				this.userStore.fetchDataForDmChatRooms();
+			    }
+		})
+
+		 this.$socket.on("ChatRoomList", (data) => {
+
+			if (data.type == 'remove')
+			{
+				console.log("Rmovee >>>>>> ")
+				// this.$nextTick(() => {
+				// 	this.displayTargetComponent = false;
+				// 	this.displayChatboxChannel = false;
+				// 	});
+				this.userStore.fetchDataForDmChatRooms();
+			}
+		});
+
+
 		this.$socket.on("Error", (data) => {
 			console.log("Error ", data)
 		});

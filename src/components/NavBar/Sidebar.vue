@@ -43,7 +43,7 @@ export default {
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">
-			<img src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
+			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
 		</div>
 
 		<!-- Tabs -->
@@ -69,8 +69,9 @@ export default {
 		<div class="mt-auto p-4">
 			<router-link to="/profile" title="Profile" class="flex items-center p-3 m-3 cursor-pointer">
 				<div class="w-[28px] h-[28px] bg-gray-300 rounded-full shadow">
-					<img v-if="this.$route.path == '/profile'" :src="this.state.userData.avatar" alt="Avatar" class="object-cover rounded-full w-full ring ring-cyan-500">
-					<img v-else :src="this.state.userData.avatar" alt="Avatar" class="object-cover rounded-full w-full">
+					<img referrerpolicy="no-referrer" v-if="this.$route.path == '/profile'" :src="this.state.userData.avatar" alt="Avatar" 
+						class="object-cover rounded-full w-[28px] h-[28px] ring ring-cyan-500">
+					<img referrerpolicy="no-referrer" v-else :src="this.state.userData.avatar" alt="Avatar" class="object-cover w-[28px] h-[28px] rounded-full">
 				</div>
 			</router-link>
 			<div title="Theme" @click="" class="flex items-center p-3 m-3 cursor-pointer">
