@@ -128,7 +128,7 @@ export default {
           </p>
           <p v-else class="text-red-500 pb-5">
             {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }} </p>
-              <div class="flex items-center justify-center w-full gap-5">
+              <div class="flex items-center justify-center w-full gap-5 font-Poppins font-medium">
                 <button @click="this.validate2FA()" :disabled="this.otpCode.length < 6"
                   class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg">
                   Submit
