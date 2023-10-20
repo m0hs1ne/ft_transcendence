@@ -4,6 +4,8 @@ import Sidebar from "./components/NavBar/Sidebar.vue";
 import Loading from "./components/Loading/Loading.vue";
 import { SharedData } from "./stores/state.ts";
 import axios from "axios";
+import { useDark, useToggle } from '@vueuse/core';
+
 
 
 export default {
@@ -15,8 +17,10 @@ export default {
     };
   },
   setup(props) {
+    const isDark = useDark();
+		const toggleDark = useToggle(isDark);
     const state = SharedData();
-    return { state };
+		return { isDark, toggleDark, state };
   },
   methods: {
     isSidebarVisible() {
