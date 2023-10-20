@@ -91,7 +91,7 @@ export class Room {
 
   checkLeftPadlleCollision(): void 
   {
-    if (this.ballPosition.x <= 0.03 && this.LeftPlayer.Paddle < this.ballPosition.y 
+    if (this.ballPosition.x <= 0.03 && this.LeftPlayer.Paddle  < this.ballPosition.y 
         && this.LeftPlayer.Paddle + 0.2 > this.ballPosition.y)
     {
       this.ballDirection.x *= -1;
