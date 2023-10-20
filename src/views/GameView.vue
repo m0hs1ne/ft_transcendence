@@ -132,7 +132,8 @@ export default {
 
     },
 
-    EventsKiller() {this.ballDirection.y * 0.002;
+    EventsKiller() 
+    {
       this.$GameSocket.removeEventListener("startGame");
       this.$GameSocket.removeEventListener("Lose");
       this.$GameSocket.removeEventListener("Win");
