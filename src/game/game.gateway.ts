@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './game.service';
 import { verifyToken } from 'src/utils/guard';
 import { LessThanOrEqual } from 'typeorm';
+import { StringifyOptions } from 'querystring';
 
 
 
@@ -129,7 +130,6 @@ export class GameGateway {
         })
       }
       // console.log("----> ",this.rooms.get(payload.roomId).LeftPlayer.Paddle);
-
     }
   }
 
@@ -137,8 +137,9 @@ export class GameGateway {
   HandlePlayerLeave(client: any, payload: any): void {
     if (this.rooms.has(payload.roomId)) 
     {
-      this.UpdateDbScore(payload.roomId);
+     
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
+      this.UpdateDbScore(payload.roomId);
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
       this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
       this.rooms.delete(payload.roomId);
@@ -173,7 +174,9 @@ export class GameGateway {
     let GameMode: number = this.rooms.get(roomId).GameMode;
     let leftSCore = this.rooms.get(roomId).LeftPlayer.Score;
     let RightSCore = this.rooms.get(roomId).RightPlayer.Score;
+    let Score: string = `${leftSCore} : ${RightSCore}`
+    console.log(Winner);
 
-    this.gameService.create(left, right, Winner, leftSCore + " : " + RightSCore, GameMode);
+    this.gameService.create(left, right, Winner, Score, GameMode);
   }
 }
