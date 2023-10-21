@@ -135,36 +135,23 @@ export class GameGateway {
 
   @SubscribeMessage('PlayerLeave')
   HandlePlayerLeave(client: any, payload: any): void {
-    if (this.rooms.has(payload.roomId)) {
-
+    if (this.rooms.has(payload.roomId)) 
+    {
+     
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
       this.UpdateDbScore(payload.roomId);
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
       this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
       this.rooms.delete(payload.roomId);
     }
-    try {
-      const Payload = verifyToken(client.handshake.headers.cookie);
-      if (this.Queus.get(payload.mode).includes(client)) 
-      {
-        this.Queus.get(payload.mode).pop();
-        this.clients.delete(Payload.sub);
-        console.log("Removed from the queu");
-      }
-      }catch (err) {
-        console.log(err);
-      }
-
-
-      // }
-      if (this.rooms.get(payload.roomId)) {
-        console.log("room still exist");
-      }
+    if (this.rooms.get(payload.roomId)) {
+      console.log("room still exist");
     }
+  }
 
   @SubscribeMessage('DeleteRoom')
-    DeleteRoom(client: any, payload: any): void {
-      if(this.rooms.has(payload.roomId)) {
+  DeleteRoom(client: any, payload: any): void {
+    if (this.rooms.has(payload.roomId)) {
       console.log("Delete room");
       this.UpdateDbScore(payload.roomId);
       if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
@@ -175,11 +162,13 @@ export class GameGateway {
       this.rooms.delete(payload.roomId);
       room = null;
     }
-
+    else
+      console.log("No Room Found");
   }
 
-  UpdateDbScore(roomId: any) {
-    let left: number = this.rooms.get(roomId).LeftPlayer.id;
+  UpdateDbScore(roomId: any)
+  {
+    let left: number= this.rooms.get(roomId).LeftPlayer.id;
     let right: number = this.rooms.get(roomId).RightPlayer.id;
     let Winner: number = this.rooms.get(roomId).Winner;
     let GameMode: number = this.rooms.get(roomId).GameMode;
