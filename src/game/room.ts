@@ -19,11 +19,11 @@ export class Room {
 
   PaddleHeight: number;
   PaddleWidth: number;
-
   closeroom: boolean;
   IntervalId: any;
   GameMode: number;
   angle: number;
+  Winner: number;
 
   roomId: string;
   ballPosition: { x: number; y: number } = { x: 0.5, y: 0.5 };
@@ -185,6 +185,7 @@ export class Room {
       this.RightPlayer.socket.emit("DeleteRoom", {
         roomId: this.roomId,
       });
+      this.Winner = this.RightPlayer.id;
     }
     else {
       this.RightPlayer.socket.emit("Lose");
@@ -192,6 +193,7 @@ export class Room {
       this.LeftPlayer.socket.emit("DeleteRoom", {
         roomId: this.roomId,
       });
+      this.Winner = this.LeftPlayer.id;
     }
     this.closeroom = true;
   }
@@ -199,9 +201,15 @@ export class Room {
   PlayerLeaves(pos: string): void {
     if (pos == "Right") {
       this.LeftPlayer.socket.emit("Win");
+      this.Winner = this.LeftPlayer.id;
+      this.RightPlayer.Score = 0;
+      this.LeftPlayer.Score = this.GameMode;
     }
     else {
       this.RightPlayer.socket.emit("Win");
+      this.Winner = this.RightPlayer.id;
+      this.LeftPlayer.Score = 0;
+      this.RightPlayer.Score = this.GameMode;
     }
     this.closeroom = true;
   }

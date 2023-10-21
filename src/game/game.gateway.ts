@@ -5,6 +5,7 @@ import { Room } from './room';
 import { v4 as uuidv4 } from 'uuid';
 import { GameService } from './game.service';
 import { verifyToken } from 'src/utils/guard';
+import { LessThanOrEqual } from 'typeorm';
 
 
 
@@ -108,56 +109,71 @@ export class GameGateway {
     }
   }
 
-@SubscribeMessage('PaddleUpdates')
-HandlePaddlesData(client: any, payload: any): void {
-  if(payload.pos == "Left") {
-  if (this.rooms.has(payload.roomId)) {
-    this.rooms.get(payload.roomId).LeftPlayer.Paddle += payload.Paddle;
-    this.rooms.get(payload.roomId).RightPlayer.socket.emit('OpponentPaddle',
-      {
-        Paddle: payload.Paddle,
-      })
-  }
+  @SubscribeMessage('PaddleUpdates')
+  HandlePaddlesData(client: any, payload: any): void {
+    if (payload.pos == "Left") {
+      if (this.rooms.has(payload.roomId)) {
+        this.rooms.get(payload.roomId).LeftPlayer.Paddle += payload.Paddle;
+        this.rooms.get(payload.roomId).RightPlayer.socket.emit('OpponentPaddle',
+          {
+            Paddle: payload.Paddle,
+          })
+      }
 
-}
+    }
     else if (payload.pos == "Right") {
-  if (this.rooms.has(payload.roomId)) {
-    this.rooms.get(payload.roomId).RightPlayer.Paddle += payload.Paddle;
-    this.rooms.get(payload.roomId).LeftPlayer.socket.emit('OpponentPaddle', {
-      Paddle: payload.Paddle,
-    })
-  }
-  // console.log("----> ",this.rooms.get(payload.roomId).LeftPlayer.Paddle);
+      if (this.rooms.has(payload.roomId)) {
+        this.rooms.get(payload.roomId).RightPlayer.Paddle += payload.Paddle;
+        this.rooms.get(payload.roomId).LeftPlayer.socket.emit('OpponentPaddle', {
+          Paddle: payload.Paddle,
+        })
+      }
+      // console.log("----> ",this.rooms.get(payload.roomId).LeftPlayer.Paddle);
 
-}
-  }
-
-@SubscribeMessage('PlayerLeave')
-HandlePlayerLeave(client: any, payload: any): void {
-  if(this.rooms.has(payload.roomId)) {
-  this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
-  this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
-  this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
-  this.rooms.delete(payload.roomId);
-}
-if (this.rooms.get(payload.roomId)) {
-  console.log("room still exist");
-}
+    }
   }
 
-@SubscribeMessage('DeleteRoom')
-DeleteRoom(client: any, payload: any): void {
-  if(this.rooms.has(payload.roomId)) {
-  console.log("Delete room");
-  if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
-    console.log("Delete Client");
-  this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
-  this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
-  let room: Room = this.rooms[payload.roomId];
-  this.rooms.delete(payload.roomId);
-  room = null;
-}
+  @SubscribeMessage('PlayerLeave')
+  HandlePlayerLeave(client: any, payload: any): void {
+    if (this.rooms.has(payload.roomId)) 
+    {
+      this.UpdateDbScore(payload.roomId);
+      this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
+      this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
+      this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
+      this.rooms.delete(payload.roomId);
+    }
+    if (this.rooms.get(payload.roomId)) {
+      console.log("room still exist");
+    }
+  }
+
+  @SubscribeMessage('DeleteRoom')
+  DeleteRoom(client: any, payload: any): void {
+    if (this.rooms.has(payload.roomId)) {
+      console.log("Delete room");
+      this.UpdateDbScore(payload.roomId);
+      if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
+        console.log("Delete Client");
+      this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
+      this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
+      let room: Room = this.rooms[payload.roomId];
+      this.rooms.delete(payload.roomId);
+      room = null;
+    }
     else
-console.log("No Room Found");
+      console.log("No Room Found");
+  }
+
+  UpdateDbScore(roomId: any)
+  {
+    let left: number= this.rooms.get(roomId).LeftPlayer.id;
+    let right: number = this.rooms.get(roomId).RightPlayer.id;
+    let Winner: number = this.rooms.get(roomId).Winner;
+    let GameMode: number = this.rooms.get(roomId).GameMode;
+    let leftSCore = this.rooms.get(roomId).LeftPlayer.Score;
+    let RightSCore = this.rooms.get(roomId).RightPlayer.Score;
+
+    this.gameService.create(left, right, Winner, leftSCore + " : " + RightSCore, GameMode);
   }
 }

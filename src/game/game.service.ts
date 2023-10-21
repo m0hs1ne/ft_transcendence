@@ -11,7 +11,7 @@ export class GameService {
   constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>,
   @InjectRepository(User) private readonly userRepository: Repository<User>)
   {}
-  async create(user1Id, user2Id, winner, score, mode) {
+  async create(user1Id: number, user2Id:number, winner: number, score: string, mode: any) {
     const game = await this.gameRepository.create({
       user1Id,
       user2Id,
