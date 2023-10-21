@@ -1,17 +1,19 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="m-2 p-5 rounded-lg bg-slate-300">
+  <div class=" flex flex-col m-2 p-5 rounded-lg bg-slate-300   h-full flex-shrink-0 ">
+    <!-- {{ this.userStore.DmChatroomsList }} -->
+  
     <AlertChannel />
     <PopUpinv />
-    <ul class="">
-      <li v-for="friend in this.userStore.DmChatroomsList " :key="friend.id"
+    <ul>
+      <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
         class="flex items-center p-2 space-x-4 border-b">
         <div class="flex-shrink-0">
-          <img referrerpolicy="no-referrer" :src="friend.avatar ? friend.avatar :
+          <img :src="friend.avatar ? friend.avatar :
             'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
             @click="handleChatClick(friend)" alt="Avatar" class=" h-12 rounded-full" />
         </div>
-        <div class="flex-grow">
+        <div class="flex-row">
           <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
           <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
         </div>
@@ -46,7 +48,7 @@ export default {
     async fetchData() {
 
       await this.userStore.fetchDataForDmChatRooms();
-
+      console.log(" OLO ", this.userStore.DmChatroomsList)
       if (this.userStore.DmChatroomsList.length == 0 || this.userStore.DmChatroomsList.data == 0)
         this.message = " 5liha 3la allah ";
       else {
@@ -69,7 +71,6 @@ export default {
         console.log("This is data: ", data)
         if (data.type == 'new') {
           this.userStore.fetchDataForDmChatRooms();
-
         }
         if (data.type == 'remove') {
           this.userStore.fetchDataForDmChatRooms();
@@ -82,7 +83,7 @@ export default {
       if (this.userStore.DmChatroomsList.length != 0)
         this.handleChatClick(this.userStore.DmChatroomsList[0])
     },
-
+    sideMunue(){}
   },
 
   mounted() {
@@ -90,10 +91,18 @@ export default {
     this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
-      console.log("data from ", data)
-      this.userStore.fetchDataForDmChatRooms();
-      // if (data.type != 'notification' || data.) {
-      // }
+      console.log(" receiveMessage form Group Friend ********* ", data)
+      if ((data.type == 'notification' && data.action == 'joined') ||
+        (data.type == 'notification' && data.action == 'status') ||
+       (data.type == 'notification' && data.action == 'kick')
+      ) {
+        this.fetchData();
+      }
+      if((data.type == 'notification' && data.action == 'kick'))
+      {
+        this.fetchData();
+        this.SocketNoti();
+      }
 
     },);
 

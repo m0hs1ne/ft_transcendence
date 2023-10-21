@@ -1,9 +1,10 @@
 <template>
 	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800">
 		<!-- Friend List and Group List Section -->
-		<div class="flex flex-col h-screen basis-1/4 overflow-y-scroll">
+		<div class="basis-1/4">
 			<!-- <GroupList @object-sent="handleObjectChannel" /> -->
 			<ChatGroupFriend @object-sent="handleObject" />
+			<ErrorPopup v-if = "this.userStore.error"/>
 		</div>
 		<div class="basis-3/4  ">
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" class="border-b-2" />
@@ -25,6 +26,7 @@ import ChatBoxChannel from '../components/Chat/ChatBoxChannel.vue'
 import ChatGroupFriend from '../components/Chat/GroupFriend.vue';
 import ChatChannelProfil from '../components/Chat/ChannelProfil.vue';
 import ChatUserProfile from '../components/Chat/UserProfile.vue';
+import ErrorPopup from '../components/Chat/ErrorPopup.vue';
 
 import { useUserStore } from './../stores/state.ts';
 export default {
@@ -41,8 +43,8 @@ export default {
 		ChatRoom,
 		ChatGroupFriend,
 		ChatUserProfile,
-		ChatChannelProfil
-
+		ChatChannelProfil,
+		ErrorPopup
 	},
 	data() {
 		return {
@@ -51,6 +53,7 @@ export default {
 			targetComponent: null,
 			personObject: {},
 			ChannelObject: {},
+			error:null
 		};
 	},
 
@@ -131,7 +134,7 @@ export default {
 				console.log("I am here: ")    
 				//this.userStore.fetchDataForDmChatRooms();
 			}
-			  if (data.action == 'kick') {
+			  if (data.action == 'kick' && data.from.id == this.userStore) {
 				console.log(" kicked >>>>>>>>")
 				this.$nextTick(() => {
 					this.displayTargetComponent = false;
@@ -157,7 +160,9 @@ export default {
 
 
 		this.$socket.on("Error", (data) => {
-			console.log("Error ", data)
+			console.log(" Error ",data)
+			this.error = data.error,
+			this.userStore.error = data.error;
 		});
 
 	},

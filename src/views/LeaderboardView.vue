@@ -35,7 +35,7 @@ export default {
 			</h1>
 			<div v-for="(player, index) in this.leaderboard" :key="index" class="flex items-center justify-start my-5 px-5 py-3 rounded-2xl 
 				custom-box-shadow dark:bg-slate-700 dark:text-white">
-				<div class="flex items-center justify-between min-w-full">
+				<router-link :to="'/users/' + player.id" class="flex items-center justify-between min-w-full">
 					<div class="flex items-center">
 						<p class="font-Poppins font-semibold text-xl">
 							{{ index + 1 }}.
@@ -51,7 +51,7 @@ export default {
 					<p class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
 						{{ (player.wins / (player.wins + player.losses)) * 100 }}%
 					</p>
-				</div>
+				</router-link>
 			</div>
 		</div>
 	</div>

@@ -1,25 +1,19 @@
 <script>
 import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
-import ProfileStat from "./../components/Profile/ProfileStat.vue"
-import { SharedData } from './../stores/state.ts';
+import axios from "axios";
+import ProfileStat from "./../components/Profile/ProfileStat.vue";
 
 export default {
 	setup(props) {
-		const state = SharedData();
+		const isLoading = ref(false);
+		const isError = ref(false);
 		const username = ref("");
 		const avatar = ref("");
-		const wins = ref(1);
-		const losses = ref(1);
+		const wins = ref(0);
+		const losses = ref(0);
 		const friends = ref([]);
 		const is2FA = ref(false);
-
-		username.value = state.userData.username;
-		avatar.value = state.userData.avatar;
-		wins.value = state.userData.wins - 1;
-		losses.value = state.userData.losses - 1;
-		friends.value = state.userData.friends;
-		is2FA.value = state.userData.is2faEnabled;
 
 		const battles = computed(() => wins.value + losses.value);
 		const winrat = computed(() => `${((wins.value + 1) / (battles.value + 2)) * 100}%`);
@@ -64,12 +58,42 @@ export default {
 		ProfileStat,
 		Icon,
 	},
+	methods:
+	{
+		async fetchData() {
+			this.isLoading = true;
+			// Get user profile data
+			try {
+				const res = await axios.get(
+					`http://localhost:3000/api/users/profile/${this.$route.params.id}`,
+					{
+						withCredentials: true,
+					}
+				);
+
+				this.username = res.data.username;
+				this.avatar = res.data.avatar;
+				this.wins = res.data.wins - 1;
+				this.losses = res.data.losses - 1;
+				this.friends = res.data.friends;
+				this.is2FA = res.data.is2faEnabled;
+				console.log("user from id: \n", res.data);
+			} catch (error) {
+				console.log("Getting user profile error\n", error);
+				this.isError = true;
+			}
+			this.isLoading = false;
+		}
+	},
+	async created() {
+		await this.fetchData();
+	},
 };
 </script>
 
 
 <template>
-	<div class="grid grid-cols-1 lg:grid-cols-2 gap-10 p-10 ml-20
+	<div class="grid grid-cols-1 lg:grid-cols-2 gap-10 p-10
 				min-h-screen dark:bg-slate-800">
 		<!-- <ProfileCard /> -->
 		<div

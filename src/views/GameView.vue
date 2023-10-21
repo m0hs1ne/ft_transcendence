@@ -1,63 +1,69 @@
 <!-- CanvasComponent.vue -->
 <template>
   <div class="flex bg-slate-800 h-screen items-center justify-center">
-    <canvas ref="gameCanvas" width="800" height="400" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
+    <canvas ref="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
   </div>
 </template>
   
   
-<script>
+<script >
 
-// import { io } from 'socket.io-client';
 
 export default {
   data() {
     return {
-      x: 50,
-      y: 50,
+      BallX: null,
+      BallY: null,
       mode: 7,
       CurrentPlayerScore: 0,
       OpponentPLayerScore: 0,
       intervalId: null,
       RoomId: null,
       pos: null,
-      PaddleHeight: 120,
-      PaddleWidth: 15,
-
-      PaddleY: 200,
-      OpponentPaddleY: 200,
+      PaddleHeight: null,
+      PaddleWidth: null,
+      PaddleY: null,
+      OpponentPaddleY: null,
       Context: null,
       Canvas: null,
     };
   },
-  created() {
-    console.log("Start here");
-    window.addEventListener('keydown', this.handleKeyDown);
 
+  created() {
+    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('resize', this.CanvasResize);
   },
 
   methods: {
     loopHook() {
-      console.log("LoopHook");
       this.draw();
-      this.intervalId = setInterval(this.draw, 1000 / 60);
+      this.intervalId = setInterval(this.draw, 10);
     },
+
     draw() {
-      const canvas = this.$refs.gameCanvas;
-      const context = canvas.getContext("2d");
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      this.drawRect(0, 0, canvas.width, canvas.height, "#1F173D");
-      if (this.pos == "Left") {
-        this.drawRect(5, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.drawRect(canvas.width - 15, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.DrawScore(this.CurrentPlayerScore, this.OpponentPLayerScore);
+      this.Context.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+      this.drawRect(0, 0, this.Canvas.width, this.Canvas.height, "#1F173D");
+      var x = this.PaddleWidth * 0.2;
+      if (this.pos == "Left") 
+      {
+        this.drawRect(x, this.PaddleY * this.Canvas.height , this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        this.drawRect(this.Canvas.width - (this.PaddleWidth + x), this.OpponentPaddleY * this.Canvas.height, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        // this.DrawScore(this.CurrentPlayerScore, this.OpponentPLayerScore);
       }
-      else if (this.pos == "Right") {
-        this.drawRect(5, this.OpponentPaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.drawRect(canvas.width - 15, this.PaddleY, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
-        this.DrawScore(this.OpponentPLayerScore, this.CurrentPlayerScore);
+      else if (this.pos == "Right") 
+      {
+        this.drawRect(x, this.OpponentPaddleY * this.Canvas.height, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        this.drawRect(this.Canvas.width - (this.PaddleWidth + x), this.PaddleY *  this.Canvas.height, this.PaddleWidth, this.PaddleHeight, "#A33A6F");
+        // this.DrawScore(this.OpponentPLayerScore, this.CurrentPlayerScore);
       }
-      this.drawBall(this.x, this.y, 10, "#A33A6F");
+      this.drawBall(this.BallX * this.Canvas.width, this.BallY * this.Canvas.height, 10, "#A33A6F");
+    },
+
+    CanvasResize() {
+      this.Canvas.width = window.innerWidth * 0.8;
+      this.Canvas.height = this.Canvas.width * 0.5;
+      this.PaddleHeight = this.Canvas.height * 0.2;
+      this.PaddleWidth = this.Canvas.width * 0.02;
     },
 
     drawBall(x, y, radius, color) {
@@ -69,44 +75,74 @@ export default {
     },
 
     drawRect(x, y, width, height, color) {
-      const context = this.$refs.gameCanvas.getContext("2d");
-      context.fillStyle = color;
-      context.fillRect(x, y, width, height);
+      this.Context.fillStyle = color;
+      this.Context.fillRect(x, y, width, height);
     },
 
     EventsHandler() {
       this.$GameSocket.on('updateBall', (data) => {
-        this.x = data.x;
-        this.y = data.y;
+        this.BallX = data.x;
+        this.BallY = data.y;
       });
 
-      this.$GameSocket.on('OpponentPaddle', (data) => {
-        this.OpponentPaddleY = data.Paddle;
+      this.$GameSocket.on('OpponentPaddle', (data) => 
+      {
+        this.OpponentPaddleY += data.Paddle;
       });
 
       this.$GameSocket.on('startGame', (data) => {
         this.RoomId = data.id;
         this.pos = data.pos;
       });
-      
+
       this.$GameSocket.on('Score', (data) => {
         this.CurrentPlayerScore = data.Current;
         this.OpponentPLayerScore = data.Oponent;
       });
 
-      
-      this.$GameSocket.on('Lose', (data) => {
+
+      this.$GameSocket.on('Lose', (data) =>
+      {
         clearInterval(this.intervalId);
-        this.drawRect(0, 0, this.$refs.gameCanvas.getContext("2d").canvas.width, this.$refs.gameCanvas.getContext("2d").canvas.height, "#1F173D");
-        this.$refs.gameCanvas.getContext("2d").font = "30px Arial";
-        this.$refs.gameCanvas.getContext("2d").fillStyle = "#A33A6F";
-        this.$refs.gameCanvas.getContext("2d").fillText("You Lose", 370, 100);
-        clearInterval(this.intervalId);
+        const context = this.Context;
+        this.drawRect(0, 0, context.canvas.width, context.canvas.height, "#1F173D");
+        context.font = "30px Arial";
+        context.fillStyle = "#A33A6F";
+        context.fillText("You Lose", 400, 200);
+        setTimeout(() => {
+          this.$router.push("/");
+        }, 2000);
 
       });
-
-      this.$GameSocket.on('Win', (data) => {
+      this.$GameSocket.on('Win', (data) => 
+      {
+        clearInterval(this.intervalId);
+        const context = this.Context;
+        this.drawRect(0, 0, context.canvas.width, context.canvas.height, "#1F173D");
+        context.font = "30px Arial";
+        context.fillStyle = "#A33A6F";
+        context.fillText("You Win", 370, 170);
+        setTimeout(() => {
+          this.$router.push("/");
+        }, 2000);
       });
+
+      this.$GameSocket.on('DeleteRoom', (data) => {
+        this.$GameSocket.emit("DeleteRoom", {
+          roomId: this.RoomId,
+        })
+      });
+
+    },
+
+    EventsKiller() {
+      this.$GameSocket.removeEventListener("startGame");
+      this.$GameSocket.removeEventListener("Lose");
+      this.$GameSocket.removeEventListener("Win");
+      this.$GameSocket.removeEventListener("DeleteRoom");
+      this.$GameSocket.removeEventListener("updateBall");
+      this.$GameSocket.removeEventListener("Score");
+      this.$GameSocket.removeEventListener("OpponentPaddle");
     },
 
     JoinGameEvent() {
@@ -115,11 +151,10 @@ export default {
       });
     },
 
-    DrawScore(score1, score2) 
-    {
+    DrawScore(score1, score2) {
       var s1 = score1;
       var s2 = score2;
-      const context = this.$refs.gameCanvas.getContext("2d");
+      const context = this.Context;
       context.font = "30px Arial";
       context.fillStyle = "#A33A6F";
       context.fillText(s1, 370, 25);
@@ -129,36 +164,49 @@ export default {
 
     handleKeyDown(event) {
       const keyCode = event.keyCode;
-      if (keyCode === 38 && this.PaddleY >= 0) {
-        this.PaddleY -= 5;
+      if (keyCode == 38 && this.PaddleY > 0) {
+        this.PaddleY -= 0.01;
         this.$GameSocket.emit("PaddleUpdates", {
           pos: this.pos,
           roomId: this.RoomId,
-          Paddle: this.PaddleY - 5,
+          Paddle: -0.01,
         });
       }
-      else if (keyCode === 40 && this.PaddleY + this.PaddleHeight <= 400) {
-        this.PaddleY += 5
+      else if (keyCode == 40 && this.PaddleY + 0.2  < 1) {
+        this.PaddleY += 0.01;
         this.$GameSocket.emit("PaddleUpdates", {
           pos: this.pos,
           roomId: this.RoomId,
-          Paddle: this.PaddleY + 5,
+          Paddle: 0.01,
         });
       }
     },
   },
 
   mounted() {
+    console.log("mounted ");
+    this.Canvas = this.$refs.gameCanvas;
+    this.Context = this.Canvas.getContext("2d");
+    this.Canvas.width = window.innerWidth * 0.8;
+    this.Canvas.height = this.Canvas.width * 0.5;
+    this.PaddleHeight = this.Canvas.height * 0.2;
+    this.PaddleWidth = this.Canvas.width * 0.02;
+    this.PaddleY = 0.4;
+    this.OpponentPaddleY = 0.4;
+    this.BallX = 0.5;
+    this.BallY = 0.5;
     this.$refs.gameCanvas.focus();
     this.EventsHandler();
     this.JoinGameEvent();
     this.loopHook();
   },
-  unmounted() {
-    console.log("Called");
-    this.$GameSocket.emit("EndGame", {
-          roomId: this.RoomId,
-        });
+  unmounted() 
+  {
+    this.EventsKiller();
+    this.$GameSocket.emit("PlayerLeave", {
+      roomId: this.RoomId,
+      pos: this.pos,
+    });
     clearInterval(this.intervalId);
   }
 };

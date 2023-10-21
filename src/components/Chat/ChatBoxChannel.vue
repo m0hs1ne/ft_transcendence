@@ -2,17 +2,19 @@
 <template>
   <div class=" flex flex-col justify-between h-screen">
     <div class=" flex flex-col mt-5 overflow-x-hidden overflow-y-scroll" ref="scrollContainer1">
-      <div v-for="message in this.userStore.ActiveMessageChannelId" class="min-w-full  max-w-2xl" >
-        <div v-if="message.type== 'notification'" class="flex flex-row justify-center rounded text-blue-900">
+      <div v-for="message in this.userStore.ActiveMessageChannelId" class="min-w-full  max-w-2xl">
+        <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
           <span>{{ message.message }}</span>
         </div>
 
-        <div v-if = "message.type == 'message'" class="flex mb-4">
-          <img referrerpolicy="no-referrer"  :src="message.from.avatar" alt="Avatar" class="circle avatar mr-1 " />
-          <div v-if = "message.from.id == this.userStore.MyId"  class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
+        <div v-if="message.type == 'message'" class="flex mb-4">
+          <img referrerpolicy="no-referrer" :src="message.from.avatar" alt="Avatar" class="circle avatar mr-1 " />
+          <div v-if="message.from.id == this.userStore.MyId"
+            class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
             <span>{{ message.message }}</span>
           </div>
-          <div v-if= "message.from.id != this.userStore.MyId"  class="mr-2 py-3 px-4 bg-red-400  rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
+          <div v-if="message.from.id != this.userStore.MyId"
+            class="mr-2 py-3 px-4 bg-red-400  rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
             <span>{{ message.message }}</span>
           </div>
         </div>
@@ -59,7 +61,7 @@ export default {
 
     async fetchData() {
       // this.userStore.UpdateChannelId(this.channel.id);
-      
+
       console.log('Hello is ', this.userStore.ActiveMessageChannelId)
       // this.userStore.ActiveMessageChannelId.forEach((element) => {
       //   var tye = "";
@@ -84,42 +86,50 @@ export default {
 
     },
 
-     sendMessage() {
+    sendMessage() {
       console.log("I AM SENDmessage fun");
       this.$socket.emit(
         "sendMessage",
         { chatId: this.channel.id, message: this.newMessage },
         () => { },
       );
-     
-    
+
+
 
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer1;
         if (scrollContainer)
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
       });
-
       this.newMessage = "";
     },
   },
- 
+
   async mounted() {
-    await  this.userStore.fetchChannelById();
+    await this.userStore.fetchChannelById();
     //this.userStore.UpdateChannelId(this.channel.id)
     console.log("I am in mounted", this.userStore.ActiveChannelId)
     this.$socket.on("receiveMessage", (data) => {
-          
-          console.log("This is Problem: " ,data)
-          this.userStore.fetchChannelById();
-         
-       })
+
+      console.log("This is Problem: ", data)
+      this.$socket.on("receiveMessage", (data) => {
+        console.log("receiveMessage form channel profile--------- ", data)
+        if ((data.type == 'notification' && data.action == 'joined') ||
+          (data.type == 'notification' && data.action == 'status')||
+            (data.type == 'message' && data.action == 'message')) {
+        this.userStore.ActiveMessageChannelId.push(data);
+      }
+
+    },);
+    //this.userStore.fetchChannelById();
     // this.$nextTick(() => {
     //   console.log(" scrol ")
     //   const scrollContainer = this.$refs.scrollContainer;
     //   scrollContainer.scrollTop = scrollContainer.scrollHeight;
     // });
-  },
+  })
+
+},
 };
 </script>
 

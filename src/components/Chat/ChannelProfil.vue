@@ -6,7 +6,7 @@
         class="h-40 rounded-full" />
 
       <EditeProfile v-if="EditChannel" />
-      <ErroPopUp v-if="this.userStore.action" />
+      <ConfirmPopup v-if="this.userStore.action" />
       <UpdateMember v-if="this.userStore.MemberRoleStatus" />
     </div>
     <div class=" flex italic text-2xl">
@@ -53,12 +53,12 @@ import EditeProfile from "./EditeProfile.vue"
 import { useUserStore } from './../../stores/state.ts';
 import FriendList from "./FriendList.vue";
 import MutePopUp from "./MutePopUp.vue";
-import ErroPopUp from "./ErrorPopUp.vue";
+import ConfirmPopup from "./ConfirmPopup.vue";
 import UpdateMember from './UpdateMember.vue'
 
 export default {
 
-  components: { EditeProfile, FriendList, MutePopUp, ErroPopUp, UpdateMember },
+  components: { EditeProfile, FriendList, MutePopUp, ConfirmPopup, UpdateMember },
   setup() {
     const userStore = useUserStore();
     return { userStore };
@@ -111,7 +111,16 @@ export default {
   },
   async mounted() {
 
+    this.$socket.on("receiveMessage", (data) => {
+      console.log("receiveMessage form channel profile--------- ", data)
+      if ((data.type == 'notification' && data.action == 'joined') ||
+        (data.type == 'notification' && data.action == 'status') ||
+        (data.type == 'notification' && data.action == 'role')
+      ) {
+        this.fetchData();
+      }
 
+    },);
     this.fetchData();
   },
 

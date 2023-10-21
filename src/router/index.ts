@@ -7,6 +7,7 @@ import leaderboardView from "../views/LeaderboardView.vue";
 import SettingView from "../views/SettingView.vue";
 import SignInView from "../views/SignInView.vue";
 import GameView from "../views/GameView.vue";
+import UserProfileView from "../views/UserProfileView.vue";
 
 
 
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView
+    },
+    {
+      path: '/users/:id',
+      name: 'user',
+      component: UserProfileView
     },
     {
       path: '/leaderboard',

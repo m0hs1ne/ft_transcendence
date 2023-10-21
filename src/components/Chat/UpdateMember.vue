@@ -10,7 +10,7 @@
                         <select id="dropdown" v-model="selectedOptionStatus"
                             class="bg-white border border-gray-300 px-4 py-2 rounded">
                             <option value="normal">Normal</option>
-                            <option value="banne">Banne</option>
+                            <option value="banned">banned</option>
                             <option value="mute5">Mute 5 min</option>
                             <option value="mute10">Mute 10 min</option>
                         </select>
@@ -55,6 +55,8 @@ export default {
             selectedOptionRole: '',
             isOpend: true,
             selectedOptionStatus: '',
+            OldStatus: '',
+            OldRole: '',
         };
     },
     methods: {
@@ -100,6 +102,7 @@ export default {
                 this.MuteThisUser(10)
             }
             else {
+
                 this.$socket.emit("updateMemberStatus",
                     {
                         "memberId": this.userStore.MemberRoleStatus.user.id,
@@ -109,17 +112,17 @@ export default {
                 console.log("I am gonne to {", status, "} this member: ");
             }
         },
-       
+
         updateRole() {
             console.log("Update role ")
-            console.log("Hello this is the object ", this.userStore.MemberRoleStatus , "ddd" )
+            console.log("Hello this is the object ", this.userStore.MemberRoleStatus, "ddd")
             this.$socket.emit("updateMemberRole",
                 {
                     "memberId": this.userStore.MemberRoleStatus.user.id,
                     "chatId": this.userStore.ActiveChannelId,
                     "role": this.selectedOptionRole,
                 });
-            
+
         },
         closePopup() {
             this.isOpend = false;
@@ -127,30 +130,34 @@ export default {
         },
         save() {
             this.isOpend = false;
-            console.log("Hello ", this.selectedOptionStatus);
-            if (this.selectedOptionStatus == 'banne')
-                this.updateStatus('banned');
-            else {
-                this.updateStatus(this.selectedOptionStatus)
+            console.log("Hello the old status ", this.OldStatus);
+            console.log("Hello the new status ", this.selectedOptionStatus);
+
+            console.log("Hello the old role ", this.OldRole);
+            console.log("Hello the new role ", this.selectedOptionRole);
+
+            if (this.selectedOptionStatus != this.OldStatus) {
+              //  if (this.selectedOptionStatus == 'banned')
+                //    this.updateStatus('banned');
+               // else {
+                    this.updateStatus(this.selectedOptionStatus)
+               // }
             }
-            
-            if(this.userStore.MemberRoleStatus.role != this.selectedOptionRole)
+            if (this.userStore.MemberRoleStatus.role != this.selectedOptionRole)
                 this.updateRole()
             this.closePopup()
         },
     },
 
     mounted() {
-        console.log("Hello this is the object ", this.userStore.MemberRoleStatus.user.id, 
-        this.userStore.MemberRoleStatus.userStatus)
-        this.selectedOptionRole = this.userStore.MemberRoleStatus.role;
-        if (this.userStore.MemberRoleStatus.userStatus === 'muted')
-        {
+        console.log("Hello this is the object ", this.userStore.MemberRoleStatus.role, this.userStore.MemberRoleStatus.userStatus)
+        this.selectedOptionRole = this.OldRole = this.userStore.MemberRoleStatus.role;
+        if (this.userStore.MemberRoleStatus.userStatus === 'muted') {
             console.log("I am here ")
-            this.selectedOptionStatus = "mute5";
+            this.selectedOptionStatus = this.OldStatus = "mute5";
         }
         else
-            this.selectedOptionStatus = this.userStore.MemberRoleStatus.userStatus
+            this.selectedOptionStatus = this.OldStatus = this.userStore.MemberRoleStatus.userStatus
     }
 };
 </script>
