@@ -22,7 +22,7 @@ export class GameGateway {
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
   private clients: Map<number, string> = new Map()
-  private roomsqueu: Socket[] = [];
+  private Queus: Map<number, Socket[]> = new Map();
 
 
   handleConnection(client: Socket) {
@@ -51,34 +51,8 @@ export class GameGateway {
   handleJoinRoom(client: Socket, payload: any): void {
     if (this.ValidateClient(client) == 0)
       console.log("Player Already Join a queu or a room")
-    else if (this.roomsqueu.includes(client) != undefined) {
-      this.roomsqueu.push(client);
-      if (this.roomsqueu.length == 2) {
-        try {
-          const { v4: uuidv4 } = require('uuid');
-          const payload1 = verifyToken(this.roomsqueu.at(0).handshake.headers.cookie);
-          const payload2 = verifyToken(this.roomsqueu.at(1).handshake.headers.cookie);
-          let room: Room = new Room(this.roomsqueu.at(0), this.roomsqueu.at(1));
-          room.roomId = uuidv4();
-          console.log(`Room Id ${room.roomId}`);
-          room.GameMode = payload.mode;
-          room.RightPlayer.id = payload1.sub;
-          room.LeftPlayer.id = payload2.sub;
-          this.clients.set(payload1.sub, room.roomId);
-          this.clients.set(payload2.sub, room.roomId)
-          this.rooms.set(room.roomId, room);
-          room.Play();
-          this.roomsqueu.pop();
-          this.roomsqueu.pop();
-          console.log("Game Started");
-        } catch (err) {
-          console.log(err);
-        }
-      }
-      else {
-        console.log("Waiting");
-      }
-    }
+    else
+      this.CheckQueus(payload.mode, client);
   }
 
   ValidateClient(client: Socket): number {
@@ -100,58 +74,90 @@ export class GameGateway {
 
   }
 
-  @SubscribeMessage('PaddleUpdates')
-  HandlePaddlesData(client: any, payload: any): void {
-    if (payload.pos == "Left") 
-    {
-      if (this.rooms.has(payload.roomId)) {
-      this.rooms.get(payload.roomId).LeftPlayer.Paddle = payload.Paddle;
-      this.rooms.get(payload.roomId).RightPlayer.socket.emit('OpponentPaddle', {
-        Paddle: payload.Paddle,
-        id: this.rooms.get(payload.roomId).roomId,
-      })
+  CheckQueus(mode: number, client: Socket) {
+    if (this.Queus.has(mode) == false) {
+      console.log("true");
+      let Queu: Socket[] = [];
+      this.Queus.set(mode, Queu);
     }
-    }
-    else if (payload.pos == "Right") {
-      if (this.rooms.has(payload.roomId)) {
-        this.rooms.get(payload.roomId).RightPlayer.Paddle = payload.Paddle;
-        this.rooms.get(payload.roomId).LeftPlayer.socket.emit('OpponentPaddle', {
-          Paddle: payload.Paddle,
-          id: this.rooms.get(payload.roomId).roomId,
-        })
+    this.Queus.get(mode).push(client);
+    if (this.Queus.get(mode).length == 2) {
+      try {
+        const { v4: uuidv4 } = require('uuid');
+        const payload1 = verifyToken(this.Queus.get(mode).at(0).handshake.headers.cookie);
+        const payload2 = verifyToken(this.Queus.get(mode).at(1).handshake.headers.cookie);
+        let room: Room = new Room(this.Queus.get(mode).at(0), this.Queus.get(mode).at(1));
+        room.roomId = uuidv4();
+        console.log(`Room Id ${room.roomId}`);
+        room.GameMode = mode;
+        room.RightPlayer.id = payload1.sub;
+        room.LeftPlayer.id = payload2.sub;
+        this.clients.set(payload1.sub, room.roomId);
+        this.clients.set(payload2.sub, room.roomId);
+        this.rooms.set(room.roomId, room);
+        room.Play();
+        this.Queus.get(mode).pop();
+        this.Queus.get(mode).pop();
+        console.log("Game Started");
+      } catch (err) {
+        console.log(err);
       }
     }
-  }
-
-  @SubscribeMessage('PlayerLeave')
-  HandlePlayerLeave(client: any, payload: any): void 
-  {
-    if (this.rooms.has(payload.roomId)) 
-    {
-      this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
-      this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
-      this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
-      this.rooms.delete(payload.roomId);
-    }
-    if (this.rooms.get(payload.roomId)) {
-      console.log("room still exist");
+    else {
+      console.log("Waiting");
     }
   }
 
-  @SubscribeMessage('DeleteRoom')
-  DeleteRoom(client: any, payload: any): void 
-  {
-    if (this.rooms.has(payload.roomId)) {
-      console.log("Delete room");
-      if(this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
-          console.log("Delete Client");
-      this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
-      this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
-      let room: Room = this.rooms[payload.roomId];
-      this.rooms.delete(payload.roomId);
-      room = null;
-    }
+@SubscribeMessage('PaddleUpdates')
+HandlePaddlesData(client: any, payload: any): void {
+  if(payload.pos == "Left") {
+  if (this.rooms.has(payload.roomId)) {
+    this.rooms.get(payload.roomId).LeftPlayer.Paddle += payload.Paddle;
+    this.rooms.get(payload.roomId).RightPlayer.socket.emit('OpponentPaddle',
+      {
+        Paddle: payload.Paddle,
+      })
+  }
+
+}
+    else if (payload.pos == "Right") {
+  if (this.rooms.has(payload.roomId)) {
+    this.rooms.get(payload.roomId).RightPlayer.Paddle += payload.Paddle;
+    this.rooms.get(payload.roomId).LeftPlayer.socket.emit('OpponentPaddle', {
+      Paddle: payload.Paddle,
+    })
+  }
+  // console.log("----> ",this.rooms.get(payload.roomId).LeftPlayer.Paddle);
+
+}
+  }
+
+@SubscribeMessage('PlayerLeave')
+HandlePlayerLeave(client: any, payload: any): void {
+  if(this.rooms.has(payload.roomId)) {
+  this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
+  this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
+  this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
+  this.rooms.delete(payload.roomId);
+}
+if (this.rooms.get(payload.roomId)) {
+  console.log("room still exist");
+}
+  }
+
+@SubscribeMessage('DeleteRoom')
+DeleteRoom(client: any, payload: any): void {
+  if(this.rooms.has(payload.roomId)) {
+  console.log("Delete room");
+  if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
+    console.log("Delete Client");
+  this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
+  this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
+  let room: Room = this.rooms[payload.roomId];
+  this.rooms.delete(payload.roomId);
+  room = null;
+}
     else
-      console.log("No Room Found");
+console.log("No Room Found");
   }
 }

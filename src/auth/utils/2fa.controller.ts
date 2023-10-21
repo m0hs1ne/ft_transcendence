@@ -62,14 +62,20 @@ export class TwoFactorAuthenticationController {
     @HttpCode(200)
     @UseGuards(userAuthGuard)
     async authenticate(@Req() req: RequestWithUser, @Res() res, @Body() { tfaCode }: { tfaCode: string }) {
+        // console.log(tfaCode)
         const user = await this.authService.getUserFromJwt(req);
         if (!user) return { message: 'User not found' };
         const isCodeValid = await this.twoAuth.isTwoFactorAuthenticationCodeValid(tfaCode, user);
-        if (!isCodeValid) throw new UnauthorizedException('Invalid code');
+        if (!isCodeValid)
+        {
+            res.send("Invalid code");
+            return;
+        }
         const payload = await this.authService.login(user, true);
         res.clearCookie('jwt');
         res.cookie('jwt', payload, { httpOnly: true });
-        return user;
+        // console.log(payload)
+        res.send("Logged in");
     }
 
     /**

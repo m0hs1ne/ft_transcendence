@@ -37,7 +37,7 @@ export class userAuthGuard implements CanActivate {
             const payload = this.jwtService.verify(jwt);
             if (!payload) return false;
             console.log(payload);
-            if(payload.is2faV === false) return false;
+            // if(payload.is2faV === false) return false;
             return true;
         } catch (e) {
             throw new UnauthorizedException();
