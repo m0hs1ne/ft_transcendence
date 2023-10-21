@@ -179,7 +179,7 @@ export default {
             console.log("RIGHT SCORE" ,data);
 
             this.rightScore = data.Current;
-            this.leftID = data.Oponent;
+            this.rightScore = data.Oponent;
           }
         });
 
