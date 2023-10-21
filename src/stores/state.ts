@@ -117,7 +117,7 @@ export const SharedData = defineStore("Shard", {
         this.friends = res.data.friends;
         this.blocked = res.data.blocked;
         this.isLoggedIn = true;
-        console.log("userData: \n", this.userData);
+        // console.log("userData: \n", res);
         // console.log("friends: \n", this.friends);
         // console.log("blocked: \n", this.blocked);
       } catch (error) {
@@ -127,19 +127,23 @@ export const SharedData = defineStore("Shard", {
 
       }
 
-      // Log state
-      // try {
-      //   await axios.get("http://localhost:3000/api/auth/success", {
-      //     withCredentials: true,
-      //   });
-
-      //   console.log("logged In");
-      //   this.isLoggedIn = true;
-      // } catch (error) {
-      //   console.log("logged Out");
-      //   this.isLoggedIn = false;
-      // }
       this.isLoading = false;
+    },
+  },
+});
+
+
+export const GameData = defineStore("Game", {
+  state: () => ({
+    modeLimit: String,
+    modeTitle: String,
+  }),
+
+  actions:{
+    setMode(limit, title)
+    {
+      this.modeLimit = limit;
+      this.modeTitle = title;
     },
   },
 });
