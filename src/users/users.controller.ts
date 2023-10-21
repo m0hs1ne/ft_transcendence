@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseFilters, UseGuards, Req, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Query, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { generateRandomString, userAuthGuard, verifyToken } from '../utils/guard'
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -63,13 +63,15 @@ export class UsersController {
   }
 
   @Post('friends')
-  addFriends(@MessageBody() body,@Req() req)
+  async addFriends(@MessageBody() body,@Req() req)
   {
     const {
       id
     } = body
     if (typeof id === 'number')
-      return this.usersService.addfriends(id, req)
+      return await this.usersService.addfriends(id, req)
+    else
+      throw new BadRequestException()
   }
 
   @Delete('friends/:id')

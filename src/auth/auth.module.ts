@@ -12,6 +12,7 @@ import { TwoFactorAuthenticationController } from './utils/2fa.controller';
 import { TwoFactorAuthenticationService } from './utils/2fa.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { Achievement } from 'src/achievement/entities/achievement.entity';
 
 config();
 
@@ -23,7 +24,7 @@ config();
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Achievement]),
     JwtModule.register({
       secret: process.env.SESSION_SECRET,
       signOptions: { expiresIn: '1d' },

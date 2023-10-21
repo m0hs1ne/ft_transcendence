@@ -5,12 +5,13 @@ import { Achievement } from './entities/achievement.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Achievement]),
+    TypeOrmModule.forFeature([Achievement, User]),
   ],
-  providers: [AchievementService,JwtService]
+  providers: [AchievementService, UsersService, JwtService]
 })
 export class AchievementModule {
   constructor(private readonly achievementService: AchievementService) {}

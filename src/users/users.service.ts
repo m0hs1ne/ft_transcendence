@@ -11,7 +11,7 @@ import { Achievement } from 'src/achievement/entities/achievement.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    // @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>
+    @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>
   ) {}
 
   async findAll() {
@@ -44,6 +44,7 @@ export class UsersService {
     const user = await this.userRepository
     .createQueryBuilder('users')
     .leftJoinAndSelect('users.friends', 'friends')
+    .leftJoinAndSelect('users.games', 'games')
     .leftJoinAndSelect('users.blocked', 'blocked')
     .leftJoinAndSelect('users.achievements', 'achievement')
     .where('users.id = :id', { id })
@@ -64,7 +65,8 @@ export class UsersService {
       'blocked.username',
       'blocked.avatar',
       'achievement.title',
-      'achievement.image'
+      'achievement.image',
+
     ])
     .getOne()
     return user;
@@ -157,6 +159,8 @@ export class UsersService {
       throw new NotFoundException();
     }
     const payload = verifyToken(req.headers.cookie);
+    if (id === payload.sub)
+      throw new NotAcceptableException()
     let isBlocked = await this.userRepository.query(
       ` SELECT * FROM blocked WHERE ("userId" = $1 AND "blockedId" = $2) OR ("userId" = $2 AND "blockedId" = $1);`,
       [id, payload.sub],
@@ -215,9 +219,9 @@ export class UsersService {
   async addAchievement(title, id)
   {
     const user = await this.userRepository.findOne(id);
-    // const role = await this.achievementRepository.findOne(title);
+    const role = await this.achievementRepository.findOne(title);
 
-    // user.achievements.push(role);
+    user.achievements.push(role);
     return await this.userRepository.save(user);
   }
 

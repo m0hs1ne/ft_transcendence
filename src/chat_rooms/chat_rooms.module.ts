@@ -12,12 +12,14 @@ import { ChatRoomInv } from './entities/invitation.entity';
 import { Message } from 'src/message/entities/message.entity';
 import { ChatRoomsController } from './chat_rooms.controller';
 import { Game } from 'src/game/entities/game.entity';
+import { AchievementService } from 'src/achievement/achievement.service';
+import { Achievement } from 'src/achievement/entities/achievement.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Game, ChatRoom, User, UserChat, ChatRoomInv, Message]),
+    TypeOrmModule.forFeature([Achievement, Game, ChatRoom, User, UserChat, ChatRoomInv, Message]),
   ],
   controllers: [ChatRoomsController],
-  providers: [UserChatService, ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
+  providers: [UserChatService, AchievementService,ChatRoomsGateway, ChatRoomsService, UsersService, UserChatService,JwtService]
 })
 export class ChatRoomsModule {}
