@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Achievement } from './entities/achievement.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
-import { UsersModule } from 'src/users/users.module';
 import { User } from 'src/users/entities/user.entity';
+import { Game } from 'src/game/entities/game.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Achievement, User]),
+    TypeOrmModule.forFeature([Achievement, Game,User]),
   ],
   providers: [AchievementService, UsersService, JwtService]
 })
