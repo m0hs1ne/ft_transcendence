@@ -231,7 +231,8 @@ export default {
   unmounted() {
     this.EventsKiller();
     if(this.GameSocket)
-    {    this.GameSocket.emit("PlayerLeave", {
+    {    
+      this.GameSocket.emit("PlayerLeave", {
       roomId: this.RoomId,
       pos: this.pos,
     });
