@@ -123,6 +123,7 @@ export const GameData = defineStore("Game", {
   state: () => ({
     modeLimit: String,
     modeTitle: String,
+    phase: 'W'
   }),
 
   actions:{
@@ -130,6 +131,11 @@ export const GameData = defineStore("Game", {
     {
       this.modeLimit = limit;
       this.modeTitle = title;
+    },
+    updatePhase(newPhase)
+    {
+      console.log("A new phase")
+      this.phase = newPhase;
     }
   },
 });
