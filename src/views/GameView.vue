@@ -145,7 +145,8 @@ export default {
 
     },
 
-    EventsKiller() {
+    EventsKiller() 
+    {
       this.$GameSocket.removeEventListener("startGame");
       this.$GameSocket.removeEventListener("Lose");
       this.$GameSocket.removeEventListener("Win");
