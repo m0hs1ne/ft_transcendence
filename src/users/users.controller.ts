@@ -6,12 +6,14 @@ import { Express } from 'express'
 import { diskStorage } from 'multer';
 import { MessageBody } from '@nestjs/websockets';
 import { ChatRoomsService } from 'src/chat_rooms/chat_rooms.service';
+import { GameService } from 'src/game/game.service';
 
 @UseGuards(userAuthGuard)
 @Controller('users/')
 export class UsersController {
   constructor(private readonly usersService: UsersService,
-    private readonly chatroomservice: ChatRoomsService
+    private readonly chatroomservice: ChatRoomsService,
+    private readonly gameservice: GameService
     ) {}
 
   @Get()
@@ -60,6 +62,22 @@ export class UsersController {
   getFriends(@Req() req) {
     const payload = verifyToken(req.headers.cookie)
     return this.usersService.getfriends(payload.sub);
+  }
+
+  @Post('/game')
+  async addgame(@MessageBody() body, @Req() req)
+  {
+    const {
+      user1Id,
+      user2Id,
+      winner,
+      leftSCore,
+      rightSCore,
+      mode
+    } = body
+
+    console.log(body)
+    this.gameservice.create(user1Id,user2Id,winner, leftSCore + ' : ' + rightSCore, mode)
   }
 
   @Post('friends')

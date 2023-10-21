@@ -4,6 +4,7 @@ import { EntityNotFoundError, FindOneOptions, FindOptionsWhere, ILike, Repositor
 import { User } from './entities/user.entity';
 import { verifyToken } from 'src/utils/guard';
 import { Achievement } from 'src/achievement/entities/achievement.entity';
+import { Game } from 'src/game/entities/game.entity';
 
 
 
@@ -11,7 +12,8 @@ import { Achievement } from 'src/achievement/entities/achievement.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>
+    @InjectRepository(Achievement) private readonly achievementRepository: Repository<Achievement>,
+    @InjectRepository(Game) private readonly gameRepository: Repository<Game>
   ) {}
 
   async findAll() {
@@ -44,7 +46,6 @@ export class UsersService {
     const user = await this.userRepository
     .createQueryBuilder('users')
     .leftJoinAndSelect('users.friends', 'friends')
-    .leftJoinAndSelect('users.games', 'games')
     .leftJoinAndSelect('users.blocked', 'blocked')
     .leftJoinAndSelect('users.achievements', 'achievement')
     .where('users.id = :id', { id })
@@ -66,9 +67,28 @@ export class UsersService {
       'blocked.avatar',
       'achievement.title',
       'achievement.image',
-
     ])
     .getOne()
+
+    const games = await this.gameRepository
+    .createQueryBuilder('game')
+    .leftJoinAndSelect('game.user1', 'user1')
+    .leftJoinAndSelect('game.user2', 'user2')
+    .where('user1.id = :id or user2.id = :id', {id})
+    .select([
+      'game.id',
+      'game.score',
+      'game.winner',
+      'game.mode',
+      'user1.id',
+      'user1.username',
+      'user1.avatar',
+      'user2.id',
+      'user2.username',
+      'user2.avatar',
+    ])
+    .getMany()
+    user.games = games
     return user;
   }
 
