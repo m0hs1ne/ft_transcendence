@@ -106,7 +106,7 @@ export default {
 				console.log("addFriend res", response);
 
 				// Update the local state with the new avatar URL
-				// await this.state.fetchData();
+				await this.state.fetchData();
 			} catch (error) {
 				console.error("Error addFriend:", error);
 			}
