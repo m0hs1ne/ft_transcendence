@@ -55,7 +55,7 @@ const router = createRouter({
       component: SignInView
     },
     {
-      path: '/game',
+      path: '/play',
       name: 'game',
       component: GameView
     },
