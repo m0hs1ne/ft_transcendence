@@ -18,7 +18,7 @@ export default {
 		const friends = ref([]);
 		const is2FA = ref(false);
 		const battles = computed(() => wins.value + losses.value);
-		const winrat = computed(() => `${((wins.value + 1) / (battles.value + 2)) * 100}%`);
+		const winrat = computed(() => `${parseInt((wins.value + 1) / (battles.value + 2)) * 100}%`);
 		const displayAdd = ref(false);
 		const isFriend = ref(false);
 
@@ -98,7 +98,7 @@ export default {
 			try {
 				const response = await axios.post(
 					"http://localhost:3000/api/users/friends/",
-					{ id: this.$route.params.id },
+					{ id:  parseInt(this.$route.params.id) },
 					{
 						withCredentials: true,
 					}

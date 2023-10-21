@@ -22,7 +22,7 @@ export default {
 		is2FA.value = state.userData.is2faEnabled;
 
 		const battles = computed(() => wins.value + losses.value);
-		const winrat = computed(() => `${((wins.value + 1) / (battles.value + 2)) * 100}%`);
+		const winrat = computed(() => `${parseInt((wins.value + 1) / (battles.value + 2)) * 100}%`);
 
 
 		const lastBattles = [

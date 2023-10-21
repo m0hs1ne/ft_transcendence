@@ -1,45 +1,31 @@
 <!-- CanvasComponent.vue -->
 <template>
-  <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
-    <WaitingModel v-if="phase === 'W'" />
-    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="LeftScore" :rightScore="rightScore"/>
-    <canvas v-if="phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
-    <WinModel v-if="phase === 'N'" />
-    <LoseModel v-if="phase === 'L'" />
-  </div>
+  <canvas
+    id="gameCanvas"
+    @keydown="handleKeyDown"
+    tabindex="1"
+    class="shadow-lg"
+  ></canvas>
 </template>
 
-
 <script lang="ts">
-import { ref } from 'vue'
-import { app } from "../main";
-import { GameData } from "../stores/state";
-import WaitingModel from "./../components/Game/WaitingModel.vue";
-import WinModel from "./../components/Game/WinModel.vue";
-import LoseModel from "./../components/Game/LoseModel.vue";
-import ScoreBar from "./../components/Game/ScoreBar.vue";
+import { app } from "../../main";
 import type { Socket } from "socket.io-client";
+import { GameData } from "./../../stores/state";
 
 export default {
   setup() {
-    const phase = ref('W');
     const gameData = GameData();
-    return { gameData, phase };
+    return { gameData };
   },
-  components: {
-    WaitingModel,
-    WinModel,
-    LoseModel,
-    ScoreBar,
-  },
+
   data() {
     return {
       BallX: 0,
       BallY: 0,
-      leftID: 0,
-      rightID: 0,
-      LeftScore: 0,
-      rightScore: 0,
+      mode: 7,
+      CurrentPlayerScore: 0,
+      OpponentPLayerScore: 0,
       PaddleHeight: 0,
       PaddleWidth: 0,
       PaddleY: 0,
@@ -148,48 +134,41 @@ export default {
         });
 
         this.GameSocket.on("startGame", (data: any) => {
-          console.log("startGame");
+        console.log("startGame");
           this.RoomId = data.id;
           this.pos = data.pos;
-          this.phase = 'P';
-          if (this.pos === "Left")
-          {
-            this.leftID = data.CurrentID;
-            this.rightID = data.OpponentID;
-          }
-          else
-          {
-            this.rightID = data.CurrentID;
-            this.leftID = data.OpponentID;
-          }
-          console.log(data)
-          console.log("rightID ", this.rightID)
-          console.log("leftID ", this.leftID)
+          this.gameData.updatePhase('P');
         });
 
         this.GameSocket.on("Score", (data: any) => {
-          if (this.pos === "Left")
-          {
-            console.log("LEFT SCORE" ,data);
-            this.LeftScore = data.Current;
-            this.rightScore = data.Oponent;
-          }
-          else
-          {
-            console.log("RIGHT SCORE" ,data);
-
-            this.rightScore = data.Current;
-            this.leftID = data.Oponent;
-          }
+          this.CurrentPlayerScore = data.Current;
+          this.OpponentPLayerScore = data.Oponent;
         });
 
         this.GameSocket.on("Lose", (data: any) => {
-          this.phase = 'L';
+          clearInterval(this.intervalId);
+          if (this.Canvas && this.Context) {
+            this.drawRect(0, 0, this.Canvas.width, this.Canvas.height, "#1F173D");
+            this.Context.font = "30px Arial";
+            this.Context.fillStyle = "#A33A6F";
+            this.Context.fillText("You Lose", 400, 200);
+            setTimeout(() => {
+              this.$router.push("/");
+            }, 2000);
+          }
         });
 
         this.GameSocket.on("Win", (data: any) => {
-          this.phase = 'N';
           clearInterval(this.intervalId);
+          if (this.Canvas && this.Context) {
+            this.drawRect(0, 0, this.Canvas.width, this.Canvas.height, "#1F173D");
+            this.Context.font = "30px Arial";
+            this.Context.fillStyle = "#A33A6F";
+            this.Context.fillText("You Win", 370, 170);
+            setTimeout(() => {
+              this.$router.push("/");
+            }, 2000);
+          }
         });
 
         this.GameSocket.on("DeleteRoom", (data: any) => {
@@ -217,10 +196,24 @@ export default {
     JoinGameEvent() {
       if (this.GameSocket) {
         this.GameSocket.emit("joinRoom", {
-          mode: this.gameData.modeLimit,
+          mode: this.mode,
         });
       }
     },
+
+    // DrawScore()
+    // {
+    //   let s1: string = this.CurrentPlayerScore.to;
+    //   var s2 = this.OpponentPLayerScore;
+    //   if(this.Context)
+    //   {
+    //     this.Context.font = "30px Arial";
+    //     this.Context.fillStyle = "#A33A6F";
+    //     this.Context.fillText(s1.toString, 370, 25);
+    //     this.Context.fillText(":", 400, 25);
+    //     this.Context.fillText(s2, 422, 25);
+    //     }
+    // }
 
     handleKeyDown(event: any) {
       const keyCode = event.keyCode;
@@ -245,38 +238,34 @@ export default {
       }
     },
   },
-  updated() {
-    if (this.phase === 'P' && !this.Canvas) {
-      this.Canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
-      if (this.Canvas) {
-        this.Context = this.Canvas.getContext("2d");
-        this.Canvas.width = window.innerWidth * 0.8;
-        this.Canvas.height = this.Canvas.width * 0.5;
-        this.PaddleHeight = this.Canvas.height * 0.25;
-        this.PaddleWidth = this.Canvas.width * 0.02;
-        this.PaddleY = 0.4;
-        this.OpponentPaddleY = 0.4;
-        this.BallX = 0.5;
-        this.BallY = 0.5;
-        this.Canvas.focus();
-        this.loopHook();
-      }
-    }
-  },
+
   mounted() {
     console.log("mounted ");
     this.GameSocket = app.config.globalProperties.$GameSocket;
-    this.EventsHandler();
-    this.JoinGameEvent();
+    this.Canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
+    if (this.Canvas) {
+      this.Context = this.Canvas.getContext("2d");
+      this.Canvas.width = window.innerWidth * 0.8;
+      this.Canvas.height = this.Canvas.width * 0.5;
+      this.PaddleHeight = this.Canvas.height * 0.25;
+      this.PaddleWidth = this.Canvas.width * 0.02;
+      this.PaddleY = 0.4;
+      this.OpponentPaddleY = 0.4;
+      this.BallX = 0.5;
+      this.BallY = 0.5;
+      this.Canvas.focus();
+      this.EventsHandler();
+      this.JoinGameEvent();
+      this.loopHook();
+    }
   },
   unmounted() {
     this.EventsKiller();
-    if(this.GameSocket)
-    {    
+    if (this.GameSocket) {
       this.GameSocket.emit("PlayerLeave", {
-      roomId: this.RoomId,
-      pos: this.pos,
-    });
+        roomId: this.RoomId,
+        pos: this.pos,
+      });
     }
     clearInterval(this.intervalId);
   },
@@ -298,4 +287,3 @@ canvas {
   border-radius: 15px;
 }
 </style>
-
