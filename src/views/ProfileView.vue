@@ -11,6 +11,8 @@ export default {
 		const avatar = ref("");
 		const wins = ref(1);
 		const losses = ref(1);
+		const battles = ref(1);
+		const winrat = ref(1);
 		const friends = ref([]);
 		const is2FA = ref(false);
 
@@ -18,11 +20,10 @@ export default {
 		avatar.value = state.userData.avatar;
 		wins.value = state.userData.wins - 1;
 		losses.value = state.userData.losses - 1;
+		battles.value = state.userData.wins + state.userData.losses - 2;
+		winrat.value = parseInt(state.userData.wins / (state.userData.wins + state.userData.losses) * 100) + '%';
 		friends.value = state.userData.friends;
 		is2FA.value = state.userData.is2faEnabled;
-
-		const battles = computed(() => wins.value + losses.value);
-		const winrat = computed(() => `${parseInt((wins.value + 1) / (battles.value + 2)) * 100}%`);
 
 
 		const lastBattles = [

@@ -6,8 +6,8 @@ import { ref } from 'vue'
 export default {
     props:
     {
-        leftID: Number,
-        rightID: Number,
+        leftID: '',
+        rightID: '',
         rightScore: Number,
         leftScore: Number,
     },

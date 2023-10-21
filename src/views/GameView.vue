@@ -2,7 +2,7 @@
 <template>
   <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
     <WaitingModel v-if="phase === 'W'" />
-    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="LeftScore" :rightScore="rightScore"/>
+    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"/>
     <canvas v-if="phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
     <WinModel v-if="phase === 'N'" />
     <LoseModel v-if="phase === 'L'" />
@@ -15,7 +15,7 @@ import { ref } from 'vue'
 import { app } from "../main";
 import { GameData } from "../stores/state";
 import WaitingModel from "./../components/Game/WaitingModel.vue";
-import WinModel from "./../components/Game/WaitingModel.vue";
+import WinModel from "./../components/Game/WinModel.vue";
 import LoseModel from "./../components/Game/LoseModel.vue";
 import ScoreBar from "./../components/Game/ScoreBar.vue";
 import type { Socket } from "socket.io-client";
@@ -38,7 +38,7 @@ export default {
       BallY: 0,
       leftID: 0,
       rightID: 0,
-      LeftScore: 0,
+      leftScore: 0,
       rightScore: 0,
       PaddleHeight: 0,
       PaddleWidth: 0,
@@ -169,7 +169,7 @@ export default {
           if (this.pos === "Left")
           {
             console.log("LEFT SCORE" ,data);
-            this.LeftScore = data.Current;
+            this.leftScore = data.Current;
             this.rightScore = data.Oponent;
           }
           else
@@ -177,7 +177,7 @@ export default {
             console.log("RIGHT SCORE" ,data);
 
             this.rightScore = data.Current;
-            this.rightScore = data.Oponent;
+            this.leftScore = data.Oponent;
           }
         });
 
@@ -244,6 +244,7 @@ export default {
     },
   },
   updated() {
+    console.log("New pahse is: ", this.phase);
     if (this.phase === 'P' && !this.Canvas) {
       this.Canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
       if (this.Canvas) {

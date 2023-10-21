@@ -15,10 +15,10 @@ export default {
 		const avatar = ref("");
 		const wins = ref(0);
 		const losses = ref(0);
+		const battles = ref(0);
+		const winrat = ref(0);
 		const friends = ref([]);
 		const is2FA = ref(false);
-		const battles = computed(() => wins.value + losses.value);
-		const winrat = computed(() => `${parseInt((wins.value + 1) / (battles.value + 2)) * 100}%`);
 		const displayAdd = ref(false);
 		const isFriend = ref(false);
 
@@ -84,6 +84,8 @@ export default {
 				this.avatar = res.data.avatar;
 				this.wins = res.data.wins - 1;
 				this.losses = res.data.losses - 1;
+				this.battles = res.data.wins + res.data.losses - 2;
+				this.winrat = parseInt(res.data.wins / (res.data.wins + res.data.losses) * 100) + '%';
 				this.friends = res.data.friends;
 				this.is2FA = res.data.is2faEnabled;
 				console.log("user from id: \n", res.data);
