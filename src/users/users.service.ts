@@ -78,6 +78,7 @@ export class UsersService {
     const user = await this.userRepository
     .createQueryBuilder('users')
     .leftJoinAndSelect('users.friends', 'friends')
+    .leftJoinAndSelect('users.games', 'games')
     .leftJoinAndSelect('users.achievements', 'achievement')
     .where('users.id = :id', { id })
     .select([

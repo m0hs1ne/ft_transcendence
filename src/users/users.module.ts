@@ -11,10 +11,11 @@ import { ChatRoom } from 'src/chat_rooms/entities/chat_room.entity';
 import { UserChat } from 'src/user_chat/entities/user_chat.entity';
 import { ChatRoomInv } from 'src/chat_rooms/entities/invitation.entity';
 import { Message } from 'src/message/entities/message.entity';
+import { Game } from 'src/game/entities/game.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Achievement, ChatRoom, User, UserChat, ChatRoomInv, Message]),
+    TypeOrmModule.forFeature([Game, Achievement, ChatRoom, User, UserChat, ChatRoomInv, Message]),
   ],
   controllers: [UsersController],
   providers: [ChatRoomsService, AchievementService, UsersService,JwtService]
