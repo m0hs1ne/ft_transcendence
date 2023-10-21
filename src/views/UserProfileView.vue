@@ -3,9 +3,12 @@ import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import axios from "axios";
 import ProfileStat from "./../components/Profile/ProfileStat.vue";
+import { SharedData } from "./../stores/state.ts";
+
 
 export default {
 	setup(props) {
+		const state = SharedData();
 		const isLoading = ref(false);
 		const isError = ref(false);
 		const username = ref("");
@@ -14,9 +17,10 @@ export default {
 		const losses = ref(0);
 		const friends = ref([]);
 		const is2FA = ref(false);
-
 		const battles = computed(() => wins.value + losses.value);
 		const winrat = computed(() => `${((wins.value + 1) / (battles.value + 2)) * 100}%`);
+		const displayAdd = ref(false);
+		const isFriend = ref(false);
 
 
 		const lastBattles = [
@@ -52,6 +56,10 @@ export default {
 			achievements,
 			battles,
 			winrat,
+			displayAdd,
+			state,
+			isFriend,
+			isLoading,
 		};
 	},
 	components: {
@@ -61,6 +69,7 @@ export default {
 	methods:
 	{
 		async fetchData() {
+			this.displayAdd = this.state.userData.id != this.$route.params.id
 			this.isLoading = true;
 			// Get user profile data
 			try {
@@ -83,7 +92,27 @@ export default {
 				this.isError = true;
 			}
 			this.isLoading = false;
-		}
+		},
+		async addFriend() {
+			this.isLoading = true;
+			try {
+				const response = await axios.post(
+					"http://localhost:3000/api/users/friends/",
+					{ id: this.$route.params.id },
+					{
+						withCredentials: true,
+					}
+				);
+				console.log("addFriend res", response);
+
+				// Update the local state with the new avatar URL
+				// await this.state.fetchData();
+			} catch (error) {
+				console.error("Error addFriend:", error);
+			}
+			this.isLoading = false;
+		},
+		async removeFriend() { },
 	},
 	async created() {
 		await this.fetchData();
@@ -97,12 +126,12 @@ export default {
 				min-h-screen dark:bg-slate-800">
 		<!-- <ProfileCard /> -->
 		<div
-			class="h-[450px] md:h-[500px] flex flex-col items-center justify-center rounded-2xl custom-box-shadow dark:bg-slate-900">
+			class="h-[400px] md:h-[500px] flex flex-col items-center justify-center rounded-2xl custom-box-shadow dark:bg-slate-900">
 			<div class="w-44 h-44 bg-gray-300 rounded-full shadow">
 				<img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar"
 					class=" object-cover rounded-full w-44 h-44">
 			</div>
-			<p class="font-Poppins font-semibold text-3xl tracking-wide mx-5 my-2 dark:text-white">
+			<p class="font-Poppins font-semibold text-3xl tracking-wide mx-5 my-3 dark:text-white">
 				{{ this.username }}
 			</p>
 			<div class="flex items-center">
@@ -112,14 +141,11 @@ export default {
 				<div class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"></div>
 				<ProfileStat :title="this.winrat" description="Win-rat" />
 			</div>
-			<div class="flex items-center justify-center w-full gap-5 font-Poppins font-bold text-xl mt-5">
-				<button @click=""
+			<div v-if="this.displayAdd"
+				class="flex items-center justify-center w-full gap-5 font-Poppins font-bold text-xl mt-7">
+				<button @click="this.addFriend()"
 					class="text-gray-100 dark:text-white shadow w-fit py-3 px-5 bg-blue-500 rounded-lg">
 					Add Friend
-				</button>
-				<button @click=""
-					class="text-gray-100 dark:text-white shadow w-fit py-3 px-5 bg-teal-500 rounded-lg">
-					Chat
 				</button>
 			</div>
 		</div>

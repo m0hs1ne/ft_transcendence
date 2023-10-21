@@ -1,5 +1,26 @@
+<script>
+import { GameData } from "./../../stores/state.ts";
+
+export default
+{
+	props:{
+		limit: String,
+		src: String,
+		title: String,
+		description: String,
+	},
+	setup(props)
+	{
+		const gameData = GameData();
+		return { gameData };
+	},
+	methods: {
+	}
+}
+</script>
+
 <template>
-	<router-link to="/game" class="relative rounded-2xl shadow-xl cursor-pointer">
+	<router-link @click="this.gameData.setMode(this.limit, this.title)" to="/play" class="relative rounded-2xl shadow-xl cursor-pointer">
 			<img referrerpolicy="no-referrer" 
 				:src="src"
 				class="w-full h-full rounded-2xl shadow-xl object-cover">
@@ -16,8 +37,4 @@
 			</div>
 	</router-link>
 </template>
-
-<script setup>
-const props = defineProps(['src', 'title', 'description']);
-</script>
   

@@ -13,6 +13,9 @@ import type {Socket} from 'socket.io-client';
 
 
 export default {
+
+
+
   data() {
     return {
       BallX: 0,
@@ -193,7 +196,6 @@ export default {
         }
       }
       else if (keyCode == 40 && this.PaddleY + 0.25 < 1) {
-
         this.PaddleY += 0.02;
         if (this.GameSocket) {
           this.GameSocket.emit("PaddleUpdates", {
@@ -226,7 +228,6 @@ export default {
       this.loopHook();
     }
   },
-
   unmounted() {
     this.EventsKiller();
     if(this.GameSocket)
