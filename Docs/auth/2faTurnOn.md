@@ -20,7 +20,7 @@ Used to enable 2FA for a user
 
 ```json
 {
-    "tfaCode": "123456"
+    "tfaCode": "123456" 
 }
 ```
 
