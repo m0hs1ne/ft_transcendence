@@ -104,7 +104,8 @@ export default {
       }
       this.$nextTick(() =>{
           const scrollContainer = this.$refs.scrollContainer;
-          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+          if(scrollContainer)
+              scrollContainer.scrollTop = scrollContainer.scrollHeight;
         });
   
     });

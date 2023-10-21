@@ -15,7 +15,7 @@ import { ref } from 'vue'
 import { app } from "../main";
 import { GameData } from "../stores/state";
 import WaitingModel from "./../components/Game/WaitingModel.vue";
-import WinModel from "./../components/Game/WinModel.vue";
+import WinModel from "./../components/Game/WaitingModel.vue";
 import LoseModel from "./../components/Game/LoseModel.vue";
 import ScoreBar from "./../components/Game/ScoreBar.vue";
 import type { Socket } from "socket.io-client";
@@ -84,7 +84,6 @@ export default {
             this.PaddleHeight,
             "#A33A6F"
           );
-          // this.DrawScore(this.CurrentPlayerScore, this.OpponentPLayerScore);
         } else if (this.pos == "Right") {
           this.drawRect(
             x,
@@ -100,7 +99,6 @@ export default {
             this.PaddleHeight,
             "#A33A6F"
           );
-          // this.DrawScore(this.OpponentPLayerScore, this.CurrentPlayerScore);
         }
         this.drawBall(
           this.BallX * this.Canvas.width,
@@ -179,7 +177,7 @@ export default {
             console.log("RIGHT SCORE" ,data);
 
             this.rightScore = data.Current;
-            this.leftID = data.Oponent;
+            this.rightScore = data.Oponent;
           }
         });
 
@@ -271,13 +269,16 @@ export default {
   },
   unmounted() {
     this.EventsKiller();
-    if (this.GameSocket) {
+    if(this.GameSocket)
+    {    
       this.GameSocket.emit("PlayerLeave", {
-        roomId: this.RoomId,
-        pos: this.pos,
-      });
+      roomId: this.RoomId,
+      pos: this.pos,
+      mode: this.gameData.modeLimit,
+    });
     }
     clearInterval(this.intervalId);
+    console.log("Unmounted");
   },
 };
 </script>

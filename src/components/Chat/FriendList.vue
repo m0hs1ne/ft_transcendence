@@ -1,7 +1,7 @@
 <!-- FriendListComponent.vue -->
 <template>
 
-    <img referrerpolicy="no-referrer" @click="openPopup" class="m-2 h-10 rounded-full hover:bg-blue-800 text-white font-bold"
+    <img referrerpolicy="no-referrer" @click="openPopup" title = "Add Friend " class="m-2 h-10 rounded-full hover:scale-150 text-white font-bold"
         src="./../../assets/icons/add.svg">
   
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">

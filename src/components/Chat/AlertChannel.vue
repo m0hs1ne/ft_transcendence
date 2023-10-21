@@ -77,8 +77,8 @@ export default {
           console.log(" this what hello ")
           console.log(data)
           
-
         });
+        
         
         this.ChannelName = '';
         this.password = '';

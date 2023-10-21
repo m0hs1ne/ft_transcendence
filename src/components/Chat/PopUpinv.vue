@@ -18,7 +18,7 @@
             }} </span>
           </div>
           <img referrerpolicy="no-referrer" @click="AccepteInvite(friend)"
-            class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-green-600 text-white font-bold py-2 px-4"
+            class="pr-5 m-2 bg-blue-300 h-10 rounded-full hover:bg-green-600 text-white font-bold py-2 px-4"
             src="./../../assets/icons/checkmark.svg">
           <img referrerpolicy="no-referrer" @click="DeclineInvite(friend)"
             class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-red-600 text-white font-bold py-2 px-4"
@@ -54,42 +54,52 @@ export default {
 
     },
     openPopup() {
+      if(this.friends.length == 0)
+        this.message = "You don't have any invitation"
       this.isOpend = true;
     },
     closePopup() {
       this.isOpend = false;
     },
-    AccepteInvite(frien) {
+    DeleteFromArray(frien)
+    {
+      const friendIndex = this.friends.findIndex((friend) => friend.id === frien.id);
+      if (friendIndex !== -1) {
+        this.friends.splice(friendIndex, 1);
+        console.log("",friendIndex)
+      }
+    },
+     AccepteInvite(frien) {
       console.log("This is what is you accept ", frien)
 
       this.$socket.emit('acceptInvite',
         {
           id: frien.id,
         })
-      this.userStore.DmChatroomsList.data.push(frien.chatRoom);
+       
+     
+      //this.userStore.DmChatroomsList.data.push(frien.chatRoom);
+  
+        console.log(" I am update in pop inv ", this.userStore.DmChatroomsList)
       this.isOpend = false;
-      const friendIndex = this.friends.findIndex((friend) => friend.id === frien);
-      if (friendIndex !== -1) {
-        this.friends.splice(friendIndex, 1);
-        console.log("",friendIndex)
-      }
+      this.DeleteFromArray(frien);
     },
     DeclineInvite(friend) {
-      this.$socket.emit('Declin',
+      this.$socket.emit('declineInvite',
         {
           id: friend.id,
         })
       console.log(" I am decline this invitation Ask mroin \n");
-      
-
+      this.DeleteFromArray(friend);
+      this.isOpend = false;
     },
   },
   mounted() {
-
+    console.log(" I am in");
     this.fetchData();
     this.$socket.on("Notification", (messages) => {
-      console.log('Notification popinv ', messages)
-      console.log(" This is friends: befor ", this.friends)
+      // console.log('Notification popinv ', messages)
+      // console.log(" This is friends: befor ", this.friends)
       if (messages.type == 'invitation') {
         console.log("The problem of the form of json ")
         this.message = '';
@@ -99,7 +109,8 @@ export default {
         //   console.log(" This is friends: " ,this.friends)
         //   console.log(" This is friends: " ,this.friends[0].from.avatar)
       }
-      else {
+      else if (messages.notifications){
+        console.log(messages)
         messages.notifications.forEach((element) => {
           if (element.type == "invitations") {
             console.log("I am invt")

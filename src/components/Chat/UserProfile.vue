@@ -18,6 +18,9 @@
     <button class="flex items-center text-gray-700 hover:text-gray-900" @click="Block">
         <span class="ml-2 h-10">Block</span>
     </button>
+    <button class="flex items-center text-gray-700 hover:text-gray-900" @click="Block">
+        <span class="ml-2 h-10">Play</span>
+    </button>
     </div>
   </div>
 </template>
