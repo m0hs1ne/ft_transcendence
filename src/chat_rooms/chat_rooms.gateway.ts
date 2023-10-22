@@ -45,8 +45,12 @@ export class ChatRoomsGateway{
       const myfriends = await this.userService.getfriends(payload.sub);
       for (const friend of myfriends)
       {
-        const client = clients.get(payload.sub)
-        client.emit("userStatus", {id: payload.sub, online: true})
+        const client : Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = clients.get(friend.id)
+        if (client)
+        {
+          console.log(friend.id)
+          client.emit("userStatus", {id: payload.sub, online: true})
+        }
       }
   } catch(e) {
     console.log(e.message)
@@ -61,8 +65,12 @@ export class ChatRoomsGateway{
     const myfriends = await this.userService.getfriends(payload.sub);
     for (const friend of myfriends)
     {
-      const client = clients.get(payload.sub)
-      client.emit("userStatus", {id: payload.sub, online: false})
+      const client : Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = clients.get(friend.id)
+      if (client)
+      {
+        console.log(friend.id)
+        client.emit("userStatus", {id: payload.sub, online: false})
+      }
     }
     console.log(`socket disconnected: ${payload.sub}`);
     this.userService.updateDateDisconnect(payload.sub)
