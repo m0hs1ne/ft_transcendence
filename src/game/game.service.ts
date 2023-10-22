@@ -35,6 +35,12 @@ export class GameService {
       .execute();
   }
 
+  async setInGame(user1Id, user2Id, inGame:boolean)
+  {
+    await this.userRepository.update({id: user1Id}, {inGame})
+    await this.userRepository.update({id: user2Id}, {inGame})
+  }
+
 //   findAll() {
 //     return `This action returns all game`;
 //   }

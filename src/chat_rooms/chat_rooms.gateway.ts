@@ -470,7 +470,7 @@ export class ChatRoomsGateway{
     const payload = verifyToken(req.handshake.headers.cookie)
     try
     {
-      if (typeof toId === 'number' && typeof toId === 'string')
+      if (typeof toId === 'number' && typeof mode === 'string')
       {
         const to = await this.userService.profile(toId, payload)
         const from = await this.userService.myprofile(payload.sub)

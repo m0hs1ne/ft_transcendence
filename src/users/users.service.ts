@@ -162,6 +162,8 @@ export class UsersService {
       'friends.id',
       'friends.username',
       'friends.avatar',
+      'friends.inGame',
+      'friends.statusOnline'
     ])
     .getOne()
     if (!friends)
