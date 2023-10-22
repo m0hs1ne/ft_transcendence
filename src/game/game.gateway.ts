@@ -147,6 +147,18 @@ export class GameGateway {
     if (this.rooms.get(payload.roomId)) {
       console.log("room still exist");
     }
+    try {
+      const Payload = verifyToken(client.handshake.headers.cookie);
+      if (this.Queus.get(payload.mode).includes(client)) 
+      {
+        this.Queus.get(payload.mode).pop();
+        this.clients.delete(Payload.sub);
+        console.log("Removed from the queu");
+      }
+      }catch (err) 
+      {
+        console.log(err);
+      }
   }
 
   @SubscribeMessage('DeleteRoom')
@@ -179,4 +191,10 @@ export class GameGateway {
 
     this.gameService.create(left, right, Winner, Score, GameMode);
   }
+  @SubscribeMessage('Chall')
+  HandlleChallenges(client: any, payload: any): void {
+  console.log(payload);
 }
+}
+
+
