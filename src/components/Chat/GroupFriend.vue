@@ -69,7 +69,7 @@ export default {
       // await this.userStore.fetchDataForDmChatRooms();
       await this.$socket.on("ChatRoomList", (data) => {
         console.log("This is data: ", data)
-        if (data.type == 'new') {
+        if (data.type == 'new' || data.type == 'updated') {
           this.userStore.fetchDataForDmChatRooms();
         }
         if (data.type == 'remove') {
@@ -80,7 +80,7 @@ export default {
       }
       );
 
-      if (this.userStore.DmChatroomsList.length != 0)
+      if (this.userStore.DmChatroomsList.length != 0 )
         this.handleChatClick(this.userStore.DmChatroomsList[0])
     },
     sideMunue(){}

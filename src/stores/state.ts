@@ -16,7 +16,8 @@ export const useUserStore = defineStore("user", {
     ChannelInvitation: {},
     Action:"",
     MemberRoleStatus:'',
-    error:'',
+    error: '',
+    ActiveId: null,
   }),
 
   actions: {
@@ -28,15 +29,15 @@ export const useUserStore = defineStore("user", {
     },
 
     async fetchChannelById() {
-      console.log("Up date the channnel");
       try {
         this.ActiveChannelData = await axios.get(
           `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`,
           { withCredentials: true }
-        );
-        this.MyId = this.ActiveChannelData.data.id;
-        this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
-        this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
+          );
+          this.MyId = this.ActiveChannelData.data.id;
+          this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
+          this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
+          console.log("Up date the channnel",this.ActiveChannelData);
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }

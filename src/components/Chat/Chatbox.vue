@@ -2,18 +2,14 @@
 <template>
   <div class=" flex flex-col justify-between h-screen">
     <div class=" flex flex-col mt-5 overflow-y-scroll" ref="scrollContainer">
-      <div
-        v-for="message in messages"
-        :key="message.id"
-        :class="{
-          message: true,
-          received: message.type === 'received',
-          sent: message.type === 'sent',
-        }"
-      >
+      <div v-for="message in messages" :key="message.id" :class="{
+        message: true,
+        received: message.type === 'received',
+        sent: message.type === 'sent',
+      }">
         <div class="flex mb-4">
           <img referrerpolicy="no-referrer" :src="message.img" alt="Avatar" class="circle avatar mr-1 " />
-          <div class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">  
+          <div class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
             <span>{{ message.text }}</span>
           </div>
         </div>
@@ -21,20 +17,17 @@
       </div>
     </div>
     <div class="flex ">
-      <input
-      v-model="newMessage"
-      @keyup.enter="sendMessage"
-      placeholder="Type your message here..."
-      class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
-      />
-      <button class="flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600" @click="sendMessage()">Send</button>
+      <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message here..."
+        class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10" />
+      <button class="flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600"
+        @click="sendMessage()">Send</button>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-  import { useUserStore } from './../../stores/state.ts';
+import { useUserStore } from './../../stores/state.ts';
 export default {
   props: {
     person: {
@@ -47,34 +40,35 @@ export default {
     return {
       messages: [],
       newMessage: "",
-      UserProfile:{},
-      length:0
+      UserProfile: {},
+      length: 0
     };
   },
   methods: {
     sendMessage() {
-        console.log("I AM SENDmessage function ", this.person);
+      console.log("I AM SENDmessage function ", this.person);
+      if (this.newMessage != '') {
         this.$socket.emit(
           "sendDM",
           { toId: this.person.id, message: this.newMessage },
-          () => {},
+          () => { },
         );
-        this.$nextTick(() => {
-          const scrollContainer = this.$refs.scrollContainer;
-          scrollContainer.scrollTop = scrollContainer.scrollHeight;
-        });
-        this.newMessage = "";
+      }
+      this.$nextTick(() => {
+        const scrollContainer = this.$refs.scrollContainer;
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      });
+      this.newMessage = "";
     },
   },
 
   mounted() {
     this.UserProfile = this.person;
     console.log(" I am in Mounted in chatbox ", this.UserProfile)
-    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => {});
+    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
-      if(data.type == "DM")
-      {
+      if (data.type == "DM") {
         var tye = "";
         if (data.message.from.id != this.person.id) tye = "sent";
         else tye = "received";
@@ -85,7 +79,7 @@ export default {
           type: tye,
           text: data.message.message,
         });
-        
+
       }
       if (data.type == "DMMessages") {
         data.messages.forEach((element) => {
@@ -102,12 +96,12 @@ export default {
           });
         });
       }
-      this.$nextTick(() =>{
-          const scrollContainer = this.$refs.scrollContainer;
-          if(scrollContainer)
-              scrollContainer.scrollTop = scrollContainer.scrollHeight;
-        });
-  
+      this.$nextTick(() => {
+        const scrollContainer = this.$refs.scrollContainer;
+        if (scrollContainer)
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      });
+
     });
 
   },
@@ -115,7 +109,6 @@ export default {
 </script>
 
 <style>
-
 .avatar {
   width: 50px;
   height: 50px;

@@ -111,6 +111,15 @@ export default {
   },
   async mounted() {
 
+     this.$socket.on("ChatRoomList", (data) => {
+        console.log("This is data from channel profile : ", data)
+        if ( data.type == 'updated') {
+         
+         
+          this.fetchData();
+        }
+      }
+      );
     this.$socket.on("receiveMessage", (data) => {
       console.log("receiveMessage form channel profile--------- ", data)
       if ((data.type == 'notification' && data.action == 'joined') ||
