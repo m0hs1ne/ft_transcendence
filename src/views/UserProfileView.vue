@@ -3,12 +3,13 @@ import { ref, computed } from 'vue';
 import { Icon } from '@iconify/vue';
 import axios from "axios";
 import ProfileStat from "./../components/Profile/ProfileStat.vue";
-import { SharedData } from "./../stores/state.ts";
+import { SharedData, useUserStore } from "./../stores/state.ts";
 
 
 export default {
 	setup(props) {
 		const state = SharedData();
+		const chatApi = useUserStore();
 		const isLoading = ref(false);
 		const isError = ref(false);
 		const username = ref("");
@@ -22,6 +23,7 @@ export default {
 		const isNotMe = ref(false);
 		const isFriend = ref(false);
 		const friendTab = ref(false);
+		const userData = {};
 
 
 		const lastBattles = [
@@ -61,6 +63,7 @@ export default {
 			state,
 			isFriend,
 			isLoading,
+			chatApi,
 		};
 	},
 	components: {
@@ -81,6 +84,7 @@ export default {
 					}
 				);
 
+				this.userData = res.data;
 				this.username = res.data.username;
 				this.avatar = res.data.avatar;
 				this.wins = res.data.wins - 1;
@@ -128,6 +132,11 @@ export default {
 			this.isLoading = false;
 		},
 		async removeFriend() { },
+		goToChat()
+		{
+			this.chatApi.ActiveId = this.userData;
+			this.$router.push('/chat');
+		}
 	},
 	async created() {
 		await this.fetchData();
@@ -196,7 +205,7 @@ export default {
 				</div>
 				<div v-if="this.isNotMe"
 					class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer">
-					<Icon @click="" icon="fluent:chat-12-filled" height="50"
+					<Icon @click="this.goToChat()" icon="fluent:chat-12-filled" height="50"
 						class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg" />
 				</div>
 				<div @click="friendTab = true"

@@ -8,7 +8,8 @@
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
     </div>
     <div class="flex flex-row">
-      <button class="flex items-center text-gray-700 hover:text-gray-900" @click="ViewProfil">
+      <button
+       class="flex items-center text-gray-700 hover:text-gray-900" @click="this.$router.push(`/users/${this.person.id}`)">
         <span class="ml-2 h-10">View Profil</span>
       </button>
       <button class="flex items-center text-gray-700 hover:text-gray-900" @click="Block">

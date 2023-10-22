@@ -17,7 +17,7 @@ export const useUserStore = defineStore("user", {
     Action:"",
     MemberRoleStatus:'',
     error: '',
-    ActiveId: null,
+    ActiveId: {},
   }),
 
   actions: {
