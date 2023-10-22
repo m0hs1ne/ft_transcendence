@@ -95,7 +95,7 @@ export class UsersController {
   @Delete('friends/:id')
   removeFriends(@Param('id') id, @Req() req)
   {
-    if (typeof id === 'number')
+
       return this.usersService.removefriends(+id, req);
   }
 
