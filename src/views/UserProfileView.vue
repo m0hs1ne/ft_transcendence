@@ -19,8 +19,9 @@ export default {
 		const winrat = ref(0);
 		const friends = ref([]);
 		const is2FA = ref(false);
-		const displayAdd = ref(false);
+		const isNotMe = ref(false);
 		const isFriend = ref(false);
+		const friendTab = ref(false);
 
 
 		const lastBattles = [
@@ -56,7 +57,7 @@ export default {
 			achievements,
 			battles,
 			winrat,
-			displayAdd,
+			isNotMe,
 			state,
 			isFriend,
 			isLoading,
@@ -69,7 +70,7 @@ export default {
 	methods:
 	{
 		async fetchData() {
-			this.displayAdd = this.state.userData.id != this.$route.params.id
+			this.isNotMe = this.state.userData.id != this.$route.params.id;
 			this.isLoading = true;
 			// Get user profile data
 			try {
@@ -87,6 +88,7 @@ export default {
 				this.battles = res.data.wins + res.data.losses - 2;
 				this.winrat = parseInt(res.data.wins / (res.data.wins + res.data.losses) * 100) + '%';
 				this.friends = res.data.friends;
+				this.isFriend = this.state.friends.some(friend => friend.id === res.data.id);
 				this.is2FA = res.data.is2faEnabled;
 				console.log("user from id: \n", res.data);
 			} catch (error) {
@@ -95,22 +97,33 @@ export default {
 			}
 			this.isLoading = false;
 		},
-		async addFriend() {
+		async friendLogic() {
 			this.isLoading = true;
 			try {
-				const response = await axios.post(
-					"http://localhost:3000/api/users/friends/",
-					{ id:  parseInt(this.$route.params.id) },
-					{
-						withCredentials: true,
-					}
-				);
-				console.log("addFriend res", response);
-
+				if (this.isFriend) {
+					console.log("I' want to delete this user")
+					const response = await axios.delete(
+						`http://localhost:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
+						{
+							withCredentials: true,
+						}
+					);
+					console.log("friendLogic res", response);
+				}
+				else {
+					const response = await axios.post(
+						"http://localhost:3000/api/users/friends/",
+						{ id: parseInt(this.$route.params.id) },
+						{
+							withCredentials: true,
+						}
+					);
+					console.log("friendLogic res", response);
+				}
 				// Update the local state with the new avatar URL
 				await this.state.fetchData();
 			} catch (error) {
-				console.error("Error addFriend:", error);
+				console.error("Error friendLogic:", error);
 			}
 			this.isLoading = false;
 		},
@@ -123,8 +136,40 @@ export default {
 </script>
 
 
-<template>
-	<div class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10
+<template> 
+	<div v-if="this.friendTab" class="flex flex-col justify-start items-center min-h-screen dark:bg-slate-800 p-5">
+		<div class="flex w-full justify-start items-center">
+			<Icon @click="friendTab = false" icon="ion:arrow-back" height="50"
+				class="text-gray-100 dark:text-white p-3" />
+			<h1 class="font-Poppins font-semibold text-4xl dark:text-white text-center items-center">
+				{{ this.username }} Friends:
+			</h1>
+		</div>
+		<div v-for="(element, index) in this.friends" :key="index" class="flex items-center justify-start my-5 px-5 py-3 rounded-2xl 
+				custom-box-shadow dark:bg-slate-700 dark:text-white">
+			<router-link :to="'/users/' + element.id" class="flex items-center justify-between min-w-full">
+				<div class="flex items-center">
+					<p class="font-Poppins font-semibold text-xl">
+						{{ index + 1 }}.
+					</p>
+					<div class="w-14 h-14 md:w-20 md:h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
+						<img referrerpolicy="no-referrer" :src="element.avatar" alt="Avatar"
+							class="object-cover rounded-full w-14 h-14 md:w-20 md:h-20">
+					</div>
+					<p class="w-36 md:w-56 overflow-ellipsis line-clamp-1
+							font-Poppins font-semibold md:text-xl tracking-wide dark:text-white">
+						{{ element.username }}
+					</p>
+				</div>
+				<p class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
+					{{ parseInt(element.wins / (element.wins + element.losses) * 100) }}%
+				</p>
+			</router-link>
+		</div>
+	</div>
+
+
+	<div v-else class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10
 				min-h-screen dark:bg-slate-800">
 		<!-- <ProfileCard /> -->
 		<div
@@ -143,12 +188,21 @@ export default {
 				<div class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"></div>
 				<ProfileStat :title="this.winrat" description="Win-rat" />
 			</div>
-			<div v-if="this.displayAdd"
-				class="flex items-center justify-center w-full gap-5 font-Poppins font-bold text-xl mt-7">
-				<button @click="this.addFriend()"
-					class="text-gray-100 dark:text-white shadow w-fit py-3 px-5 bg-blue-500 rounded-lg">
-					Add Friend
-				</button>
+			<div class="flex w-full items-center justify-center gap-5 mt-7">
+				<div v-if="this.isNotMe"
+					class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer">
+					<Icon @click="this.friendLogic()" :icon="!isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'"
+						height="50" class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg" />
+				</div>
+				<div v-if="this.isNotMe"
+					class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer">
+					<Icon @click="" icon="fluent:chat-12-filled" height="50"
+						class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg" />
+				</div>
+				<div @click="friendTab = true"
+					class="flex items-center justify-center text-gray-700 font-Poppins font-bold text-xl cursor-pointer bg-gray-200 p-4 rounded-lg shadow-lg">
+					View Friends
+				</div>
 			</div>
 		</div>
 
@@ -161,7 +215,7 @@ export default {
 				<div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
 			</div>
 			<div class="overflow-y-auto w-full font-Poppins text-lg font-medium">
-				<div v-for="(battle, index) in lastBattles" :key="index"
+				<div v-for="( battle, index ) in  lastBattles " :key="index"
 					class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
 					<div class="mb-2">
 						{{ battle.player1.name }} ({{ battle.player1.score }})
@@ -179,7 +233,7 @@ export default {
 				Achievements:
 			</h1>
 			<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
-				<div v-for="(val, index) in achievements" :key="index" class="flex flex-col w-full items-center justify-center rounded-2xl mx-auto py-5 gap-2
+				<div v-for="( val, index ) in  achievements " :key="index" class="flex flex-col w-full items-center justify-center rounded-2xl mx-auto py-5 gap-2
 					custom-box-shadow dark:bg-slate-900 dark:text-white">
 					<Icon class="text-gray-500 dark:text-gray-400" :icon="val.icon" height="80" />
 					<h1 class="font-Poppins font-bold">{{ val.title }}</h1>
