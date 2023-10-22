@@ -6,6 +6,7 @@ import { Server, Socket } from 'socket.io';
 import { checkPassword, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 
 var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()
@@ -39,16 +40,28 @@ export class ChatRoomsGateway{
       const message = await this.chatRoomsService.messagesNotification(payload.sub)
       notifications.push({type: 'info', message: `You Got ${message} new Messages`})
       socket.emit('Notification', {type: 'list', notifications})
+
       this.userService.setOnline(payload.sub, true)
+      const myfriends = await this.userService.getfriends(payload.sub);
+      for (const friend of myfriends)
+      {
+        clients[friend.id].emit("userStatus", {id: payload.sub, online: true})
+      }
   } catch(e) {
     console.log(e.message)
     socket.disconnect()
   }
   }
 
-  handleDisconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
     const payload = verifyToken(socket.handshake.headers.cookie)
+    
     this.userService.setOnline(payload.sub, false)
+    const myfriends = await this.userService.getfriends(payload.sub);
+    for (const friend of myfriends)
+    {
+      clients[friend.id].emit("userStatus", {id: payload.sub, online: false})
+    }
     console.log(`socket disconnected: ${payload.sub}`);
     this.userService.updateDateDisconnect(payload.sub)
     clients.delete(payload.sub)
