@@ -18,12 +18,12 @@
 </template>
   
 <script>
-import GroupList from '../components/Chat/GroupList.vue';
+
 import ChatChatbox from '../components/Chat/Chatbox.vue';
 import ChatFriendList from '../components/Chat/FriendList.vue';
 import ChatRoom from '../components/Chat/chatRoom.vue';
 import ChatBoxChannel from '../components/Chat/ChatBoxChannel.vue'
-import ChatGroupFriend from '../components/Chat/GroupFriend.vue';
+ import ChatGroupFriend from '../components/Chat/GroupFriend.vue';
 import ChatChannelProfil from '../components/Chat/ChannelProfil.vue';
 import ChatUserProfile from '../components/Chat/UserProfile.vue';
 import ErrorPopup from '../components/Chat/ErrorPopup.vue';
@@ -39,7 +39,6 @@ export default {
 		ChatBoxChannel,
 		ChatFriendList,
 		ChatChatbox,
-		GroupList,
 		ChatRoom,
 		ChatGroupFriend,
 		ChatUserProfile,

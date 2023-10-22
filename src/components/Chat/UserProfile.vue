@@ -63,21 +63,26 @@ export default {
       console.log(" block user ", this.person)
 
       axios.post("http://localhost:3000/api/users/blocked/", {
-           withCredentials: true,
-            id : this.person.id
-          })
+        withCredentials: true,
+        id: this.person.id
+      })
         .then((response) => {
-            console.log(response)
+          console.log(response)
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
     },
-    play()
-    {
-      console.log(this.person , this.ActiveChannelId)
+    play() {
+      console.log(this.person, this.ActiveChannelId)
       console.log(this.$GameSocket)
-      
+      this.$GameSocket.emit("Chall",
+        {
+          challId: this.userStore.MyId,
+          oppId: this.person.id,
+          type: "chall"
+
+        }, () => { });
     },
 
     ViewProfil() {
@@ -86,6 +91,7 @@ export default {
   },
   mounted() {
     console.log(" mounted in userprofile ", this.person);
+    
   },
 };
 </script>
