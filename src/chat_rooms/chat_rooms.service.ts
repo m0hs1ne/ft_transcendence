@@ -32,9 +32,9 @@ export class ChatRoomsService {
     {
       if (typeof createChatRoomDto.ifProtectedPass != 'string')
         throw new BadRequestException()
-      const msg = this.checkPasswordStrength(createChatRoomDto.ifProtectedPass)
-      if (msg)
-        throw new BadRequestException(msg)
+      // const msg = this.checkPasswordStrength(createChatRoomDto.ifProtectedPass)
+      // if (msg)
+      //   throw new BadRequestException(msg)
     }
     createChatRoomDto.owner = payload.sub
     const chatroom = await this.chatRoomRepository.create(createChatRoomDto);
