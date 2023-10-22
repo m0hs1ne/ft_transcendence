@@ -11,7 +11,8 @@
         <div class="flex-shrink-0">
           <img :src="friend.avatar ? friend.avatar :
             'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
-            @click="handleChatClick(friend)" alt="Avatar" class=" h-12 rounded-full" />
+            @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
+            class="h-12 rounded-full" />
         </div>
         <div class="flex-row">
           <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
@@ -76,26 +77,31 @@ export default {
           this.userStore.fetchDataForDmChatRooms();
           if (this.userStore.DmChatroomsList.length != 0)
             this.handleChatClick(this.userStore.DmChatroomsList[0])
-        }}
+        }
+      }
       );
-      
-      if(this.userStore.ActiveId.length)
-      {
+
+      if (this.userStore.ActiveId.length) {
         console.log(" I am her to get chat room ", this.userStore.ActiveId)
         this.handleChatClick(this.userStore.ActiveId)
       }
-      else if (this.userStore.DmChatroomsList.length != 0)
-      {
-        console.log(" I am her ",this.userStore.DmChatroomsList);
+      else if (this.userStore.DmChatroomsList.length != 0) {
+        console.log(" I am her ", this.userStore.DmChatroomsList);
         this.handleChatClick(this.userStore.DmChatroomsList[0])
       }
     },
-    sideMunue() { }
+
+    getStatusClass(status) {
+      console.log(" ******************************************--*********************");
+      console.log(status)
+      if (status)
+        return "border-4 border-green-500"
+    }
   },
 
   async mounted() {
-  await this.fetchData();
-   await  this.SocketNoti();
+    await this.fetchData();
+    await this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
       console.log(" receiveMessage form Group Friend ********* ", data)
@@ -114,14 +120,20 @@ export default {
 
     this.$socket.on("userStatus", (data) => {
       console.log(" receiveMessage  user Status  ********* ", data)
-      
+      console.log(this.userStore.DmChatroomsList);
+      this.userStore.DmChatroomsList.forEach(element => {
+        console.log(element)
+        // array of objects .......
+        // data.forEach(StatusObj => {
+        //   if (StatusObj.id == element.id) {
+        //     element.statusOnline = StatusObj.online;
+        //   }
+        // })
+      })
+      //  this.fetchData();
+      //  this.SocketNoti();
 
     },);
-     
-
-
-
-
   },
 };
 </script>
