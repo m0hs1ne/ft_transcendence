@@ -457,4 +457,60 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
+
+  // Send Game Challenge in notificatio
+  @SubscribeMessage('sendChallenge')
+  async challenge(@MessageBody() body, @Req() req) {
+    const {
+      toId,
+      mode
+    } = body
+
+    // expected params: toId: id of user to send to | title: title of chatroom
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try
+    {
+      if (typeof toId === 'number' && typeof toId === 'string')
+      {
+        const to = await this.userService.profile(toId, payload)
+        const from = await this.userService.myprofile(payload.sub)
+        const client = clients.get(toId)
+        if (client)
+        {
+          const invitation = {
+            mode,
+            from: {
+              id: from.id,
+              avatar: from.avatar,
+              username: from.username
+            },
+            to: {
+              id: to.id,
+              avatar: to.avatar,
+              username: to.username
+            }
+          }
+          client.emit('Notification', {type: "challenge", invitation})
+        }
+      }
+      else 
+        throw new BadRequestException()
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Error', {error: e.message});
+    }
+    /* return Invitation sent to toId, 
+    {
+      id, of invitation
+      title, of chat
+      from:
+        {
+          id,
+          username,
+          avatar
+        }
+      }
+    */
+  } 
 }
