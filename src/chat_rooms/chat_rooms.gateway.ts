@@ -39,6 +39,7 @@ export class ChatRoomsGateway{
       const message = await this.chatRoomsService.messagesNotification(payload.sub)
       notifications.push({type: 'info', message: `You Got ${message} new Messages`})
       socket.emit('Notification', {type: 'list', notifications})
+      this.userService.setOnline(payload.sub, true)
   } catch(e) {
     console.log(e.message)
     socket.disconnect()
@@ -47,6 +48,7 @@ export class ChatRoomsGateway{
 
   handleDisconnect(socket: Socket) {
     const payload = verifyToken(socket.handshake.headers.cookie)
+    this.userService.setOnline(payload.sub, false)
     console.log(`socket disconnected: ${payload.sub}`);
     this.userService.updateDateDisconnect(payload.sub)
     clients.delete(payload.sub)
