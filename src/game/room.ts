@@ -1,21 +1,20 @@
-import { Socket } from 'socket.io';
-
+import { Socket } from "socket.io";
 
 export class Room {
   id: number;
   RightPlayer: {
-    socket: Socket,
+    socket: Socket;
     Paddle: number;
     Score: number;
     id: number;
-  }
+  };
 
   LeftPlayer: {
-    socket: Socket,
+    socket: Socket;
     Paddle: number;
     Score: number;
     id: number;
-  }
+  };
 
   PaddleHeight: number;
   PaddleWidth: number;
@@ -27,7 +26,7 @@ export class Room {
 
   roomId: string;
   ballPosition: { x: number; y: number } = { x: 0.5, y: 0.5 };
-  ballDirection: { x: number; y: number } = {x: 0, y:0};
+  ballDirection: { x: number; y: number } = { x: 0, y: 0 };
 
   constructor(rightPlayerSocket: Socket, leftPlayerSocket: Socket) {
     this.RightPlayer = {
@@ -44,21 +43,24 @@ export class Room {
       id: null,
     };
     this.closeroom = false;
-    this.angle = Math.random() * (Math.PI/4 - (-Math.PI/4)) + (-Math.PI/4);
+    this.angle = Math.random() * (Math.PI / 4 - -Math.PI / 4) + -Math.PI / 4;
     this.ballDirection.x = 2 * Math.cos(this.angle);
     this.ballDirection.y = 2 * Math.sin(this.angle);
-
   }
 
   Play(): void {
-    this.RightPlayer.socket.emit('startGame', {
+    this.RightPlayer.socket.emit("startGame", {
       id: this.roomId,
       pos: "Right",
-    })
-    this.LeftPlayer.socket.emit('startGame', {
+      CurrentID: this.RightPlayer.id,
+      OpponentID: this.LeftPlayer.id,
+    });
+    this.LeftPlayer.socket.emit("startGame", {
       id: this.roomId,
       pos: "Left",
-    })
+      CurrentID: this.LeftPlayer.id,
+      OpponentID: this.RightPlayer.id,
+    });
     this.startGameLoop();
   }
 
@@ -67,19 +69,16 @@ export class Room {
       if (this.closeroom == true) {
         clearInterval(this.IntervalId);
         console.log("It should stop know");
-      }
-      else 
-      {
+      } else {
         this.ballPosition.x += this.ballDirection.x * 0.002;
         this.ballPosition.y += this.ballDirection.y * 0.002;
         this.CheckBall();
-        this.LeftPlayer.socket.emit('updateBall', 
-        {
+        this.LeftPlayer.socket.emit("updateBall", {
           x: this.ballPosition.x,
           y: this.ballPosition.y,
         });
 
-        this.RightPlayer.socket.emit('updateBall', {
+        this.RightPlayer.socket.emit("updateBall", {
           x: this.ballPosition.x,
           y: this.ballPosition.y,
         });
@@ -87,25 +86,23 @@ export class Room {
     }, 1000 / 60);
   }
 
-  CheckBall(): void 
-  {
-    if(this.checkGoals()){}
-    else if(!this.checkLeftPadlleCollision()){}
-    else
-      this.checkRightPadlleCollision();
+  CheckBall(): void {
+    if (this.checkGoals()) {
+    } else if (!this.checkLeftPadlleCollision()) {
+    } else this.checkRightPadlleCollision();
     this.checkWallCollision();
-    
   }
 
-  checkLeftPadlleCollision(): number
-  {
-    if (this.ballPosition.x <= 0.03 &&  this.LeftPlayer.Paddle - 0.01  <= this.ballPosition.y
-        && this.LeftPlayer.Paddle + 0.25 + 0.01  >= this.ballPosition.y)
-    {
+  checkLeftPadlleCollision(): number {
+    if (
+      this.ballPosition.x <= 0.03 &&
+      this.LeftPlayer.Paddle - 0.01 <= this.ballPosition.y &&
+      this.LeftPlayer.Paddle + 0.25 + 0.01 >= this.ballPosition.y
+    ) {
       // var diff = this.ballPosition.y - this.LeftPlayer.Paddle;
-			// var angle = this.map(diff * 100, 0, 25, -Math.PI, Math.PI);
-			// this.ballDirection.x = -2 * Math.cos(angle);
-			// this.ballDirection.y = 2 * Math.sin(angle);
+      // var angle = this.map(diff * 100, 0, 25, -Math.PI, Math.PI);
+      // this.ballDirection.x = -2 * Math.cos(angle);
+      // this.ballDirection.y = 2 * Math.sin(angle);
       this.ballDirection.x *= -1;
       return 0;
     }
@@ -122,9 +119,11 @@ export class Room {
   // }
 
   checkRightPadlleCollision(): number {
-    if (this.ballPosition.x >= 0.97 && this.RightPlayer.Paddle - 0.01 <= this.ballPosition.y
-      && this.RightPlayer.Paddle + 0.25 + 0.01 >= this.ballPosition.y)   
-    {
+    if (
+      this.ballPosition.x >= 0.97 &&
+      this.RightPlayer.Paddle - 0.01 <= this.ballPosition.y &&
+      this.RightPlayer.Paddle + 0.25 + 0.01 >= this.ballPosition.y
+    ) {
       this.ballDirection.x *= -1;
       return 0;
     }
@@ -134,46 +133,37 @@ export class Room {
   checkWallCollision(): void {
     if (this.ballPosition.y < 0.02) {
       this.ballDirection.y *= -1;
-    }
-    else if (this.ballPosition.y > 0.98) {
+    } else if (this.ballPosition.y > 0.98) {
       this.ballDirection.y *= -1;
     }
   }
-  
-  checkGoals(): number 
-  {
+
+  checkGoals(): number {
     if (this.ballPosition.x <= 0.02) {
       this.RightPlayer.Score++;
       if (this.RightPlayer.Score == this.GameMode) {
         this.EndTheGame();
-      }
-      else
-        this.EmitScore();
+      } else this.EmitScore();
       return 1;
-    }
-    else if (this.ballPosition.x >= 0.98) {
+    } else if (this.ballPosition.x >= 0.98) {
       this.LeftPlayer.Score++;
       if (this.LeftPlayer.Score == this.GameMode) {
         this.EndTheGame();
-      }
-      else
-        this.EmitScore();
+      } else this.EmitScore();
       return 1;
     }
     return 0;
   }
 
   EmitScore(): void {
-    this.RightPlayer.socket.emit("Score",
-      {
-        Current: this.RightPlayer.Score,
-        Oponent: this.LeftPlayer.Score
-      });
-    this.LeftPlayer.socket.emit("Score",
-      {
-        Current: this.LeftPlayer.Score,
-        Oponent: this.RightPlayer.Score,
-      });
+    this.RightPlayer.socket.emit("Score", {
+      Current: this.RightPlayer.Score,
+      Oponent: this.LeftPlayer.Score,
+    });
+    this.LeftPlayer.socket.emit("Score", {
+      Current: this.LeftPlayer.Score,
+      Oponent: this.RightPlayer.Score,
+    });
     this.ballPosition.x = 0.5;
     this.ballPosition.y = 0.5;
   }
@@ -186,8 +176,7 @@ export class Room {
         roomId: this.roomId,
       });
       this.Winner = this.RightPlayer.id;
-    }
-    else {
+    } else {
       this.RightPlayer.socket.emit("Lose");
       this.LeftPlayer.socket.emit("Win");
       this.LeftPlayer.socket.emit("DeleteRoom", {
@@ -204,8 +193,7 @@ export class Room {
       this.Winner = this.LeftPlayer.id;
       this.RightPlayer.Score = 0;
       this.LeftPlayer.Score = this.GameMode;
-    }
-    else {
+    } else {
       this.RightPlayer.socket.emit("Win");
       this.Winner = this.RightPlayer.id;
       this.LeftPlayer.Score = 0;
