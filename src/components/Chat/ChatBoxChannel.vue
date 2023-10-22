@@ -87,14 +87,14 @@ export default {
     },
 
     sendMessage() {
-      console.log("I AM SENDmessage fun");
-      this.$socket.emit(
-        "sendMessage",
-        { chatId: this.channel.id, message: this.newMessage },
-        () => { },
-      );
-
-
+      console.log("I AM SENDmessage channel");
+      if (this.newMessage != '') {
+        this.$socket.emit(
+          "sendMessage",
+          { chatId: this.channel.id, message: this.newMessage },
+          () => { },
+        );
+      }
 
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer1;
@@ -110,13 +110,10 @@ export default {
     //this.userStore.UpdateChannelId(this.channel.id)
     console.log("I am in mounted", this.userStore.ActiveChannelId)
     this.$socket.on("receiveMessage", (data) => {
-
-      console.log("This is Problem: ", data)
-      this.$socket.on("receiveMessage", (data) => {
-        console.log("receiveMessage form channel profile--------- ", data)
-        if ((data.type == 'notification' && data.action == 'joined') ||
-          (data.type == 'notification' && data.action == 'status')||
-            (data.type == 'message' && data.action == 'message')) {
+      console.log("receiveMessage form channel profile--------- ", data)
+      if ((data.type == 'notification' && data.action == 'joined') ||
+        (data.type == 'notification' && data.action == 'status') ||
+        (data.type == 'message' && data.action == 'message')) {
         this.userStore.ActiveMessageChannelId.push(data);
       }
 
@@ -127,9 +124,8 @@ export default {
     //   const scrollContainer = this.$refs.scrollContainer;
     //   scrollContainer.scrollTop = scrollContainer.scrollHeight;
     // });
-  })
 
-},
+  },
 };
 </script>
 

@@ -2,7 +2,7 @@
 <template>
   <div class=" flex flex-col m-2 p-5 rounded-lg bg-slate-300   h-full flex-shrink-0 ">
     <!-- {{ this.userStore.DmChatroomsList }} -->
-  
+
     <AlertChannel />
     <PopUpinv />
     <ul>
@@ -69,7 +69,7 @@ export default {
       // await this.userStore.fetchDataForDmChatRooms();
       await this.$socket.on("ChatRoomList", (data) => {
         console.log("This is data: ", data)
-        if (data.type == 'new') {
+        if (data.type == 'new' || data.type == 'updated') {
           this.userStore.fetchDataForDmChatRooms();
         }
         if (data.type == 'remove') {
@@ -79,11 +79,15 @@ export default {
         }
       }
       );
-
-      if (this.userStore.DmChatroomsList.length != 0)
+      if(this.userStore.ActiveId)
+      {
+        console.log(" I am her to get chat room ", this.userStore.ActiveId)
+        this.handleChatClick(this.userStore.ActiveId)
+      }
+      else if (this.userStore.DmChatroomsList.length != 0)
         this.handleChatClick(this.userStore.DmChatroomsList[0])
     },
-    sideMunue(){}
+    sideMunue() { }
   },
 
   mounted() {
@@ -94,12 +98,11 @@ export default {
       console.log(" receiveMessage form Group Friend ********* ", data)
       if ((data.type == 'notification' && data.action == 'joined') ||
         (data.type == 'notification' && data.action == 'status') ||
-       (data.type == 'notification' && data.action == 'kick')
+        (data.type == 'notification' && data.action == 'kick')
       ) {
         this.fetchData();
       }
-      if((data.type == 'notification' && data.action == 'kick'))
-      {
+      if ((data.type == 'notification' && data.action == 'kick')) {
         this.fetchData();
         this.SocketNoti();
       }
