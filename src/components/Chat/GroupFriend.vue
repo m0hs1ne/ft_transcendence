@@ -94,7 +94,7 @@ export default {
   },
 
   async mounted() {
-    await this.fetchData();
+  await this.fetchData();
    await  this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
@@ -111,6 +111,16 @@ export default {
       }
 
     },);
+
+    this.$socket.on("userStatus", (data) => {
+      console.log(" receiveMessage  user Status  ********* ", data)
+      
+
+    },);
+     
+
+
+
 
   },
 };

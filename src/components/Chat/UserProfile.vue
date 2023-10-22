@@ -9,24 +9,25 @@
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
     </div>
     <div class="flex flex-col items-center">
-      <button
-       class="flex items-center text-gray-700 hover:text-gray-900" @click="this.$router.push(`/users/${this.person.id}`)">
+      <button class="flex items-center text-gray-700 hover:text-gray-900"
+        @click="this.$router.push(`/users/${this.person.id}`)">
         <span class="ml-2 h-10">View Profil</span>
       </button>
       <button class="flex items-center text-gray-700 hover:text-gray-900" @click="Block">
         <span class="ml-2 h-10">Block</span>
       </button>
-      <button v-if = "this.person.inGame == false" class="flex items-center text-gray-700 hover:text-gray-900" @click="play">
+      <button v-if="this.person.inGame == false" class="flex items-center text-gray-700 hover:text-gray-900"
+        @click="play">
         <span class="ml-2 h-10">Play</span>
       </button>
-      <button v-else  class="flex items-center text-gray-700 hover:text-gray-900">
+      <button v-else class="flex items-center text-gray-700 hover:text-gray-900">
         <span class="ml-2 h-10">Playing ......</span>
       </button>
 
       <button v-if="this.person.statusOnline == true" class="flex items-center text-green-700 hover:text-gray-900">
         <span class="ml-2 h-10">online</span>
       </button>
-      <button v-else class="flex items-center text-green-700 hover:text-gray-900">
+      <button v-else class="flex items-center text-red-700 hover:text-gray-900">
         <span class="ml-2 h-10">offline</span>
       </button>
 
@@ -39,7 +40,7 @@ import { useUserStore } from './../../stores/state.ts';
 import GameMode from './GameMode.vue';
 import axios from "axios";
 export default {
-  components : {GameMode},
+  components: { GameMode },
   setup() {
     const userStore = useUserStore();
     return { userStore };
@@ -47,7 +48,7 @@ export default {
   data() {
     return {
       friends: [{}],
-      creatchallenge:false,
+      creatchallenge: false,
     };
   },
   props: {
@@ -79,8 +80,10 @@ export default {
       console.log(" block user ", this.person)
 
       axios.post("http://localhost:3000/api/users/blocked/", {
+
+        id: parseInt(this.person.id)
+      }, {
         withCredentials: true,
-        id: prseInt(this.person.id)
       })
         .then((response) => {
           console.log(response)
@@ -95,7 +98,7 @@ export default {
       this.userStore.Opponent = this.person;
       console.log(this.person, this.ActiveChannelId)
       console.log(this.$GameSocket)
-     
+
     },
 
     ViewProfil() {
@@ -104,7 +107,7 @@ export default {
   },
   mounted() {
     console.log(" mounted in userprofile ", this.person);
-    
+
   },
 };
 </script>
