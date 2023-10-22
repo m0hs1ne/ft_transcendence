@@ -49,7 +49,7 @@ export default {
 						</p>
 					</div>
 					<p class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
-						{{ (player.wins / (player.wins + player.losses)) * 100 }}%
+						{{ parseInt(player.wins / (player.wins + player.losses) * 100) }}%
 					</p>
 				</router-link>
 			</div>
