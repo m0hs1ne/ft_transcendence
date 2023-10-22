@@ -98,7 +98,7 @@ export default {
     console.log(" I am in");
     this.fetchData();
     this.$socket.on("Notification", (messages) => {
-      // console.log('Notification popinv ', messages)
+      
       // console.log(" This is friends: befor ", this.friends)
       if (messages.type == 'invitation') {
         console.log("The problem of the form of json ")

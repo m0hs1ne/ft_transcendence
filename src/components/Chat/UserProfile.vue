@@ -1,13 +1,14 @@
 <!-- FriendListComponent.vue -->
 <template>
   <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
+    <GameMode v-if="this.userStore.creatchallenge" />
     <div class="flex-shrink-0">
       <img referrerpolicy="no-referrer" :src="this.person.avatar" alt="Avatar" class="h-40 rounded-full" />
     </div>
     <div class="flex">
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
     </div>
-    <div class="flex flex-row">
+    <div class="flex flex-col items-center">
       <button
        class="flex items-center text-gray-700 hover:text-gray-900" @click="this.$router.push(`/users/${this.person.id}`)">
         <span class="ml-2 h-10">View Profil</span>
@@ -15,17 +16,30 @@
       <button class="flex items-center text-gray-700 hover:text-gray-900" @click="Block">
         <span class="ml-2 h-10">Block</span>
       </button>
-      <button class="flex items-center text-gray-700 hover:text-gray-900" @click="play">
+      <button v-if = "this.person.inGame == false" class="flex items-center text-gray-700 hover:text-gray-900" @click="play">
         <span class="ml-2 h-10">Play</span>
       </button>
+      <button v-else  class="flex items-center text-gray-700 hover:text-gray-900">
+        <span class="ml-2 h-10">Playing ......</span>
+      </button>
+
+      <button v-if="this.person.statusOnline == true" class="flex items-center text-green-700 hover:text-gray-900">
+        <span class="ml-2 h-10">online</span>
+      </button>
+      <button v-else class="flex items-center text-green-700 hover:text-gray-900">
+        <span class="ml-2 h-10">offline</span>
+      </button>
+
     </div>
   </div>
 </template>
 
 <script>
 import { useUserStore } from './../../stores/state.ts';
+import GameMode from './GameMode.vue';
 import axios from "axios";
 export default {
+  components : {GameMode},
   setup() {
     const userStore = useUserStore();
     return { userStore };
@@ -33,6 +47,7 @@ export default {
   data() {
     return {
       friends: [{}],
+      creatchallenge:false,
     };
   },
   props: {
@@ -65,7 +80,7 @@ export default {
 
       axios.post("http://localhost:3000/api/users/blocked/", {
         withCredentials: true,
-        id: this.person.id
+        id: prseInt(this.person.id)
       })
         .then((response) => {
           console.log(response)
@@ -75,15 +90,12 @@ export default {
         });
     },
     play() {
+
+      this.userStore.creatchallenge = true;
+      this.userStore.Opponent = this.person;
       console.log(this.person, this.ActiveChannelId)
       console.log(this.$GameSocket)
-      this.$GameSocket.emit("Chall",
-        {
-          challId: this.userStore.MyId,
-          oppId: this.person.id,
-          type: "chall"
-
-        }, () => { });
+     
     },
 
     ViewProfil() {

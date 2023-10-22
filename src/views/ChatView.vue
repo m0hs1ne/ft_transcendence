@@ -1,6 +1,7 @@
 <template>
 	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800">
 		<!-- Friend List and Group List Section -->
+		<confirmPlay/>
 		<div class="basis-1/4">
 			<!-- <GroupList @object-sent="handleObjectChannel" /> -->
 			<ChatGroupFriend @object-sent="handleObject" />
@@ -27,6 +28,7 @@ import ChatBoxChannel from '../components/Chat/ChatBoxChannel.vue'
 import ChatChannelProfil from '../components/Chat/ChannelProfil.vue';
 import ChatUserProfile from '../components/Chat/UserProfile.vue';
 import ErrorPopup from '../components/Chat/ErrorPopup.vue';
+import ConfirmPlay from '../components/Chat/ConfirmPlay.vue';
 
 import { useUserStore } from './../stores/state.ts';
 export default {
@@ -43,7 +45,8 @@ export default {
 		ChatGroupFriend,
 		ChatUserProfile,
 		ChatChannelProfil,
-		ErrorPopup
+		ErrorPopup,
+		ConfirmPlay,
 	},
 	data() {
 		return {
@@ -115,7 +118,7 @@ export default {
 
 	async mounted() {
 
-		// this.$socket.on("Notification", (messages) => {
+		// this.$socket.on("Motification", (messages) => {
 		// 	console.log("this is notification------------------");
 		// 	console.log(messages);
 		// 	this.userStore.UpdateInvitaion(messages);

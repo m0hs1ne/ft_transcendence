@@ -111,12 +111,11 @@ export default {
   },
   async mounted() {
 
-     this.$socket.on("ChatRoomList", (data) => {
+     await this.$socket.on("ChatRoomList", (data) => {
         console.log("This is data from channel profile : ", data)
         if ( data.type == 'updated') {
-         
-         
           this.fetchData();
+          console.log( "hoooo " , this.userStore.ActiveMembersChannelId)
         }
       }
       );

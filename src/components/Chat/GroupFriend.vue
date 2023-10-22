@@ -76,23 +76,26 @@ export default {
           this.userStore.fetchDataForDmChatRooms();
           if (this.userStore.DmChatroomsList.length != 0)
             this.handleChatClick(this.userStore.DmChatroomsList[0])
-        }
-      }
+        }}
       );
-      if(this.userStore.ActiveId)
+      
+      if(this.userStore.ActiveId.length)
       {
         console.log(" I am her to get chat room ", this.userStore.ActiveId)
         this.handleChatClick(this.userStore.ActiveId)
       }
       else if (this.userStore.DmChatroomsList.length != 0)
+      {
+        console.log(" I am her ",this.userStore.DmChatroomsList);
         this.handleChatClick(this.userStore.DmChatroomsList[0])
+      }
     },
     sideMunue() { }
   },
 
-  mounted() {
-    this.fetchData();
-    this.SocketNoti();
+  async mounted() {
+    await this.fetchData();
+   await  this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
       console.log(" receiveMessage form Group Friend ********* ", data)

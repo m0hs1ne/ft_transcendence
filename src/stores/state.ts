@@ -18,6 +18,8 @@ export const useUserStore = defineStore("user", {
     MemberRoleStatus:'',
     error: '',
     ActiveId: {},
+    Opponent:{},
+    creatchallenge:false
   }),
 
   actions: {
@@ -37,6 +39,7 @@ export const useUserStore = defineStore("user", {
           this.MyId = this.ActiveChannelData.data.id;
           this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
           this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
+          this.ActiveChannelTitle = this.ActiveChannelData.data.title;
           console.log("Up date the channnel",this.ActiveChannelData);
       } catch (error) {
         console.log("fetch channel by id error: ", error);
