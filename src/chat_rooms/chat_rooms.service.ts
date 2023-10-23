@@ -721,7 +721,7 @@ export class ChatRoomsService {
 
   async isMemberInChat(memberId: number, chatId: number)
   {
-    const userchat = await this.userChatRepository.find({
+    const userchat = await this.userChatRepository.findOne({
       where:{userId: memberId, chatRoomId: chatId}
     })
     if (userchat)
