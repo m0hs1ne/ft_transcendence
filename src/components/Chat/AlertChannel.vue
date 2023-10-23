@@ -1,8 +1,8 @@
 <template>
+  <img referrerpolicy="no-referrer" @click="openPopup" title="Creat Channel"
+    class="h-10 rounded-full  hover:scale-150 text-white font-bold py-2 transition-opacity duration-500"
+    src="./../../assets/icons/group.svg">
   <div>
-    <img referrerpolicy="no-referrer" @click="openPopup" title="Creat Channel"
-      class=" flex items-center justify-between  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
-      src="./../../assets/icons/group.svg">
     <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
       <div class="bg-white rounded-lg p-6">
         <h2 class="text-xl font-bold mb-4">Create Channel:</h2>

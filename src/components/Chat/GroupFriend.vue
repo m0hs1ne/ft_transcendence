@@ -1,36 +1,33 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="flex w-1/8 flex-col h-full  bg-slate-300  ">
-    <div>
+  <div id="sidebar" class="flex w-1/4 align-middle flex-col h-full  bg-slate-300  ">
+    <div class="flex flex-col ">
       <img referrerpolicy="no-referrer" @click="moveTheBar()" title="moveTheBar"
-        class=" flex float-right  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
-        src="./../../assets/icons/side-menu.svg">
+      class="float-left h-10 rounded-full  hover:scale-150 text-white font-bold py-2"
+      src="./../../assets/icons/side-menu.svg">
+      <AlertChannel />
+      <PopUpinv />
     </div>
 
     <Transition>
-      <div class=" m-2 p-5 rounded-lg h-full">
-        <div class=" flex  justify-between  flex-row w-full     ">
-          <AlertChannel />
-          <PopUpinv />
-        </div>
+      <div class=" w-full rounded-lg h-full">
         <ul>
-          <GameMode v-if="this.userStore.creatchallenge" />
-          <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
-            class="flex items-center p-2 space-x-4 border-b">
+          <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id" class="flex items-center p-1  border-b">
             <div class="flex-shrink-0">
               <img :src="friend.avatar ? friend.avatar :
                 'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
                 @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
                 class="h-12 rounded-full" />
             </div>
+            <GameMode v-if="this.userStore.creatchallenge" />
             <div v-if="show" class="flex-row">
-              <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
+              <span class="text-lg font-semiboldusername overflow-ellipsis line-clamp-1">{{ friend.username }} {{
+                friend.title }}</span>
               <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
-
             </div>
             <img referrerpolicy="no-referrer" v-if="friend.inGame == false && friend.statusOnline == true"
               @click="play(friend)" title="Play"
-              class=" m-2 h-10 rounded-full  hover:scale-150  text-white font-bold py-2 px-4"
+              class="h-10  hover:scale-150  text-white font-bold py-2 px-4"
               src="./../../assets/icons/ping.svg">
           </li>
         </ul>
@@ -113,6 +110,7 @@ export default {
       if (status)
         return "border-4 border-green-500 "
     },
+
     moveTheBar() {
       console.log(" dfdf ")
       this.show = !this.show;

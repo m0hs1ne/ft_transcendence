@@ -2,7 +2,7 @@
 <template>
 
   <img referrerpolicy="no-referrer" @click="openPopup" title="Check your Inv"
-        class=" flex items-center justify-between  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
+        class=" h-10 rounded-full  hover:scale-150 text-white font-bold py-2 transition-opacity duration-500 "
         src="./../../assets/icons/bell.svg">
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
     <div class="bg-white rounded-lg p-6">
