@@ -142,6 +142,7 @@ export const GameData = defineStore("Game", {
   state: () => ({
     modeLimit: String,
     modeTitle: String,
+    random: true,
   }),
 
   actions:{
@@ -149,6 +150,7 @@ export const GameData = defineStore("Game", {
     {
       this.modeLimit = limit;
       this.modeTitle = title;
+      this.random = true;
     },
   },
 });

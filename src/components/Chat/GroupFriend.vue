@@ -1,43 +1,41 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="flex w-1/4 flex-col h-full  bg-slate-300  ">
+  <div class="flex w-1/8 flex-col h-full  bg-slate-300  ">
     <div>
-      <img referrerpolicy="no-referrer" @click="moveTheBar()" title = "moveTheBar"
-      class=" flex float-right  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
-      src="./../../assets/icons/side-menu.svg"
-      
-      >
+      <img referrerpolicy="no-referrer" @click="moveTheBar()" title="moveTheBar"
+        class=" flex float-right  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
+        src="./../../assets/icons/side-menu.svg">
     </div>
-    
-    <Transition>
-    <div  class=" m-2 p-5 rounded-lg h-full">
-      <div class=" flex  justify-between  flex-row w-full     ">
-        <AlertChannel />
-      <PopUpinv />
-      </div>
-      <GameMode v-if="this.userStore.creatchallenge" />
-      <ul>
-        <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
-          class="flex items-center p-2 space-x-4 border-b">
-          <div class="flex-shrink-0">
-            <img :src="friend.avatar ? friend.avatar :
-              'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
-              @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
-              class="h-12 rounded-full" />
-          </div>
-          <div v-if="show" class="flex-row">
-            <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
-            <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
 
-          </div>
-          <img referrerpolicy="no-referrer" v-if="friend.inGame == false && friend.statusOnline == true"
-            @click="play(friend)" title="Play"
-            class=" m-2 h-10 rounded-full  hover:scale-150  text-white font-bold py-2 px-4"
-            src="./../../assets/icons/ping.svg">
-        </li>
-      </ul>
-    </div>
-  </Transition>
+    <Transition>
+      <div class=" m-2 p-5 rounded-lg h-full">
+        <div class=" flex  justify-between  flex-row w-full     ">
+          <AlertChannel />
+          <PopUpinv />
+        </div>
+        <GameMode v-if="this.userStore.creatchallenge" />
+        <ul>
+          <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
+            class="flex items-center p-2 space-x-4 border-b">
+            <div class="flex-shrink-0">
+              <img :src="friend.avatar ? friend.avatar :
+                'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
+                @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
+                class="h-12 rounded-full" />
+            </div>
+            <div v-if="show" class="flex-row">
+              <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
+              <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
+
+            </div>
+            <img referrerpolicy="no-referrer" v-if="friend.inGame == false && friend.statusOnline == true"
+              @click="play(friend)" title="Play"
+              class=" m-2 h-10 rounded-full  hover:scale-150  text-white font-bold py-2 px-4"
+              src="./../../assets/icons/ping.svg">
+          </li>
+        </ul>
+      </div>
+    </Transition>
   </div>
 </template>
   
@@ -62,7 +60,7 @@ export default {
   data() {
     return {
       friends: [],
-      show:true
+      show: true
     };
   },
   methods: {
@@ -115,8 +113,7 @@ export default {
       if (status)
         return "border-4 border-green-500 "
     },
-    moveTheBar()
-    { 
+    moveTheBar() {
       console.log(" dfdf ")
       this.show = !this.show;
 
@@ -128,7 +125,7 @@ export default {
       console.log(this.person, this.ActiveChannelId)
       console.log(this.$GameSocket)
     },
-    
+
 
   },
 

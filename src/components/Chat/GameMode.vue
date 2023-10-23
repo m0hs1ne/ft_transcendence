@@ -30,11 +30,12 @@
 </template>
     
 <script>
-import { useUserStore } from '../../stores/state.ts';
+import { useUserStore , GameData} from '../../stores/state.ts';
 export default {
     setup() {
         const userStore = useUserStore();
-        return { userStore };
+        const gameData = GameData();
+        return { userStore, gameData };
     },
     data() {
         return {
@@ -58,13 +59,18 @@ export default {
                     mode: this.selectedOption,
                 }, () => { });
 
-            
+
             this.$GameSocket.emit('Chall',
-            {
-                oponentId: this.userStore.Opponent.id,
-                challId: this.userStore.MyId,
-                type : "challenger",
-                mode: this.selectedOption,
+                {
+                    oponentId: this.userStore.Opponent.id,
+                    challId: this.userStore.MyId,
+                    type: "challenger",
+                    mode: this.selectedOption,
+                })
+            this.$GameSocket.on("start", (data) => {
+                console.log(" ", data)
+                this.gameData.random = false;
+                this.$router.push('/play');
             })
             this.isOpend = false;
             this.userStore.creatchallenge = false;
@@ -78,6 +84,8 @@ export default {
     },
     mounted() {
         this.isOpend = true;
+
+
 
     },
 };

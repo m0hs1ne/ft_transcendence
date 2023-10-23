@@ -15,11 +15,12 @@
 </template>
     
 <script>
-import { useUserStore } from '../../stores/state.ts';
+import { useUserStore, GameData } from '../../stores/state.ts';
 export default {
     setup() {
         const userStore = useUserStore();
-        return { userStore };
+        const gameData = GameData();
+        return { userStore, gameData };
     },
     data() {
         return {
@@ -40,9 +41,12 @@ export default {
                 type: 'opp',
                 mode: this.message.mode,
             })
+            
             this.isOpend = false;
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
+            this.gameData.random = false;
+            this.$router.push('/play');
         },
 
         closePopup() {
