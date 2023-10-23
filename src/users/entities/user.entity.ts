@@ -26,10 +26,10 @@ export class User {
     username: string;
 
 
-    @Column()
+    @Column({default: false})
     statusOnline: boolean;
 
-    @Column()
+    @Column({default: false})
     inGame: boolean;
 
     @Column({ default: false })

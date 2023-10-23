@@ -6,6 +6,7 @@ import { Server, Socket } from 'socket.io';
 import { checkPassword, verifyToken } from 'src/utils/guard';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 
 var clients : Map<number, Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>> = new Map()
@@ -39,14 +40,38 @@ export class ChatRoomsGateway{
       const message = await this.chatRoomsService.messagesNotification(payload.sub)
       notifications.push({type: 'info', message: `You Got ${message} new Messages`})
       socket.emit('Notification', {type: 'list', notifications})
+
+      this.userService.setOnline(payload.sub, true)
+      const myfriends = await this.userService.getfriends(payload.sub);
+      for (const friend of myfriends)
+      {
+        const client : Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = clients.get(friend.id)
+        if (client)
+        {
+          console.log(friend.id)
+          client.emit("userStatus", {id: payload.sub, online: true})
+        }
+      }
   } catch(e) {
     console.log(e.message)
     socket.disconnect()
   }
   }
 
-  handleDisconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
     const payload = verifyToken(socket.handshake.headers.cookie)
+
+    this.userService.setOnline(payload.sub, false)
+    const myfriends = await this.userService.getfriends(payload.sub);
+    for (const friend of myfriends)
+    {
+      const client : Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = clients.get(friend.id)
+      if (client)
+      {
+        console.log(friend.id)
+        client.emit("userStatus", {id: payload.sub, online: false})
+      }
+    }
     console.log(`socket disconnected: ${payload.sub}`);
     this.userService.updateDateDisconnect(payload.sub)
     clients.delete(payload.sub)
@@ -457,4 +482,60 @@ export class ChatRoomsGateway{
         client.emit('Error', {error: e.message});
     }
   }
+
+  // Send Game Challenge in notificatio
+  @SubscribeMessage('sendChallenge')
+  async challenge(@MessageBody() body, @Req() req) {
+    const {
+      toId,
+      mode
+    } = body
+
+    // expected params: toId: id of user to send to | title: title of chatroom
+    const payload = verifyToken(req.handshake.headers.cookie)
+    try
+    {
+      if (typeof toId === 'number' && typeof mode === 'string')
+      {
+        const to = await this.userService.profile(toId, payload)
+        const from = await this.userService.myprofile(payload.sub)
+        const client = clients.get(toId)
+        if (client)
+        {
+          const invitation = {
+            mode,
+            from: {
+              id: from.id,
+              avatar: from.avatar,
+              username: from.username
+            },
+            to: {
+              id: to.id,
+              avatar: to.avatar,
+              username: to.username
+            }
+          }
+          client.emit('Notification', {type: "challenge", invitation})
+        }
+      }
+      else 
+        throw new BadRequestException()
+    } catch(e) {
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Error', {error: e.message});
+    }
+    /* return Invitation sent to toId, 
+    {
+      id, of invitation
+      title, of chat
+      from:
+        {
+          id,
+          username,
+          avatar
+        }
+      }
+    */
+  } 
 }

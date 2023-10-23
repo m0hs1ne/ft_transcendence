@@ -20,6 +20,12 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
+  async setOnline(id, statusOnline:boolean)
+  {
+    await this.userRepository.update({id}, {statusOnline})
+  }
+
+
   async checkUserisBlockedByUser(user1Id, user2Id)
   {
     var isblocked = false;
@@ -162,6 +168,8 @@ export class UsersService {
       'friends.id',
       'friends.username',
       'friends.avatar',
+      'friends.inGame',
+      'friends.statusOnline'
     ])
     .getOne()
     if (!friends)

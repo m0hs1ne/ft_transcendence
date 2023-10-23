@@ -94,6 +94,7 @@ export class GameGateway {
         room.GameMode = mode;
         room.RightPlayer.id = payload1.sub;
         room.LeftPlayer.id = payload2.sub;
+        this.gameService.setInGame(payload1.sub,payload2.sub,true);
         this.clients.set(payload1.sub, room.roomId);
         this.clients.set(payload2.sub, room.roomId);
         this.rooms.set(room.roomId, room);
@@ -142,6 +143,8 @@ export class GameGateway {
       this.UpdateDbScore(payload.roomId);
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
       this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
+      this.gameService.setInGame(this.rooms.get(payload.roomId).LeftPlayer.id,this.rooms.get(payload.roomId).RightPlayer.id,false);
+
       this.rooms.delete(payload.roomId);
     }
     if (this.rooms.get(payload.roomId)) {
@@ -170,9 +173,8 @@ export class GameGateway {
         console.log("Delete Client");
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
       this.clients.delete(this.rooms.get(payload.roomId).RightPlayer.id);
-      let room: Room = this.rooms[payload.roomId];
+      this.gameService.setInGame(this.rooms.get(payload.roomId).LeftPlayer.id,this.rooms.get(payload.roomId).RightPlayer.id,false);
       this.rooms.delete(payload.roomId);
-      room = null;
     }
     else
       console.log("No Room Found");
