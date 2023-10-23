@@ -25,6 +25,7 @@ export class GameGateway {
   private rooms: Map<string, Room> = new Map();
   private clients: Map<number, string> = new Map()
   private Queus: Map<number, Socket[]> = new Map();
+  private Challenge: Map<number, Socket> = new Map();
 
 
   handleConnection(client: Socket) {
@@ -196,7 +197,33 @@ export class GameGateway {
   @SubscribeMessage('Chall')
   HandlleChallenges(client: any, payload: any): void 
   {
-    console.log(payload);
+    // console.log(payload);
+    if(payload.type == "refuse")
+    {
+      console.log(payload);
+    }
+    if(payload.type == "challenger")
+    {
+      this.Challenge.set(payload.challId, client);
+    }
+    else if(payload.type == "opp")
+    {
+      if(this.Challenge.has(payload.challId))
+      {
+        let room: Room = new Room(this.Challenge.get(payload.challId), client);
+        room.roomId = uuidv4();
+        room.GameMode = payload.mode;
+        room.RightPlayer.id = payload.ChallId;
+        room.LeftPlayer.id = payload.oponentId;
+        this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id,true);
+        this.clients.set(room.LeftPlayer.id, room.roomId);
+        this.clients.set(room.RightPlayer.id, room.roomId);
+        this.rooms.set(room.roomId, room);
+        room.RightPlayer.socket.emit("start");
+        room.Play();
+        console.log("Challenge Game Started");
+      }
+    }
   }
 }
 

@@ -26,7 +26,7 @@ export class GameService {
       .set({ wins: () => "wins + 1" })
       .where("id = :id", { id: winner })
       .execute();
-      const loser = (winner == user1Id ? user1Id : user2Id)
+      const loser = (winner == user1Id ? user2Id : user1Id)
     this.userRepository
       .createQueryBuilder()
       .update(User)
