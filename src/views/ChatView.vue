@@ -1,13 +1,12 @@
 <template>
 	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800">
 		<!-- Friend List and Group List Section -->
-		<confirmPlay/>
-		
-			<!-- <GroupList @object-sent="handleObjectChannel" /> -->
-			<ChatGroupFriend @object-sent="handleObject" />
-		
+		<confirmPlay />
+		<!-- <GroupList @object-sent="handleObjectChannel" /> -->
+		<ChatGroupFriend @object-sent="handleObject" />
+
 		<div class="basis-full  ">
-			<ErrorPopup v-if = "this.userStore.error"/>
+			<ErrorPopup v-if="this.userStore.error" />
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" class="border-b-2" />
 			<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject" />
 		</div>
@@ -24,7 +23,7 @@ import ChatChatbox from '../components/Chat/Chatbox.vue';
 import ChatFriendList from '../components/Chat/FriendList.vue';
 import ChatRoom from '../components/Chat/chatRoom.vue';
 import ChatBoxChannel from '../components/Chat/ChatBoxChannel.vue'
- import ChatGroupFriend from '../components/Chat/GroupFriend.vue';
+import ChatGroupFriend from '../components/Chat/GroupFriend.vue';
 import ChatChannelProfil from '../components/Chat/ChannelProfil.vue';
 import ChatUserProfile from '../components/Chat/UserProfile.vue';
 import ErrorPopup from '../components/Chat/ErrorPopup.vue';
@@ -55,7 +54,7 @@ export default {
 			targetComponent: null,
 			personObject: {},
 			ChannelObject: {},
-			error:null
+			error: null
 		};
 	},
 
@@ -129,28 +128,26 @@ export default {
 		// 		}
 		// 	});
 		// });
-		 this.$socket.on("receiveMessage", (data) => {
+		this.$socket.on("receiveMessage", (data) => {
 			console.log("data from ", data)
-			if (data.type != 'DMMessages')
-			{
-				console.log("I am here: ")    
+			if (data.type != 'DMMessages') {
+				console.log("I am here: ")
 				//this.userStore.fetchDataForDmChatRooms();
 			}
-			  if (data.action == 'kick' && data.from.id == this.userStore) {
+			if (data.action == 'kick' && data.from.id == this.userStore) {
 				console.log(" kicked >>>>>>>>")
 				this.$nextTick(() => {
 					this.displayTargetComponent = false;
 					this.displayChatboxChannel = false;
-					
-					});
+
+				});
 				this.userStore.fetchDataForDmChatRooms();
-			    }
+			}
 		})
 
-		 this.$socket.on("ChatRoomList", (data) => {
+		this.$socket.on("ChatRoomList", (data) => {
 
-			if (data.type == 'remove')
-			{
+			if (data.type == 'remove') {
 				console.log("Rmovee >>>>>> ")
 				// this.$nextTick(() => {
 				// 	this.displayTargetComponent = false;
@@ -162,9 +159,9 @@ export default {
 
 
 		this.$socket.on("Error", (data) => {
-			console.log(" Error ",data)
+			console.log(" Error ", data)
 			this.error = data.error,
-			this.userStore.error = data.error;
+				this.userStore.error = data.error;
 		});
 
 	},

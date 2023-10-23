@@ -13,8 +13,8 @@
           <AlertChannel />
           <PopUpinv />
         </div>
-        <GameMode v-if="this.userStore.creatchallenge" />
         <ul>
+          <GameMode v-if="this.userStore.creatchallenge" />
           <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
             class="flex items-center p-2 space-x-4 border-b">
             <div class="flex-shrink-0">

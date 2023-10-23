@@ -54,7 +54,6 @@ export const useUserStore = defineStore("user", {
         this.ActiveChannelTitle = title
         console.log("update Channel id ", id);
       }
-      // this.fetchChannelById()
     },
 
     async FetchFriend() {
@@ -74,6 +73,7 @@ export const useUserStore = defineStore("user", {
       this.ChannelList = await this.$socket.on("ChatRoomList");
       console.log("This is Channel list ", this.ChannelList);
     },
+
     async fetchDataForDmChatRooms() {
       try {
         this.DmChatroomsList = await axios.get(
@@ -93,6 +93,12 @@ export const useUserStore = defineStore("user", {
      //await this.fetchDataForDmChatRooms();
       
     },
+    switchToChannael(obj)
+    {
+      this.UpdateChannelId(obj.id, obj.title)
+      this.fetchChannelById();
+      this.fetchDataForDmChatRooms()
+    }
   },
 });
 
