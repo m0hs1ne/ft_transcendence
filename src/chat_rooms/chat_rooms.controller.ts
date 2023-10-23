@@ -28,8 +28,8 @@ export class ChatRoomsController {
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
         const friends = await this.userservice.getfriends(payload.sub)
         let result;
-        result.concat(friends)
-        result.concat(chatrooms)
+        result = result.concat(friends)
+        result = result.concat(chatrooms)
         return result;
     }
 
