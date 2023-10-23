@@ -192,9 +192,10 @@ export class GameGateway {
     this.gameService.create(left, right, Winner, Score, GameMode);
   }
   @SubscribeMessage('Chall')
-  HandlleChallenges(client: any, payload: any): void {
-  console.log(payload);
-}
+  HandlleChallenges(client: any, payload: any): void 
+  {
+    console.log(payload);
+  }
 }
 
 
