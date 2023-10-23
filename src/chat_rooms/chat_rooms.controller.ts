@@ -18,16 +18,19 @@ export class ChatRoomsController {
     @Get()
     async myChatRoom(@Req() req){
         const payload = verifyToken(req.headers.cookie)
-        const chatrooms = await this.chatroomservice.findMyChatRooms(payload);
+        const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
         return chatrooms
     }
     
     @Get('/DM_chatrooms')
     async all(@Req() req){
         const payload = verifyToken(req.headers.cookie)
-        const chatrooms = await this.chatroomservice.findMyChatRooms(payload);
+        const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
         const friends = await this.userservice.getfriends(payload.sub)
-        return friends.concat(chatrooms)
+        let result;
+        result.concat(friends)
+        result.concat(chatrooms)
+        return result;
     }
 
     @Get('myrole/:id')

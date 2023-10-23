@@ -155,12 +155,13 @@ export class UsersController {
   }
 
   @Post('search')
-  async search(@MessageBody() body) {
+  async search(@MessageBody() body, @Req() req) {
     const {
       query
     } = body
+    const payload = verifyToken(req.headers.cookie)
     const users = await this.usersService.search(query);
-    const chatrooms = await this.chatroomservice.search(query)
+    const chatrooms = await this.chatroomservice.search(query, payload.sub)
     return {users, chatrooms}
   }
 }

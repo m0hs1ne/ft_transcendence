@@ -74,9 +74,8 @@ export class ChatRoomsService {
     });
   }
  
-  async findMyChatRooms(payload) {
-    const id = payload.sub
-    let mychatRooms = []
+  async findMyChatRooms(id) {
+    let mychatRooms : ChatRoom[] = []
     const userChats = await this.userChatRepository
     .createQueryBuilder('user_chat')
     .leftJoinAndSelect('user_chat.chatRoom', 'chatRoom')
@@ -700,14 +699,33 @@ export class ChatRoomsService {
     await this.chatRoomRepository.update({id: chatId}, {avatar: 'http://localhost:3000/' + avatar.filename})
   }
 
-  async search(query: string)
+  async search(query: string, userId: number)
   {
-    const chatrooms = await this.chatRoomRepository.find({
+    const chatrooms : any = await this.chatRoomRepository.find({
+      select:['id','avatar','owner','privacy','title'],
       where: {
         privacy: In(['public', 'protected']),
         title: ILike(`%${query}%`),
       }
     });
+
+    for(let chat of chatrooms)
+    {
+      if (await this.isMemberInChat(userId, chat.id))
+        chat.isMember = true;
+      else
+        chat.isMember = false;
+    }
     return chatrooms
+  }
+
+  async isMemberInChat(memberId: number, chatId: number)
+  {
+    const userchat = await this.userChatRepository.find({
+      where:{userId: memberId, chatRoomId: chatId}
+    })
+    if (userchat)
+      return true
+    return false
   }
 }

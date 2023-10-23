@@ -121,7 +121,7 @@ export class ChatRoomsGateway{
   async findOne(@MessageBody() body, @Req() req) {
     const payload = verifyToken(req.handshake.headers.cookie)
     try{
-        const mychatRooms = await this.chatRoomsService.findMyChatRooms(payload);
+        const mychatRooms = await this.chatRoomsService.findMyChatRooms(payload.sub);
         const client = clients.get(payload.sub)
         client.emit('ChatRoomList', {type: 'mylist', chatrooms: mychatRooms});
     } catch(e) {
