@@ -12,7 +12,7 @@
     <Transition>
       <div class=" w-full rounded-lg h-full">
         <ul>
-          <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id" class="flex items-center p-1  border-b">
+          <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id" class="flex items-center justify-between p-2  border-b">
             <div class="flex-shrink-0">
               <img :src="friend.avatar ? friend.avatar :
                 'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
@@ -114,7 +114,6 @@ export default {
     moveTheBar() {
       console.log(" dfdf ")
       this.show = !this.show;
-
     },
     play(member) {
       console.log("This is the member of", member)
