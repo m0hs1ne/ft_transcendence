@@ -1,9 +1,9 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <button class="flex items-center justify-between 
-         text-red-700 hover:text-blue-900" @click="openPopup">
-    <span class="mr-2">Invitations</span>
-  </button>
+
+  <img referrerpolicy="no-referrer" @click="openPopup" title="Check your Inv"
+        class=" flex items-center justify-between  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
+        src="./../../assets/icons/bell.svg">
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
     <div class="bg-white rounded-lg p-6">
       <h2 class="text-xl font-bold mb-4">Invitations:</h2>

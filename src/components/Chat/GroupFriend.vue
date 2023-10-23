@@ -1,25 +1,43 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class=" flex flex-col m-2 p-5 rounded-lg bg-slate-300   h-full flex-shrink-0 ">
-    <!-- {{ this.userStore.DmChatroomsList }} -->
+  <div class="flex w-1/4 flex-col h-full  bg-slate-300  ">
+    <div>
+      <img referrerpolicy="no-referrer" @click="moveTheBar()" title = "moveTheBar"
+      class=" flex float-right  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
+      src="./../../assets/icons/side-menu.svg"
+      
+      >
+    </div>
+    
+    <Transition>
+    <div  class=" m-2 p-5 rounded-lg h-full">
+      <div class=" flex  justify-between  flex-row w-full     ">
+        <AlertChannel />
+      <PopUpinv />
+      </div>
+      <GameMode v-if="this.userStore.creatchallenge" />
+      <ul>
+        <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
+          class="flex items-center p-2 space-x-4 border-b">
+          <div class="flex-shrink-0">
+            <img :src="friend.avatar ? friend.avatar :
+              'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
+              @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
+              class="h-12 rounded-full" />
+          </div>
+          <div v-if="show" class="flex-row">
+            <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
+            <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
 
-    <AlertChannel />
-    <PopUpinv />
-    <ul>
-      <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
-        class="flex items-center p-2 space-x-4 border-b">
-        <div class="flex-shrink-0">
-          <img :src="friend.avatar ? friend.avatar :
-            'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'"
-            @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
-            class="h-12 rounded-full" />
-        </div>
-        <div class="flex-row">
-          <span class="text-lg font-semibold">{{ friend.username }} {{ friend.title }}</span>
-          <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
-        </div>
-      </li>
-    </ul>
+          </div>
+          <img referrerpolicy="no-referrer" v-if="friend.inGame == false && friend.statusOnline == true"
+            @click="play(friend)" title="Play"
+            class=" m-2 h-10 rounded-full  hover:scale-150  text-white font-bold py-2 px-4"
+            src="./../../assets/icons/ping.svg">
+        </li>
+      </ul>
+    </div>
+  </Transition>
   </div>
 </template>
   
@@ -29,11 +47,13 @@ import AlertChannel from "./AlertChannel.vue";
 import PopUpinv from './PopUpinv.vue'
 import axios from "axios";
 import { useUserStore } from './../../stores/state.ts';
+import GameMode from './GameMode.vue';
 export default {
   components:
   {
     AlertChannel,
     PopUpinv,
+    GameMode,
   },
   setup() {
     const userStore = useUserStore();
@@ -41,8 +61,8 @@ export default {
   },
   data() {
     return {
-      friends: [
-      ],
+      friends: [],
+      show:true
     };
   },
   methods: {
@@ -92,11 +112,24 @@ export default {
     },
 
     getStatusClass(status) {
-      console.log(" ******************************************--*********************");
-      console.log(status)
       if (status)
-        return "border-4 border-green-500"
-    }
+        return "border-4 border-green-500 "
+    },
+    moveTheBar()
+    { 
+      console.log(" dfdf ")
+      this.show = !this.show;
+
+    },
+    play(member) {
+      console.log("This is the member of", member)
+      this.userStore.creatchallenge = true;
+      this.userStore.Opponent = member;
+      console.log(this.person, this.ActiveChannelId)
+      console.log(this.$GameSocket)
+    },
+    
+
   },
 
   async mounted() {
@@ -115,23 +148,20 @@ export default {
         this.fetchData();
         this.SocketNoti();
       }
-
     },);
 
     this.$socket.on("userStatus", (data) => {
       console.log(" receiveMessage  user Status  ********* ", data)
       console.log(this.userStore.DmChatroomsList);
+      //   this.userStore.fetchDataForDmChatRooms();
       this.userStore.DmChatroomsList.forEach(element => {
         console.log(element)
-        // array of objects .......
-        // data.forEach(StatusObj => {
-        //   if (StatusObj.id == element.id) {
-        //     element.statusOnline = StatusObj.online;
-        //   }
-        // })
+        if (data.id == element.id) {
+
+          element.statusOnline = data.online;
+          console.log(" I am get the id **--------------------------------------")
+        }
       })
-      //  this.fetchData();
-      //  this.SocketNoti();
 
     },);
   },
@@ -140,5 +170,16 @@ export default {
   
 <style>
 /* Add your CSS styling here */
+
+/* we will explain what these classes do next! */
+/* .v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+} */
 </style>
       

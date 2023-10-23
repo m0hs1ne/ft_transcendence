@@ -19,7 +19,8 @@ export const useUserStore = defineStore("user", {
     error: '',
     ActiveId: {},
     Opponent:{},
-    creatchallenge:false
+    creatchallenge:false,
+    UserStatus:'',
   }),
 
   actions: {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <button class="flex items-center justify-between text-red-700 hover:text-blue-900" @click="openPopup">
-      <span class="mr-2">Add Channel</span>
-    </button>
+    <img referrerpolicy="no-referrer" @click="openPopup" title="Creat Channel"
+      class=" flex items-center justify-between  h-10 rounded-full  hover:scale-150 text-white font-bold py-2 "
+      src="./../../assets/icons/group.svg">
     <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
       <div class="bg-white rounded-lg p-6">
         <h2 class="text-xl font-bold mb-4">Create Channel:</h2>
@@ -33,7 +33,7 @@
         </button>
       </div>
     </div>
-   
+
   </div>
 </template>
 
@@ -41,9 +41,9 @@
 import { useUserStore } from '../../stores/state.ts';
 export default {
   setup() {
-		const userStore = useUserStore();
-		return { userStore };
-	},
+    const userStore = useUserStore();
+    return { userStore };
+  },
   data() {
     return {
       ChannelName: '',
@@ -71,15 +71,15 @@ export default {
             title: this.ChannelName,
             privacy: this.selectedOption,
             password: this.password
-          }, () => {});
-        
-        this.$socket.on("ChatRoomList",(data)=>{
+          }, () => { });
+
+        this.$socket.on("ChatRoomList", (data) => {
           console.log(" this what hello ")
           console.log(data)
-          
+
         });
-        
-        
+
+
         this.ChannelName = '';
         this.password = '';
         this.selectedOption = '';

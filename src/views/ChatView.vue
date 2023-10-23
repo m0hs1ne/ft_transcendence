@@ -2,16 +2,16 @@
 	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800">
 		<!-- Friend List and Group List Section -->
 		<confirmPlay/>
-		<div class="basis-1/4">
+		
 			<!-- <GroupList @object-sent="handleObjectChannel" /> -->
 			<ChatGroupFriend @object-sent="handleObject" />
+		
+		<div class="basis-full  ">
 			<ErrorPopup v-if = "this.userStore.error"/>
-		</div>
-		<div class="basis-3/4  ">
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" class="border-b-2" />
 			<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject" />
 		</div>
-		<div class="basis-1/4">
+		<div class="w-1/4">
 			<ChatUserProfile :person="personObject" v-if="displayTargetComponent" />
 			<ChatChannelProfil v-if="displayChatboxChannel" />
 		</div>

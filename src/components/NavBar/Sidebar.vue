@@ -20,7 +20,9 @@ export default {
 			if (confirmed) {
 				try {
 					await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
+					this.$socket.disconnect();
 					this.$router.push('/signIn');
+
 				}
 				catch (error) {
 					console.log("logdout error: ", error)

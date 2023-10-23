@@ -20,16 +20,11 @@
         @click="play">
         <span class="ml-2 h-10">Play</span>
       </button>
-      <button v-else class="flex items-center text-gray-700 hover:text-gray-900">
+      <button v-else-if = "this.person.inGame == true" class="flex items-center text-gray-700 hover:text-gray-900">
         <span class="ml-2 h-10">Playing ......</span>
       </button>
 
-      <button v-if="this.person.statusOnline == true" class="flex items-center text-green-700 hover:text-gray-900">
-        <span class="ml-2 h-10">online</span>
-      </button>
-      <button v-else class="flex items-center text-red-700 hover:text-gray-900">
-        <span class="ml-2 h-10">offline</span>
-      </button>
+    
 
     </div>
   </div>
@@ -107,6 +102,7 @@ export default {
   },
   mounted() {
     console.log(" mounted in userprofile ", this.person);
+   
 
   },
 };
