@@ -27,7 +27,7 @@ export class ChatRoomsController {
         const payload = verifyToken(req.headers.cookie)
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
         const friends = await this.userservice.getfriends(payload.sub)
-        let result;
+        let result = [];
         result = result.concat(friends)
         result = result.concat(chatrooms)
         return result;
