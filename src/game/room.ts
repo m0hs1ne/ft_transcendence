@@ -23,6 +23,7 @@ export class Room {
   GameMode: number;
   angle: number;
   Winner: number;
+  BallSpeed: number;
 
   roomId: string;
   ballPosition: { x: number; y: number } = { x: 0.5, y: 0.5 };
@@ -46,6 +47,7 @@ export class Room {
     this.angle = Math.random() * (Math.PI / 4 - -Math.PI / 4) + -Math.PI / 4;
     this.ballDirection.x = 2 * Math.cos(this.angle);
     this.ballDirection.y = 2 * Math.sin(this.angle);
+    this.BallSpeed = 0.003;
   }
 
   Play(): void {
@@ -70,8 +72,9 @@ export class Room {
         clearInterval(this.IntervalId);
         console.log("It should stop know");
       } else {
-        this.ballPosition.x += this.ballDirection.x * 0.002;
-        this.ballPosition.y += this.ballDirection.y * 0.002;
+        this.ballPosition.x += this.ballDirection.x * this.BallSpeed;
+        this.ballPosition.y += this.ballDirection.y * this.BallSpeed;
+        this.BallSpeed += 0.0000001;
         this.CheckBall();
         this.LeftPlayer.socket.emit("updateBall", {
           x: this.ballPosition.x,
@@ -124,7 +127,7 @@ export class Room {
       this.RightPlayer.Paddle - 0.01 <= this.ballPosition.y &&
       this.RightPlayer.Paddle + 0.25 + 0.01 >= this.ballPosition.y
     ) {
-      this.ballDirection.x *= -1;
+      this.ballDirection.x *= -1 ;
       return 0;
     }
     return 1;
@@ -166,6 +169,7 @@ export class Room {
     });
     this.ballPosition.x = 0.5;
     this.ballPosition.y = 0.5;
+    this.BallSpeed = 0.003;
   }
 
   EndTheGame(): void {
