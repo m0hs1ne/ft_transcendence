@@ -163,11 +163,10 @@ export class ChatRoomsGateway {
         updateChatRoomDto,
         payload,
       );
-      if (chatroom.privacy != "private")
-        this.server.emit("ChatRoomList", {
-          type: "updated",
-          chatrooms: chatroom,
-        });
+      this.chatRoomsService.sendObjectToMembers(chatroom, {
+        type: "updated",
+        chatrooms: chatroom,
+      }, clients)
     } catch (e) {
       const client = clients.get(payload.sub);
       if (client) client.emit("Error", { error: e.message });
