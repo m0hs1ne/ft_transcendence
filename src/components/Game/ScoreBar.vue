@@ -19,13 +19,13 @@ export default {
             // Get user profile data
             try {
                 const res1 = await axios.get(
-                    `http://10.32.117.168:3000/api/users/profile/${props.leftID}`,
+                    `http://10.32.125.38:3000/api/users/profile/${props.leftID}`,
                     {
                         withCredentials: true,
                     }
                 );
                 const res2 = await axios.get(
-                    `http://10.32.117.168:3000/api/users/profile/${props.rightID}`,
+                    `http://10.32.125.38:3000/api/users/profile/${props.rightID}`,
                     {
                         withCredentials: true,
                     }

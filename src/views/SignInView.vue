@@ -22,12 +22,12 @@ export default {
 		<div>
 			<p class="font-Poppins font-bold text-3xl tracking-wide pb-5 pr-[5.5rem] dark:text-white">Welcome Back 👋</p>
 			<p class="font-Poppins text-gray-700 dark:text-gray-300 text-lg">Let’s play ping pong...</p>
-			<a href="http://10.32.117.168:3000/api/auth/google/login" class="container flex items-center justify-center 
+			<a href="http://10.32.125.38:3000/api/auth/google/login" class="container flex items-center justify-center 
 						py-3 mt-10 mb-5 bg-blue-50 dark:bg-slate-900 rounded-lg">
 				<img referrerpolicy="no-referrer" class="pr-5" src="./../assets/icons/Google.svg" alt="">
 				<p class=" text-gray-800 dark:text-gray-400">Sign in with Google</p>
 			</a>
-			<a href="http://10.32.117.168:3000/api/auth/42/login" class="container flex items-center justify-center 
+			<a href="http://10.32.125.38:3000/api/auth/42/login" class="container flex items-center justify-center 
 						py-3 mb-10 bg-blue-50 dark:bg-slate-900 rounded-lg">
 				<img referrerpolicy="no-referrer" class="pr-5" src="./../assets/icons/42.png" alt="">
 				<p class=" text-gray-800 dark:text-gray-400">Sign in with Intra</p>
