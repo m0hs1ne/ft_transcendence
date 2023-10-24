@@ -119,6 +119,7 @@ export class UsersService {
         "users.wins",
         "users.losses",
         "users.avatar",
+        "users.is2faEnabled",
         "friends.id",
         "friends.username",
         "friends.wins",
@@ -128,6 +129,26 @@ export class UsersService {
         "achievement.image",
       ])
       .getOne();
+
+      const games = await this.gameRepository
+      .createQueryBuilder("game")
+      .leftJoinAndSelect("game.user1", "user1")
+      .leftJoinAndSelect("game.user2", "user2")
+      .where("user1.id = :id or user2.id = :id", { id })
+      .select([
+        "game.id",
+        "game.score",
+        "game.winner",
+        "game.mode",
+        "user1.id",
+        "user1.username",
+        "user1.avatar",
+        "user2.id",
+        "user2.username",
+        "user2.avatar",
+      ])
+      .getMany();
+    user.games = games;
     return user;
   }
 
