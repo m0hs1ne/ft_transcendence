@@ -8,6 +8,7 @@ import SettingView from "../views/SettingView.vue";
 import SignInView from "../views/SignInView.vue";
 import GameView from "../views/GameView.vue";
 import UserProfileView from "../views/UserProfileView.vue";
+import NotFound from "../views/NotFound.vue";
 
 
 
@@ -58,6 +59,11 @@ const router = createRouter({
       path: '/play',
       name: 'game',
       component: GameView
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: '404',
+      component: NotFound,
     },
   ]
 })
