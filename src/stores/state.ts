@@ -93,12 +93,18 @@ export const useUserStore = defineStore("user", {
      //await this.fetchDataForDmChatRooms();
       
     },
-    switchToChannael(obj)
-    {
-      this.UpdateChannelId(obj.id, obj.title)
-      this.fetchChannelById();
-      this.fetchDataForDmChatRooms()
-    }
+    // async switchToChannael(obj)
+    // {
+
+    //   this.ActiveId = obj;
+    //   this.UpdateChannelId(obj.id, obj.title);
+    //   console.log(" 1 -----------------------------> active id is: ", this.ActiveId);
+    //   await this.fetchChannelById();
+    //   console.log(" 2 -----------------------------> active id is: ", this.ActiveId);
+    //   await this.fetchDataForDmChatRooms();
+    //   console.log(" 3 -----------------------------> active id is: ", this.ActiveId);
+    //   console.log(" 4 -----------------------------> active id is: ", this.ActiveId)
+    // }
   },
 });
 
