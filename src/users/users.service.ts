@@ -309,7 +309,7 @@ export class UsersService {
 
   async uploadAvatar(avatar, payload)
   {
-    await this.userRepository.update({id: payload.sub}, {avatar: 'http://localhost:3000/' + avatar.filename})
+    await this.userRepository.update({id: payload.sub}, {avatar: 'http://10.32.117.168:3000/' + avatar.filename})
   }
 
   async getleaders()
