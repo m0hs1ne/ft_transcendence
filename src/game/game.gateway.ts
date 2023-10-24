@@ -217,7 +217,7 @@ export class GameGateway {
         room.GameMode = payload.mode;
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
-        this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id,true);
+        this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
         this.clients.set(room.LeftPlayer.id, room.roomId);
         this.clients.set(room.RightPlayer.id, room.roomId);
         this.rooms.set(room.roomId, room);
