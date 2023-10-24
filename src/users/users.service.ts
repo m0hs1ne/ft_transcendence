@@ -318,7 +318,7 @@ export class UsersService {
         "user.wins",
         "user.losses",
       ])
-      .orderBy("user.wins / (user.wins + user.losses)", "DESC")
+      .orderBy("(user.wins / (user.wins + user.losses)) * 100", "DESC")
       .take(10)
       .getMany();
     return list;
