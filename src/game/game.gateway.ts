@@ -16,11 +16,11 @@ import { StringifyOptions } from "querystring";
   namespace: "/game",
   cors: {
     credentials: true,
-    origin: "http://10.32.120.112:5173",
+    origin: "http://localhost:5173",
   },
 })
 export class GameGateway {
-  constructor(private readonly gameService: GameService) {}
+  constructor(private readonly gameService: GameService) { }
 
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
@@ -158,10 +158,12 @@ export class GameGateway {
     }
     try {
       const Payload = verifyToken(client.handshake.headers.cookie);
-      if (this.Queus.get(payload.mode).includes(client)) {
-        this.Queus.get(payload.mode).pop();
-        this.clients.delete(Payload.sub);
-        console.log("Removed from the queu");
+      if (this.Queus.has(payload.mode)) {
+        if (this.Queus.get(payload.mode).includes(client)) {
+          this.Queus.get(payload.mode).pop();
+          this.clients.delete(Payload.sub);
+          console.log("Removed from the queu");
+        }
       }
     } catch (err) {
       console.log(err);
@@ -204,20 +206,21 @@ export class GameGateway {
     if (payload.type == "refuse") {
       console.log(payload);
     }
-    if (payload.type == "challenger") {
-      this.Challenge.set(payload.challId, client);
-    } else if (payload.type == "opp") {
-      if (this.Challenge.has(payload.challId)) {
-        let room: Room = new Room(this.Challenge.get(payload.challId), client);
+    else if (payload.type == "challenger") 
+    {
+      console.log(payload);
+      this.Challenge.set(payload.oponentId, client);
+    } 
+    else if (payload.type == "opp") 
+    {
+      console.log(payload);
+      if (this.Challenge.has(payload.oponentId)) {
+        let room: Room = new Room(this.Challenge.get(payload.oponentId), client);
         room.roomId = uuidv4();
         room.GameMode = payload.mode;
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
-        this.gameService.setInGame(
-          room.RightPlayer.id,
-          room.LeftPlayer.id,
-          true,
-        );
+        this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
         this.clients.set(room.LeftPlayer.id, room.roomId);
         this.clients.set(room.RightPlayer.id, room.roomId);
         this.rooms.set(room.roomId, room);
