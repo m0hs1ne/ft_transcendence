@@ -35,9 +35,9 @@
             <span v-else class="text-lg font-semibold">{{ member.user.username }}</span>
             <p class="text-sm text-green-700">{{ member.role }} ({{ member.userStatus }})</p>
           </div>
-          <div class="flex-grow">
-            <img referrerpolicy="no-referrer" v-if="member.role != 'owner' && member.user.id != this.userStore.MyId"
-              @click="UpdateMember(member)" title="Setting"
+          <div v-if="this.MyRole != 'member'" class="flex-grow">
+            <img referrerpolicy="no-referrer" v-if="(member.role != 'owner' && member.user.id != this.userStore.MyId) 
+              " @click="UpdateMember(member)" title="Setting"
               class=" m-2 h-10 rounded-full hover:bg-blue-200 hover:scale-150  text-white font-bold py-2 px-4"
               src="./../../assets/icons/setting.svg">
           </div>
@@ -77,6 +77,7 @@ export default {
       EditChannel: true,
       Error: '',
       Updatemember: false,
+      MyRole:''
     };
   },
   methods: {
@@ -84,6 +85,7 @@ export default {
       await this.userStore.fetchChannelById();
       this.role = await axios.get(`http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true });
+      
       if (this.role.data.role == 'member') {
         this.AddFriend = false;
         this.DeletePermission = false;
@@ -91,6 +93,10 @@ export default {
       }
       if (this.role.data.role == 'owner')
         this.DeletePermission = true
+      if (this.role.data.role == 'admin')
+        this.AddFriend = true
+
+      this.MyRole = this.role.data.role;
     },
     LeaveChannel() {
       this.userStore.action = 'Leave';
@@ -123,7 +129,6 @@ export default {
       if ((data.type == 'notification' && data.action == 'joined') ||
         (data.type == 'notification' && data.action == 'status') ||
         (data.type == 'notification' && data.action == 'role')
-       
       ) {
         this.fetchData();
       }

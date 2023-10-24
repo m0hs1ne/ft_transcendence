@@ -2,7 +2,7 @@
 <template>
   <div class=" flex flex-col justify-between h-screen">
     <div class=" flex flex-col mt-5 overflow-x-hidden overflow-y-scroll" ref="scrollContainer1">
-      <div v-for="message in this.userStore.ActiveMessageChannelId" class="min-w-full  max-w-2xl">
+      <div v-for="message in this.messages" class="min-w-full  max-w-2xl">
         <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
           <span>{{ message.message }}</span>
         </div>
@@ -49,7 +49,7 @@ export default {
 
   data() {
     return {
-      messages: [],
+      messages: [{}],
       newMessage: "",
       UserProfile: {},
       length: 0,
@@ -58,8 +58,6 @@ export default {
     };
   },
   methods: {
-
-
     sendMessage() {
       console.log("I AM SENDmessage channel");
       if (this.newMessage != '') {
@@ -81,14 +79,16 @@ export default {
 
   async mounted() {
     await this.userStore.fetchChannelById();
+    this.messages = this.userStore.ActiveMessageChannelId;
     //this.userStore.UpdateChannelId(this.channel.id)
     console.log("I am in mounted", this.userStore.ActiveChannelId)
     this.$socket.on("receiveMessage", (data) => {
-      console.log("receiveMessage form channel profile--------- ", data)
+
       if ((data.type == 'notification' && data.action == 'joined') ||
         (data.type == 'notification' && data.action == 'status') ||
         (data.type == 'message' && data.action == 'message')) {
-        this.userStore.ActiveMessageChannelId.push(data);
+        console.log(" I am puching .....", data)
+        this.messages.push(data);
       }
 
     },);
