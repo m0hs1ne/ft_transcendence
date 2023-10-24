@@ -31,7 +31,7 @@ export class AuthController {
     async callback(@Req() req: RequestWithUser, @Res() res) {
         const payload = await this.authService.login(req.user, false);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:5173/');
+        res.redirect('http://10.32.117.168:5173/');
     }
 
     /**
@@ -78,6 +78,6 @@ export class AuthController {
     async googleCallback(@Req() req: RequestWithUser, @Res() res) {
         const payload = await this.authService.login(req.user, false);
         res.cookie('jwt', payload, { httpOnly: true });
-        res.redirect('http://localhost:5173/');
+        res.redirect('http://10.32.117.168:5173/');
     }
 }
