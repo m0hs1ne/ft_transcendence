@@ -745,4 +745,17 @@ export class ChatRoomsService {
     if (userchat) return true;
     return false;
   }
+
+  async sendObjectToMembers(chatroom: ChatRoom, obj, clients)
+  {
+    const options: FindManyOptions<UserChat> = {
+      select: ["id", "mutedTill", "userId", "userStatus", "role", "chatRoom"],
+      where: { chatRoomId: chatroom.id },
+    };
+    const chatmembers = await this.userChatRepository.find(options);
+    for (const member of chatmembers) {
+      const client = clients.get(member.userId);
+      client.emit("ChatRoomList", obj);
+    }
+  }
 }
