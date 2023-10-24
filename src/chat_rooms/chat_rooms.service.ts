@@ -347,6 +347,7 @@ export class ChatRoomsService {
 
   async inviteUserToChat(id: number, chatId: number, payload)
   {
+
     const invit = await this.invitationRepository.findOne({
       where: {toUserId: id, chatRoomId: chatId}
     })
@@ -358,6 +359,11 @@ export class ChatRoomsService {
     const isAdmin = await this.isAdmin(payload.sub, chat.id)
     if (chat && isAdmin)
     {
+      const notMember = await this.userChatRepository.findOne({
+        where: {userId: payload.sub, chatRoomId: chat.id}
+      })
+      if (notMember)
+        throw new ForbiddenException()
       const fromUser = await this.userRepository.findOne({
         select: ['id', 'username', 'avatar'], 
         where: {id: payload.sub},
