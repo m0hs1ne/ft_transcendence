@@ -636,6 +636,7 @@ export class ChatRoomsService {
             "message.createdAt",
             "message.updatedAt",
           ])
+          .orderBy('message.createdAt',"DESC")
           .getMany();
       } else throw new NotAcceptableException();
     } else {
