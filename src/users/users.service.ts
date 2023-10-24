@@ -58,7 +58,6 @@ export class UsersService {
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.friends", "friends")
       .leftJoinAndSelect("users.blocked", "blocked")
-      .leftJoinAndSelect("users.friends", "friends")
       .leftJoinAndSelect("users.achievements", "achievement")
       .where("users.id = :id", { id })
       .select([

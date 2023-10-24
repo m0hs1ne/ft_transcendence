@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     credentials: true,
-    origin: "http://10.32.120.112:5173/",
+    origin: "http://10.32.120.112:5173",
   });
   app.setGlobalPrefix("api");
   app.use(
@@ -18,7 +18,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 1000 * 60 * 5,
-      },
+      }, 
     }),
   );
   app.use(passport.initialize());
