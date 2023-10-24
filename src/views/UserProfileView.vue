@@ -136,7 +136,7 @@ export default {
       // Get user profile data
       try {
         const res = await axios.get(
-          `http://10.32.117.168:3000/api/users/profile/${this.$route.params.id}`,
+          `http://10.32.120.112:3000/api/users/profile/${this.$route.params.id}`,
           {
             withCredentials: true,
           }
@@ -166,7 +166,7 @@ export default {
         if (this.isFriend) {
           console.log("I' want to delete this user");
           const response = await axios.delete(
-            `http://10.32.117.168:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
+            `http://10.32.120.112:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
             {
               withCredentials: true,
             }
@@ -174,7 +174,7 @@ export default {
           console.log("friendLogic res", response);
         } else {
           const response = await axios.post(
-            "http://10.32.117.168:3000/api/users/friends/",
+            "http://10.32.120.112:3000/api/users/friends/",
             { id: parseInt(this.$route.params.id) },
             {
               withCredentials: true,
@@ -189,7 +189,7 @@ export default {
       }
       this.isLoading = false;
     },
-    async removeFriend() {},
+    async removeFriend() { },
     switchFriendTab() {
       this.friendTab = !this.friendTab;
     },
@@ -205,134 +205,77 @@ export default {
 </script>
 
 <template>
-  <div
-    v-if="this.friendTab"
-    class="flex flex-col justify-start items-center min-h-screen dark:bg-slate-800 p-10"
-  >
+  <div v-if="this.friendTab" class="flex flex-col justify-start items-center min-h-screen dark:bg-slate-800 p-10">
     <div class="flex w-full justify-center items-center pb-10">
-      <Icon
-        @click="switchFriendTab()"
-        icon="ion:arrow-back"
-        class="text-gray-100 h-16 w-16 dark:text-white p-3"
-      />
+      <Icon @click="switchFriendTab()" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3" />
       <h1
-        class="font-Poppins font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis"
-      >
+        class="font-Poppins font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis">
         {{ this.username }} Friends:
       </h1>
     </div>
-    <div
-      v-for="(element, index) in this.friends"
-      :key="index"
-      class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white"
-    >
-      <router-link
-        :to="'/users/' + element.id"
-        class="flex items-center justify-between min-w-full"
-      >
+    <div v-for="(element, index) in this.friends" :key="index"
+      class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
+      <router-link :to="'/users/' + element.id" class="flex items-center justify-between min-w-full">
         <div class="flex items-center">
           <p class="font-Poppins font-semibold text-xl">{{ index + 1 }}.</p>
           <div class="w-20 h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
-            <img
-              referrerpolicy="no-referrer"
-              :src="element.avatar"
-              alt="Avatar"
-              class="object-cover rounded-full w-20 h-20"
-            />
+            <img referrerpolicy="no-referrer" :src="element.avatar" alt="Avatar"
+              class="object-cover rounded-full w-20 h-20" />
           </div>
           <p
-            class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-Poppins font-semibold md:text-xl tracking-wide dark:text-white"
-          >
+            class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-Poppins font-semibold md:text-xl tracking-wide dark:text-white">
             {{ element.username }}
           </p>
         </div>
-        <p
-          class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white"
-        >
+        <p class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
           {{ parseInt((element.wins / (element.wins + element.losses)) * 100) }}%
         </p>
       </router-link>
     </div>
   </div>
 
-  <div
-    v-else
-    class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800"
-  >
+  <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
-      class="h-[400px] md:h-[500px] flex flex-col items-center justify-center rounded-2xl custom-box-shadow dark:bg-slate-900"
-    >
+      class="h-[400px] md:h-[500px] flex flex-col items-center justify-center rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="w-44 h-44 bg-gray-300 rounded-full shadow">
-        <img
-          referrerpolicy="no-referrer"
-          :src="this.avatar"
-          alt="Avatar"
-          class="object-cover rounded-full w-44 h-44"
-        />
+        <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-44 h-44" />
       </div>
-      <p
-        class="font-Poppins font-semibold text-3xl tracking-wide mx-5 my-3 dark:text-white"
-      >
+      <p class="font-Poppins font-semibold text-3xl tracking-wide mx-5 my-3 dark:text-white">
         {{ this.username }}
       </p>
       <div class="flex items-center">
         <ProfileStat :title="this.battles" description="Battles" />
-        <div
-          class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"
-        ></div>
+        <div class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"></div>
         <ProfileStat :title="this.wins" description="Wins" />
-        <div
-          class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"
-        ></div>
+        <div class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"></div>
         <ProfileStat :title="this.winrat" description="Win-rat" />
       </div>
       <div class="flex w-full items-center justify-center gap-5 mt-7">
-        <div
-          v-if="this.isNotMe"
-          class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer"
-        >
-          <Icon
-            @click="this.friendLogic()"
-            :icon="!isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'"
-            height="50"
-            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg"
-          />
+        <div v-if="this.isNotMe" class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer">
+          <Icon @click="this.friendLogic()" :icon="!isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'" height="50"
+            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg" />
         </div>
-        <div
-          v-if="this.isNotMe"
-          class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer"
-        >
-          <Icon
-            @click="this.goToChat()"
-            icon="fluent:chat-12-filled"
-            height="50"
-            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg"
-          />
+        <div v-if="this.isNotMe" class="flex items-center justify-center font-Poppins font-bold text-xl cursor-pointer">
+          <Icon @click="this.goToChat()" icon="fluent:chat-12-filled" height="50"
+            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 rounded-lg" />
         </div>
-        <div
-          @click="switchFriendTab()"
-          class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-Poppins font-bold text-xl cursor-pointer bg-gray-200 rounded-lg shadow-lg"
-        >
+        <div @click="switchFriendTab()"
+          class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-Poppins font-bold text-xl cursor-pointer bg-gray-200 rounded-lg shadow-lg">
           View Friends
         </div>
       </div>
     </div>
 
     <!-- <LastBattlesCard /> -->
-    <div
-      class="h-[450px] md:h-[500px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
-    >
+    <div class="h-[450px] md:h-[500px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
         <h1 class="font-Poppins font-semibold text-2xl dark:text-white">Last Battles</h1>
         <div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
       </div>
       <div class="overflow-y-auto w-full font-Poppins text-lg font-medium">
-        <div
-          v-for="(battle, index) in lastBattles"
-          :key="index"
-          class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white"
-        >
+        <div v-for="(battle, index) in lastBattles" :key="index"
+          class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
           <div class="mb-2">{{ battle.player1.name }} ({{ battle.player1.score }})</div>
           <div>{{ battle.player2.name }} ({{ battle.player2.score }})</div>
         </div>
@@ -344,27 +287,17 @@ export default {
       <h1 class="p-7 font-Poppins font-semibold text-4xl dark:text-white">
         Achievements:
       </h1>
-      <div
-        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5"
-      >
-        <div
-          v-for="(val, index) in achievements"
-          :key="index"
-          class="flex flex-col w-full items-center justify-center rounded-2xl mx-auto py-5 gap-2 custom-box-shadow dark:bg-slate-900 dark:text-white"
-        >
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
+        <div v-for="(val, index) in achievements" :key="index"
+          class="flex flex-col w-full items-center justify-center rounded-2xl mx-auto py-5 gap-2 custom-box-shadow dark:bg-slate-900 dark:text-white">
           <Icon class="text-gray-500 dark:text-gray-400" :icon="val.icon" height="80" />
           <h1 class="font-Poppins font-bold">{{ val.title }}</h1>
           <p class="font-Poppins text-gray-400">{{ val.desc }}</p>
-          <div
-            v-if="val.status"
-            class="p-2 text-emerald-400 bg-green-700 bg-opacity-30 font-Poppins font-semibold rounded-md"
-          >
+          <div v-if="val.status"
+            class="p-2 text-emerald-400 bg-green-700 bg-opacity-30 font-Poppins font-semibold rounded-md">
             Achieved
           </div>
-          <div
-            v-else
-            class="p-2 text-red-400 bg-red-300 bg-opacity-30 font-Poppins font-semibold rounded-md"
-          >
+          <div v-else class="p-2 text-red-400 bg-red-300 bg-opacity-30 font-Poppins font-semibold rounded-md">
             In progress
           </div>
         </div>

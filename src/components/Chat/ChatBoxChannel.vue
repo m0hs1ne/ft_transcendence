@@ -59,32 +59,6 @@ export default {
   },
   methods: {
 
-    async fetchData() {
-      // this.userStore.UpdateChannelId(this.channel.id);
-
-      console.log('Hello is ', this.userStore.ActiveMessageChannelId)
-      // this.userStore.ActiveMessageChannelId.forEach((element) => {
-      //   var tye = "";
-      //  // console.log("This is fffff ", element)
-      //   if (element.type === "notification") {
-      //     //  console.log("this is notif" ,element.type)
-      //     this.messages.push({ notificetion: element.message, });
-      //   }
-      //   else {
-      //     if (element.from.id != element.id)
-      //       tye = "sent";
-      //     else tye = "received";
-
-      //     this.messages.push({
-
-      //       img: element.from.avatar,
-      //       type: tye,
-      //       text: element.message,
-      //     });
-      //   }
-      // });
-
-    },
 
     sendMessage() {
       console.log("I AM SENDmessage channel");

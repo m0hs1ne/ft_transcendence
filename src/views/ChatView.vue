@@ -69,7 +69,9 @@ export default {
 			console.log(object)
 			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
-				console.log(" I am here In person ", object)
+				console.log(" =========================== ", this.displayChatboxChannel)
+				if(this.displayChatboxChannel)
+					this.displayChatboxChannel = 0;
 				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
 					this.displayTargetComponent = false;
 					this.$nextTick(() => {
@@ -88,21 +90,18 @@ export default {
 		IsChannel(object) {
 			console.log("This is an channel ", object)
 			this.displayTargetComponent = false
-			if (object.id != this.displayChatboxChannel) {
-				console.log(" I am here to ", object, this.displayChatboxChannel)
-				if (this.displayChatboxChannel) {
-					this.displayTargetComponent = false;
-					this.displayChatboxChannel = false;
-					this.$nextTick(() => {
-						// Code here will be executed after the next DOM update cycle
-						console.log('DOM updated', object.id);
-						this.displayChatboxChannel = object.id;
-						// Access or manipulate DOM elements here
-					});
-				}
-				else
+
+			if (this.displayChatboxChannel) {
+				this.displayTargetComponent = false;
+				this.displayChatboxChannel = false;
+				this.$nextTick(() => {
+					console.log('DOM updated', object.id);
 					this.displayChatboxChannel = object.id;
+				});
 			}
+			else
+				this.displayChatboxChannel = object.id;
+
 			this.ChannelObject = object;
 		},
 

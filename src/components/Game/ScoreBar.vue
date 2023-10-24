@@ -19,13 +19,13 @@ export default {
             // Get user profile data
             try {
                 const res1 = await axios.get(
-                    `http://10.32.117.168:3000/api/users/profile/${props.leftID}`,
+                    `http://10.32.120.112:3000/api/users/profile/${props.leftID}`,
                     {
                         withCredentials: true,
                     }
                 );
                 const res2 = await axios.get(
-                    `http://10.32.117.168:3000/api/users/profile/${props.rightID}`,
+                    `http://10.32.120.112:3000/api/users/profile/${props.rightID}`,
                     {
                         withCredentials: true,
                     }
@@ -59,7 +59,7 @@ export default {
         </div>
 
         <p class="font-Poppins font-bold text-xl dark:text-white w-20 text-center">
-        {{ leftScore }} | {{ rightScore }}
+            {{ leftScore }} | {{ rightScore }}
         </p>
         <div class="flex items-center justify-end w-50 md:w-80 ">
             <p class="font-Poppins font-semibold md:text-xl tracking-wide mx-2 dark:text-white overflow-ellipsis">

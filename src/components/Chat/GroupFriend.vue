@@ -106,7 +106,8 @@ export default {
     },
 
     getStatusClass(status) {
-      if (status) return "border-4 border-green-500 ";
+      if (status)
+        return "border-4 border-green-500 ";
     },
 
     moveTheBar() {

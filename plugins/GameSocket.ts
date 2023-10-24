@@ -1,9 +1,9 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
-export default((app: any) => {
-  const GameSocket: Socket = io('http://10.32.117.168:3000/game', {
+export default (app: any) => {
+  const GameSocket: Socket = io("http://10.32.120.112:3000/game", {
     withCredentials: true,
   });
   app.config.globalProperties.$GameSocket = GameSocket;
-  console.log( "Game Socket Connected", GameSocket);
-});
+  console.log("Game Socket Connected", GameSocket);
+};

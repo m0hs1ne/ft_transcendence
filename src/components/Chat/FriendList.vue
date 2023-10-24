@@ -1,9 +1,8 @@
 <!-- FriendListComponent.vue -->
 <template>
+  <img referrerpolicy="no-referrer" @click="openPopup" title="Add Friend "
+    class="m-2 h-10 rounded-full hover:scale-150 text-white font-bold" src="./../../assets/icons/add.svg">
 
-    <img referrerpolicy="no-referrer" @click="openPopup" title = "Add Friend " class="m-2 h-10 rounded-full hover:scale-150 text-white font-bold"
-        src="./../../assets/icons/add.svg">
-  
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
     <div class="bg-white rounded-lg p-6">
       <h2 class="text-xl font-bold mb-4">Add friends:</h2>
@@ -42,13 +41,13 @@ export default {
     const userStore = useUserStore();
     return { userStore };
   },
-  
+
   data() {
     return {
       isOpend: false,
       friends: [],
       members: [],
-      message:''
+      message: ''
 
     };
   },
@@ -59,27 +58,25 @@ export default {
       await this.userStore.FetchFriend();
       // handl friend 
 
-       console.log("This Friends : " ,this.userStore.UserFriends.data)
-       console.log("This Members : " ,this.members);
-       
+      console.log("This Friends : ", this.userStore.UserFriends.data)
+      console.log("This Members : ", this.members);
+
       this.userStore.UserFriends.data.forEach(element => {
         // to get friends not found in the channel
         var boool = true;
 
         for (const obj of this.members) {
 
-            if (obj.user.id == element.id)
-            {
-              boool = false;
-              break;
-            }
+          if (obj.user.id == element.id) {
+            boool = false;
+            break;
+          }
         }
         if (boool) {
           this.friends.push(element);
         }
         console.log("fff ", this.friends.length)
-        if(this.friends.length === 0)
-        {
+        if (this.friends.length === 0) {
           this.message = "you don't have any friends to invite them";
           console.log("you dont have any frineds to invite them ")
         }
@@ -88,11 +85,11 @@ export default {
     },
     async openPopup() {
 
-      // const role = await axios.get (`http://10.32.117.168:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`, 
+      // const role = await axios.get (`http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`, 
       //           { withCredentials: true },);
 
       //   console.log(role)
-        this.isOpend = true;
+      this.isOpend = true;
     },
     closePopup() {
       this.isOpend = false;

@@ -81,7 +81,8 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.role = await axios.get(`http://10.32.117.168:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
+      await this.userStore.fetchChannelById();
+      this.role = await axios.get(`http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true });
       if (this.role.data.role == 'member') {
         this.AddFriend = false;
@@ -90,7 +91,6 @@ export default {
       }
       if (this.role.data.role == 'owner')
         this.DeletePermission = true
-      await this.userStore.fetchChannelById();
     },
     LeaveChannel() {
       this.userStore.action = 'Leave';
@@ -111,19 +111,19 @@ export default {
   },
   async mounted() {
 
-     await this.$socket.on("ChatRoomList", (data) => {
-        console.log("This is data from channel profile : ", data)
-        if ( data.type == 'updated') {
-          this.fetchData();
-          console.log( "hoooo " , this.userStore.ActiveMembersChannelId)
-        }
+    await this.$socket.on("ChatRoomList", (data) => {
+      console.log("This is data from channel profile : ", data)
+      if (data.type == 'updated') {
+        this.fetchData();
       }
-      );
+    }
+    );
     this.$socket.on("receiveMessage", (data) => {
       console.log("receiveMessage form channel profile--------- ", data)
       if ((data.type == 'notification' && data.action == 'joined') ||
         (data.type == 'notification' && data.action == 'status') ||
         (data.type == 'notification' && data.action == 'role')
+       
       ) {
         this.fetchData();
       }
