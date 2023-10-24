@@ -370,16 +370,35 @@ export class ChatRoomsService {
     await this.userChatRepository.save(userChat);
   }
 
+<<<<<<< HEAD
   async inviteUserToChat(id: number, chatId: number, payload) {
+=======
+  async inviteUserToChat(id: number, chatId: number, payload)
+  {
+
+>>>>>>> cae0a59913d9c9326f204a0b9d9ab80d731e642b
     const invit = await this.invitationRepository.findOne({
       where: { toUserId: id, chatRoomId: chatId },
     });
     if (invit) throw new NotAcceptableException("Invitation was sent already.");
     const chat = await this.chatRoomRepository.findOne({
+<<<<<<< HEAD
       where: { id: chatId },
     });
     const isAdmin = await this.isAdmin(payload.sub, chat.id);
     if (chat && isAdmin) {
+=======
+      where: {id: chatId}
+    })
+    const isAdmin = await this.isAdmin(payload.sub, chat.id)
+    if (chat && isAdmin)
+    {
+      const notMember = await this.userChatRepository.findOne({
+        where: {userId: payload.sub, chatRoomId: chat.id}
+      })
+      if (notMember)
+        throw new ForbiddenException()
+>>>>>>> cae0a59913d9c9326f204a0b9d9ab80d731e642b
       const fromUser = await this.userRepository.findOne({
         select: ["id", "username", "avatar"],
         where: { id: payload.sub },
