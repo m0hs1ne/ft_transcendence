@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.role = await axios.get(`http://localhost:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
+      this.role = await axios.get(`http://10.32.117.168:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true });
       if (this.role.data.role == 'member') {
         this.AddFriend = false;
