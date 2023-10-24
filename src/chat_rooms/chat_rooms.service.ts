@@ -281,7 +281,7 @@ export class ChatRoomsService {
           if (member.role != 'owner')
           {
             member.role = 'owner'
-            chat.owner = member.id
+            chat.owner = member.userId
             this.userChatRepository.save(member)
             this.chatRoomRepository.save(chat)
             break;
