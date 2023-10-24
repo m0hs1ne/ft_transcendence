@@ -53,16 +53,16 @@ export default {
                 <img referrerpolicy="no-referrer" :src="this.leftData.avatar" alt="Avatar"
                     class=" object-cover rounded-full w-20 h-20 md:w-28 md:h-28">
             </div>
-            <p class="font-Poppins font-semibold md:text-xl tracking-wide mx-2  dark:text-white overflow-ellipsis">
+            <p class=" font-semibold md:text-xl tracking-wide mx-2  dark:text-white overflow-ellipsis">
                 {{ this.leftData.username }}
             </p>
         </div>
 
-        <p class="font-Poppins font-bold text-xl dark:text-white w-20 text-center">
+        <p class=" font-bold text-xl dark:text-white w-20 text-center">
         {{ leftScore }} | {{ rightScore }}
         </p>
         <div class="flex items-center justify-end w-50 md:w-80 ">
-            <p class="font-Poppins font-semibold md:text-xl tracking-wide mx-2 dark:text-white overflow-ellipsis">
+            <p class=" font-semibold md:text-xl tracking-wide mx-2 dark:text-white overflow-ellipsis">
                 {{ this.rightData.username }}
             </p>
             <div class="w-20 h-20 md:w-28 md:h-28 bg-gray-300 rounded-full shadow">
