@@ -18,6 +18,7 @@ export default {
         const fetchData = async () => {
             // Get user profile data
             try {
+                console.log("==> ", props.leftID, props.rightID);
                 const res1 = await axios.get(
                     `http://localhost:3000/api/users/profile/${props.leftID}`,
                     {
