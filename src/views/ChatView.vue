@@ -1,5 +1,5 @@
 <template>
-	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800">
+	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800 p-5">
 		<!-- Friend List and Group List Section -->
 		<confirmPlay />
 		<!-- <GroupList @object-sent="handleObjectChannel" /> -->

@@ -111,18 +111,18 @@ export default {
   <div v-if="this.joinChannel" class="flex flex-col justify-center items-center min-h-screen ml-20 dark:bg-slate-800">
     <div
       class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-      <div class="flex w-full justify-start items-center pl-10 pt-7 font-Poppins font-bold text-2xl dark:text-white">
+      <div class="flex w-full justify-start items-center pl-10 pt-7  font-bold text-2xl dark:text-white">
         Join {{ this.selectedChannel.title }}
       </div>
       <div class="w-full px-10 pt-5">
         <input type="text" id="first_name"
-          class="font-Poppins font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
-          v-model="this.pass" placeholder="Enter Channel password" required />
+          class=" font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
+          v-model="this.pass" placeholder="Enter Channel password" @input="this.error = ''" required />
       </div>
-      <p v-if="this.error" class="text-red-500">
+      <p class="text-red-500">
         {{ this.error }}
       </p>
-      <div class="flex w-full justify-end items-center font-Poppins font-bold pr-10 pb-5 gap-5">
+      <div class="flex w-full justify-end items-center  font-bold pr-10 pb-5 gap-5">
         <button @click="this.protectedChannel"
           class="text-gray-100 dark:text-white shadow py-2 px-5 bg-blue-500 rounded-lg">
           Join
@@ -139,17 +139,17 @@ export default {
     <div class="w-full flex flex-col justify-center items-center px-10">
       <div class="w-full max-w-[400px] py-5">
         <input type="text" id="first_name"
-          class="font-Poppins font-bold text-xl bg-gray-200 text-gray-900 rounded-lg w-full px-8 py-4 dark:bg-gray-700 dark:text-white"
+          class=" font-bold text-xl bg-gray-200 text-gray-900 rounded-lg w-full px-8 py-4 dark:bg-gray-700 dark:text-white"
           @input="this.search" v-model="this.query" placeholder="Search" required />
       </div>
       <div class="flex items-center justify-evenly w-full max-w-[500px] my-2 px-5 dark:text-white">
         <button @click="this.userTab = true" class="flex flex-col p-3 gap-0.5 items-center">
-          <h1 class="font-Poppins font-bold text-xl">Users</h1>
+          <h1 class=" font-bold text-xl">Users</h1>
           <div v-if="this.userTab" class="w-12 h-3 px-5 rounded-md bg-blue-600 custom-box-shadow" />
           <div v-else class="w-12 h-3 px-5" />
         </button>
         <button @click="this.userTab = false" class="flex flex-col p-3 gap-0.5 items-center">
-          <h1 class="font-Poppins font-bold text-xl">Channels</h1>
+          <h1 class=" font-bold text-xl">Channels</h1>
           <div v-if="!this.userTab" class="w-12 h-3 px-5 rounded-md bg-blue-600 custom-box-shadow" />
           <div v-else class="w-12 h-3 px-5" />
         </button>
@@ -165,11 +165,11 @@ export default {
                 class="object-cover rounded-full w-14 h-14 md:w-20 md:h-20" />
             </div>
             <p
-              class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-Poppins font-semibold md:text-xl tracking-wide dark:text-white">
+              class="w-36 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
               {{ player.username }}
             </p>
           </div>
-          <p class="min-w-fit font-Poppins font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
+          <p class="min-w-fit  font-semibold text-xl md:text-2xl tracking-wide dark:text-white">
             {{ parseInt((player.wins / (player.wins + player.losses)) * 100) }}%
           </p>
         </router-link>
@@ -183,12 +183,12 @@ export default {
               <Icon class="text-blue-600 w-full h-full" icon="clarity:group-solid" />
             </div>
             <p
-              class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-Poppins font-semibold md:text-xl tracking-wide dark:text-white">
+              class="w-36 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
               {{ channel.title }}
             </p>
           </div>
           <button @click="this.channelLogic(channel)"
-            class="text-gray-100 dark:text-white font-Poppins font-bold shadow py-2 px-5 bg-blue-500 rounded-lg">
+            class="text-gray-100 dark:text-white  font-bold shadow py-2 px-5 bg-blue-500 rounded-lg">
             {{ channel.isMember ? "Chat" : "Join" }}
           </button>
         </div>

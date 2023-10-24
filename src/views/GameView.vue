@@ -53,7 +53,7 @@ export default {
     };
   },
 
-  created() {
+  mounted() {
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("resize", this.CanvasResize);
   },

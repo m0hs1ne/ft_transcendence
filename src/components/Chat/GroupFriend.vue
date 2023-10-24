@@ -1,39 +1,33 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div id="sidebar" class="flex w-1/4 align-middle flex-col h-full bg-slate-300">
-    <div class="flex flex-col">
-      <img referrerpolicy="no-referrer" @click="moveTheBar()" title="moveTheBar"
-        class="float-left h-10 rounded-full hover:scale-150 text-white font-bold py-2"
-        src="./../../assets/icons/side-menu.svg" />
+  <div id="sidebar"
+    class="flex flex-col w-1/4 bg-gray-400 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
+    <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly">
+      <Icon @click="moveTheBar()" title="moveTheBar" class="h-8 w-8" icon="mingcute:menu-fill" />
       <AlertChannel />
       <PopUpinv />
     </div>
 
-    <Transition>
-      <div class="w-full rounded-lg h-full">
-        <ul>
-          <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id"
-            class="flex items-center justify-between p-2 border-b">
-            <div class="flex-shrink-0">
-              <img :src="friend.avatar
-                ? friend.avatar
-                : 'https://cdn1.iconfinder.com/data/icons/developer-set-2/512/users-512.png'
-                " @click="handleChatClick(friend)" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
-                class="h-12 rounded-full" />
-            </div>
-            <GameMode v-if="this.userStore.creatchallenge" />
-            <div v-if="show" class="flex-row">
-              <span class="text-lg font-semiboldusername overflow-ellipsis line-clamp-1">{{ friend.username }} {{
-                friend.title }}</span>
-              <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
-            </div>
-            <img referrerpolicy="no-referrer" v-if="friend.inGame == false && friend.statusOnline == true"
-              @click="play(friend)" title="Play" class="h-10 hover:scale-150 text-white font-bold py-2 px-4"
-              src="./../../assets/icons/ping.svg" />
-          </li>
-        </ul>
-      </div>
-    </Transition>
+    <ul>
+      <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id" @click="handleChatClick(friend)"
+        class="flex w-full items-center p-2 cursor-pointer custom-box-shadow rounded-xl dark:bg-slate-800 mb-3">
+        <div class="flex w-full">
+          <div class="w-14 h-14 bg-gray-200 rounded-full shadow mr-4">
+            <img v-if="friend.avatar" :src="friend.avatar" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
+              class="h-14 w-14 rounded-full object-cover" />
+            <Icon v-else class="text-blue-600 h-14 w-14" icon="clarity:group-solid" />
+          </div>
+          <GameMode v-if="this.userStore.creatchallenge" />
+          <div v-if="show" class="flex items-center">
+            <span class="text-lg font-bold overflow-ellipsis line-clamp-1">{{ friend.username }} {{ friend.title
+            }}</span>
+            <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
+          </div>
+        </div>
+        <Icon v-if="friend.inGame == false && friend.statusOnline == true" @click="play(friend)" title="Play"
+          class="text-blue-600 h-10 w-10 ml-3" icon="mingcute:game-2-fill" />
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -43,11 +37,14 @@ import PopUpinv from "./PopUpinv.vue";
 import axios from "axios";
 import { useUserStore } from "./../../stores/state.ts";
 import GameMode from "./GameMode.vue";
+import { Icon } from "@iconify/vue";
+
 export default {
   components: {
     AlertChannel,
     PopUpinv,
     GameMode,
+    Icon,
   },
   setup() {
     const userStore = useUserStore();
@@ -155,8 +152,11 @@ export default {
       });
     });
     if (this.userStore.ActiveId) {
-      this.$emit('object-sent', this.userStore.ActiveId);
-      this.userStore.UpdateChannelId(this.userStore.ActiveId.id, this.userStore.ActiveId.title);
+      this.$emit("object-sent", this.userStore.ActiveId);
+      this.userStore.UpdateChannelId(
+        this.userStore.ActiveId.id,
+        this.userStore.ActiveId.title
+      );
     }
   },
 };

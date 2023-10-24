@@ -98,7 +98,7 @@ export default {
     }
 
   },
-  async created() {
+  async mounted() {
     await this.state.fetchData();
     this.twoFA = this.state.userData.is2faEnabled && !this.state.userData.validSession;
     this.routerGard();
@@ -112,11 +112,11 @@ export default {
 </script>
 
 <template>
-  <main>
+  <main class="font-Poppins">
     <div v-if="this.twoFA" class="m-auto flex items-center justify-center h-screen dark:bg-slate-800">
       <div
         class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-        <h2 class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500">
+        <h2 class="flex w-full justify-start items-center py-5 px-10  font-light text-xl text-gray-500">
           Enter virifcation code from Google Authenticator app.
         </h2>
         <div class="flex flex-col justify-center items-center text-center">
@@ -128,7 +128,7 @@ export default {
           </p>
           <p v-else class="text-red-500 pb-5">
             {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }} </p>
-              <div class="flex items-center justify-center w-full gap-5 font-Poppins font-medium">
+              <div class="flex items-center justify-center w-full gap-5  font-medium">
                 <button @click="this.validate2FA()" :disabled="this.otpCode.length < 6"
                   class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg">
                   Submit

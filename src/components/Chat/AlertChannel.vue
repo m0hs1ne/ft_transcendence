@@ -1,7 +1,5 @@
 <template>
-  <img referrerpolicy="no-referrer" @click="openPopup" title="Creat Channel"
-    class="h-10 rounded-full  hover:scale-150 text-white font-bold py-2 transition-opacity duration-500"
-    src="./../../assets/icons/group.svg">
+  <Icon @click="openPopup" title="Creat Channel" class="h-8 w-8" icon="mdi:group-add" />
   <div>
     <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
       <div class="bg-white rounded-lg p-6">
@@ -38,7 +36,9 @@
 </template>
 
 <script>
+import { Icon } from "@iconify/vue";
 import { useUserStore } from '../../stores/state.ts';
+
 export default {
   setup() {
     const userStore = useUserStore();
@@ -52,6 +52,9 @@ export default {
       isOpend: false,
       message: false
     };
+  },
+  components:{
+    Icon
   },
   methods: {
     openPopup() {
