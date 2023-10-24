@@ -266,7 +266,8 @@ export default {
     console.log("mounted ");
     this.GameSocket = app.config.globalProperties.$GameSocket;
     this.EventsHandler();
-    this.JoinGameEvent();
+    if(this.gameData.random)
+        this.JoinGameEvent();
   },
   unmounted() {
     this.EventsKiller();

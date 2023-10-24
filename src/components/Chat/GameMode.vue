@@ -8,10 +8,10 @@
                         <label for="dropdown" class="mr-2">Chose the mode of Game:</label>
                         <select id="dropdown" v-model="selectedOption"
                             class="bg-white border border-gray-300 px-4 py-2 rounded">
-                            <option value="classic">Classic</option>
-                            <option value="rapid">Rapid</option>
-                            <option value="Blitz">Blitz</option>
-                            <option value="Bullet">Bullet</option>
+                            <option value="20">Classic</option>
+                            <option value="14">Rapid</option>
+                            <option value="3">Blitz</option>
+                            <option value="1">Bullet</option>
                         </select>
                     </div>
                 </div>
@@ -68,7 +68,7 @@ export default {
                     mode: this.selectedOption,
                 })
             this.$GameSocket.on("start", (data) => {
-                console.log(" ", data)
+                console.log("start a sahbi", data)
                 this.gameData.random = false;
                 this.$router.push('/play');
             })
