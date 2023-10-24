@@ -25,7 +25,6 @@ export default {
     data() {
         return {
             ChannelName: '',
-
             isOpend: false,
             strings: '',
             isChanllenge: false,
@@ -39,7 +38,7 @@ export default {
                 oponentId: this.message.invitation.to.id,
                 challId: this.message.invitation.from.id,
                 type: 'opp',
-                mode: this.message.mode,
+                mode: this.message.invitation.mode,
             })
             
             this.isOpend = false;
@@ -56,7 +55,7 @@ export default {
                 oponentId: this.message.invitation.to.id,
                 challId: this.message.invitation.from.id,
                 type: 'refuse',
-                mode: this.message.mode,
+                mode: this.message.invitation.mode,
             })
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
@@ -72,7 +71,7 @@ export default {
                 oponentId: this.message.invitation.to.id,
                 challId: this.message.invitation.from.id,
                 type: 'refuse',
-                mode: this.message.mode,
+                mode: this.message.invitation.mode,
             })
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
@@ -83,6 +82,7 @@ export default {
             this.message = messages
             console.log('Notification popinv dddddd ', messages.invitation)
             if (messages.type == 'challenge') {
+                console.log(messages)
                 this.strings = `${messages.invitation.to.username} Challend you 👊.`;
                 this.isOpend = true;
                 this.showToast();
