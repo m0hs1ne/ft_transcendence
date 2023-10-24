@@ -14,7 +14,7 @@ import { StringifyOptions } from 'querystring';
   namespace: '/game',
   cors: {
     credentials: true,
-    origin: "http://localhost:5173"
+    origin: "http://10.32.117.168:5173"
   }
 })
 export class GameGateway {
@@ -45,7 +45,7 @@ export class GameGateway {
       }
       console.log(`Game Socket => Client disconnected: ${client.id}`);
     } catch (err) {
-      console.log(`======> ${err}`);
+      // console.log(`======> ${err}`);
     }
   }
 
