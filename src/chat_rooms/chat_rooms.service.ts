@@ -206,6 +206,15 @@ export class ChatRoomsService {
 
   /* ---------member work------------ */
   async updateMemberRole(memberId, chatId, role, payload) {
+
+    const myUserChat = await this.userChatRepository.findOne({
+      relations: ["user", "chatRoom"],
+      where: { userId: payload.sub, chatRoomId: chatId },
+    });
+    if (!myUserChat)
+      throw new NotFoundException({ message: "You are not in this chat" });
+    else if (myUserChat.role != "admin" && myUserChat.role != "owner" )
+      throw new ForbiddenException({message: "You no authority here!"})
     const userChat = await this.userChatRepository.findOne({
       relations: ["user", "chatRoom"],
       where: { userId: memberId, chatRoomId: chatId },
