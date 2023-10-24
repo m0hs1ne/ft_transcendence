@@ -153,7 +153,7 @@ export class GameGateway {
     }
     try {
       const Payload = verifyToken(client.handshake.headers.cookie);
-      if (this.Queus.get(payload.mode).includes(client)) 
+      if (this.Queus.has(payload.mode) && this.Queus.get(payload.mode).includes(client))
       {
         this.Queus.get(payload.mode).pop();
         this.clients.delete(Payload.sub);
@@ -197,23 +197,25 @@ export class GameGateway {
   @SubscribeMessage('Chall')
   HandlleChallenges(client: any, payload: any): void 
   {
-    // console.log(payload);
     if(payload.type == "refuse")
     {
-      console.log(payload);
+      if(this.Challenge.has(payload.oponentId))
+      {
+        this.Challenge.delete(payload.oponentId);
+      }
     }
-    if(payload.type == "challenger")
+    else if(payload.type == "challenger")
     {
-      this.Challenge.set(payload.challId, client);
+      this.Challenge.set(payload.oponentId, client);
     }
     else if(payload.type == "opp")
     {
-      if(this.Challenge.has(payload.challId))
+      if(this.Challenge.has(payload.oponentId))
       {
-        let room: Room = new Room(this.Challenge.get(payload.challId), client);
+        let room: Room = new Room(this.Challenge.get(payload.oponentId), client);
         room.roomId = uuidv4();
         room.GameMode = payload.mode;
-        room.RightPlayer.id = payload.ChallId;
+        room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
         this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id,true);
         this.clients.set(room.LeftPlayer.id, room.roomId);
