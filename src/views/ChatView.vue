@@ -125,7 +125,7 @@ export default {
 		this.$socket.on("receiveMessage", (data) => {
 			console.log("data from ", data)
 			console.log(this.userStore.ActiveChannelId)
-			if (data.type != 'DMMessages') {
+			if (data.type != 'error') {
 				console.log("I am here: ")
 				//this.userStore.fetchDataForDmChatRooms();
 			}
