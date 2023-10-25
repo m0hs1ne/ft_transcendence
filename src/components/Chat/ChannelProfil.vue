@@ -28,9 +28,9 @@
         class="text-black dark:text-white h-10 w-10 hover:bg-blue-300 p-1 rounded-md cursor-pointer" />
     </div>
 
-    <div class="flex w-full h-full custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-3 justify-center gap-5">
+    <div class="flex flex-col w-full h-full custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-3  gap-5">
         <div v-for="member in this.userStore.ActiveMembersChannelId" 
-        class="flex w-full h-fit custom-box-shadow p-3 dark:bg-slate-900 rounded-lg my-3 flex-row items-center">
+        class="flex w-full h-fit custom-box-shadow p-3 dark:bg-slate-900 rounded-lg  flex-row items-center">
           <div class="flex-shrink-0">
             <img referrerpolicy="no-referrer" :src="member.user.avatar" alt="Avatar" title="View Profil"
               class="h-8 rounded-full hover:scale-150" />
@@ -101,8 +101,8 @@ export default {
       }
       if (this.role.data.role == "owner") this.DeletePermission = true;
       if (this.role.data.role == "admin") this.AddFriend = true;
-
       this.MyRole = this.role.data.role;
+      await this.userStore.fetchChannelById();
     },
     LeaveChannel() {
       this.userStore.action = "Are you sure you wand to Leave this Channel?";
@@ -131,7 +131,8 @@ export default {
       if (
         (data.type == "notification" && data.action == "joined") ||
         (data.type == "notification" && data.action == "status") ||
-        (data.type == "notification" && data.action == "role")
+        (data.type == "notification" && data.action == "role") ||
+        (data.type == "notification" && data.action == "kick")
       ) {
         this.fetchData();
       }
