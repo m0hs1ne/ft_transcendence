@@ -60,17 +60,12 @@ export default {
 
 
 	methods: {
-		handleNotification(message) {
-			console.log("I am here ");
-		},
-
-
 		IsPerson(object) {
 			console.log(object)
 			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
 				console.log(" =========================== ", this.displayChatboxChannel)
-				if(this.displayChatboxChannel)
+				if (this.displayChatboxChannel)
 					this.displayChatboxChannel = 0;
 				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
 					this.displayTargetComponent = false;
@@ -129,18 +124,21 @@ export default {
 		// });
 		this.$socket.on("receiveMessage", (data) => {
 			console.log("data from ", data)
+			console.log(this.userStore.ActiveChannelId)
 			if (data.type != 'DMMessages') {
 				console.log("I am here: ")
 				//this.userStore.fetchDataForDmChatRooms();
 			}
-			if (data.action == 'kick' && data.from.id == this.userStore) {
+			if (data.action == 'kick') {
 				console.log(" kicked >>>>>>>>")
-				this.$nextTick(() => {
-					this.displayTargetComponent = false;
-					this.displayChatboxChannel = false;
+				if (this.userStore.ActiveChannelId == data.chatRoomId) {
+					this.$nextTick(() => {
+						this.displayTargetComponent = false;
+						this.displayChatboxChannel = false;
 
-				});
-				this.userStore.fetchDataForDmChatRooms();
+					});
+				}
+				//this.userStore.fetchDataForDmChatRooms();
 			}
 		})
 

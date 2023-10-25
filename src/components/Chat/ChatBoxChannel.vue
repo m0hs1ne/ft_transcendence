@@ -22,10 +22,10 @@
     </div>
     <div class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent">
       <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message here..."
-        class=" placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white" />
+        class="placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white" />
 
       <div class="flex justify-center items-center h-full text-white dark:text-white shadow px-2 bg-blue-500 rounded-lg">
-        <Icon @click="sendMessage()" icon="mingcute:send-fill"  height="30"/>
+        <Icon @click="sendMessage()" icon="mingcute:send-fill" height="30" />
       </div>
     </div>
   </div>
@@ -84,17 +84,21 @@ export default {
   },
 
   async mounted() {
+    console.log(this.userStore.ActiveChannelId);
     await this.userStore.fetchChannelById();
     this.messages = this.userStore.ActiveMessageChannelId;
+    // console.log("messs", this.messages)
     //this.userStore.UpdateChannelId(this.channel.id)
-    console.log("I am in mounted", this.userStore.ActiveChannelId);
+    // console.log("I am in mounted", this.userStore.ActiveChannelId)
     this.$socket.on("receiveMessage", (data) => {
+      // console.log( " merwan ",data.chatRoomId)
+      console.log("Helllo this is my ", this.userStore.ActiveChannelId, data.chatRoomId);
       if (
-        (data.type == "notification" && data.action == "joined") ||
-        (data.type == "notification" && data.action == "status") ||
-        (data.type == "message" && data.action == "message")
+        this.userStore.ActiveChannelId == data.chatRoomId &&
+        ((data.type == "notification" && data.action == "joined") ||
+          (data.type == "notification" && data.action == "status") ||
+          (data.type == "message" && data.action == "message"))
       ) {
-        console.log(" I am puching .....", data);
         this.messages.push(data);
       }
     });

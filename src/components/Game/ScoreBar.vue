@@ -60,7 +60,7 @@ export default {
         </div>
 
         <p class=" font-bold text-xl dark:text-white w-20 text-center">
-        {{ leftScore }} | {{ rightScore }}
+            {{ leftScore }} | {{ rightScore }}
         </p>
         <div class="flex items-center justify-end w-50 md:w-80 ">
             <p class=" font-semibold md:text-xl tracking-wide mx-2 dark:text-white overflow-ellipsis">

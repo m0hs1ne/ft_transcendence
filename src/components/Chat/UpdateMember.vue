@@ -63,7 +63,6 @@ export default {
         openPopup() {
             this.isOpend = true;
         },
-
         kick() {
             console.log("Kick ");
             this.$socket.emit("kickMember",
@@ -79,12 +78,10 @@ export default {
             console.log("Time ", time)
             this.$socket.emit("updateMemberStatus",
                 {
-
                     "memberId": this.userStore.MemberRoleStatus.user.id,
                     "chatId": this.userStore.ActiveChannelId,
                     "status": "muted",
                     "mutedFor": time
-
                 });
             if (time) {
                 console.log("I am in time condition ");
@@ -137,11 +134,11 @@ export default {
             console.log("Hello the new role ", this.selectedOptionRole);
 
             if (this.selectedOptionStatus != this.OldStatus) {
-              //  if (this.selectedOptionStatus == 'banned')
+                //  if (this.selectedOptionStatus == 'banned')
                 //    this.updateStatus('banned');
-               // else {
-                    this.updateStatus(this.selectedOptionStatus)
-               // }
+                // else {
+                this.updateStatus(this.selectedOptionStatus)
+                // }
             }
             if (this.userStore.MemberRoleStatus.role != this.selectedOptionRole)
                 this.updateRole()

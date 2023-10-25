@@ -35,13 +35,14 @@ export const useUserStore = defineStore("user", {
       try {
         this.ActiveChannelData = await axios.get(
           `http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}/`,
-          { withCredentials: true }
-          );
-          this.MyId = this.ActiveChannelData.data.id;
-          this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
-          this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
-          this.ActiveChannelTitle = this.ActiveChannelData.data.title;
-          console.log("Up date the channnel",this.ActiveChannelData);
+          { withCredentials: true },
+        );
+        console.log("----------------------------------------",this.ActiveChannelData)
+        this.MyId = this.ActiveChannelData.data.id;
+        this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
+        this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
+        this.ActiveChannelTitle = this.ActiveChannelData.data.title;
+       // console.log(this.ActiveChannelData.data.messages);
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }
@@ -51,7 +52,6 @@ export const useUserStore = defineStore("user", {
       if (title) {
         this.ActiveChannelId = id;
         this.ActiveChannelTitle = title;
-      
       }
     },
 
@@ -70,7 +70,7 @@ export const useUserStore = defineStore("user", {
       this.$socket.emit("myChatRooms", {}, () => {});
       console.log(" Noting ");
       this.ChannelList = await this.$socket.on("ChatRoomList");
-     // console.log("This is Channel list ", this.ChannelList);
+      // console.log("This is Channel list ", this.ChannelList);
     },
 
     async fetchDataForDmChatRooms() {
@@ -83,7 +83,6 @@ export const useUserStore = defineStore("user", {
       } catch (error) {
         console.log("fetch friends by id error: ", error);
       }
-    
     },
 
     async RemoveChatRome() {
