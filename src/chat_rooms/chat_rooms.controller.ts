@@ -1,4 +1,4 @@
-import { Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { generateRandomString, userAuthGuard, verifyToken } from 'src/utils/guard';
 import { ChatRoomsService } from './chat_rooms.service';
 import { UsersService } from 'src/users/users.service';
@@ -36,6 +36,8 @@ export class ChatRoomsController {
     @Get('myrole/:id')
     async myrole(@Param('id') id, @Req() req)
     {
+        if (isNaN(id))
+          throw new BadRequestException()
         const payload = verifyToken(req.headers.cookie)
         const role = await this.userchatservice.myrole(id, payload.sub)
         return role
@@ -43,6 +45,8 @@ export class ChatRoomsController {
     
     @Get(':id')
     async chatroomDetails(@Param('id') id, @Req() req){
+        if (isNaN(id))
+          throw new BadRequestException()
         const payload = verifyToken(req.headers.cookie)
         const members = await this.chatroomservice.getChatMember(id);
         const messages = await this.chatroomservice.getMessages('chat', id, payload)
@@ -74,6 +78,8 @@ export class ChatRoomsController {
           new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
         ],
       }),) file: Express.Multer.File, @Param('id') id: number,@Req() req) {
+        if (isNaN(id))
+          throw new BadRequestException()
         const payload = verifyToken(req.headers.cookie);
         this.chatroomservice.uploadAvatar(file, id, payload)
         return {

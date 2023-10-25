@@ -348,7 +348,8 @@ export class ChatRoomsGateway {
         throw new BadRequestException("chatId should be a number");
     } catch (e) {
       const client = clients.get(payload.sub);
-      if (client) client.emit("Error", { error: e.message });
+      if (client) 
+        client.emit("Error", { error: e.message });
     }
   }
 

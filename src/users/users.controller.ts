@@ -53,6 +53,8 @@ export class UsersController {
 
   @Get("profile/:id")
   findOtherProfile(@Param("id") id, @Req() req) {
+    if (isNaN(id))
+      throw new BadRequestException()
     const payload = verifyToken(req.headers.cookie);
     return this.usersService.profile(id, payload);
   }
@@ -97,13 +99,15 @@ export class UsersController {
   @Post("friends")
   async addFriends(@MessageBody() body, @Req() req) {
     const { id } = body;
-    if (typeof id === "number")
+    if (!isNaN(id))
       return await this.usersService.addfriends(id, req);
     else throw new BadRequestException();
   }
 
   @Delete("friends/:id")
   removeFriends(@Param("id") id, @Req() req) {
+    if (isNaN(id))
+      throw new BadRequestException()
     return this.usersService.removefriends(+id, req);
   }
 
@@ -118,12 +122,12 @@ export class UsersController {
   addBlocked(@MessageBody() body, @Req() req) {
     //expected: id: user to block
     const { id } = body;
-    if (typeof id === "number") return this.usersService.addblocked(id, req);
+    if (!isNaN(id)) return this.usersService.addblocked(id, req);
   }
 
   @Delete("blocked/:id")
   removeBlocked(@Param("id") id, @Req() req) {
-    if (typeof id === "number") return this.usersService.removeblocked(id, req);
+    if (!isNaN(id)) return this.usersService.removeblocked(id, req);
   }
 
   @Post("upload_avatar")
