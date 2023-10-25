@@ -289,9 +289,9 @@ export class ChatRoomsService {
       )
         throw new UnauthorizedException();
       this.newChatMessage(
-        payload.sub,
+        userChat.user.id,
         chatId,
-        `${userChat.user.username} left the chat.`,
+        `${userChat.user.username} kicked the chat.`,
         "notification",
         clients,
         "kick",
