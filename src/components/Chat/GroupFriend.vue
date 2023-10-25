@@ -1,7 +1,6 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div id="sidebar"
-    class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
+  <div id="sidebar" class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
     <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly">
       <Icon @click="moveTheBar()" title="moveTheBar" class="h-8 w-8" icon="mingcute:menu-fill" />
       <AlertChannel />
@@ -12,10 +11,12 @@
       <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id" @click="handleChatClick(friend)"
         class="flex w-full items-center p-2 cursor-pointer custom-box-shadow rounded-xl dark:bg-slate-800 mb-3">
         <div class="flex w-full">
-          <div class="w-14 h-14 bg-gray-200 rounded-full shadow mr-4">
-            <img v-if="friend.avatar" :src="friend.avatar" alt="Avatar" :class="getStatusClass(friend.statusOnline)"
-              class="h-14 w-14 rounded-full object-cover" />
-            <Icon v-else class="text-blue-600 h-14 w-14" icon="clarity:group-solid" />
+          <div class="w-14 bg-gray-200 rounded-full shadow mr-4">
+            <div v-if="friend.avatar" class=" relative w-14">
+              <img :src="friend.avatar" alt="Avatar" class="w-14 rounded-full object-cover" />
+              <div v-if="getStatusClass(friend.statusOnline)" class=" absolute bottom-0 right-0 h-5 w-5 rounded-full bg-green-500"/>
+            </div>
+            <Icon v-else class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
           </div>
           <GameMode v-if="this.userStore.creatchallenge" />
           <div v-if="show" class="flex items-center">

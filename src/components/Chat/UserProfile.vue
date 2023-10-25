@@ -55,7 +55,7 @@ export default {
   methods: {
     fetchData() {
       // axios
-      //   .post("http://10.32.120.112:3000/api/users/blocked//",
+      //   .post("http://10.32.125.38:3000/api/users/blocked//",
       //     { withCredentials: true })
       //   .then((response) => {
 
@@ -74,7 +74,7 @@ export default {
     Block() {
       console.log(" block user ", this.person)
 
-      axios.post("http://10.32.120.112:3000/api/users/blocked/", {
+      axios.post("http://10.32.125.38:3000/api/users/blocked/", {
 
         id: parseInt(this.person.id)
       }, {

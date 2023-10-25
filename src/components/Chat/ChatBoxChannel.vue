@@ -1,32 +1,39 @@
 <!-- ChatComponent.vue -->
 <template>
-  <div class="flex flex-col justify-between h-screen">
-    <div class="flex flex-col mt-5 overflow-x-hidden overflow-y-scroll" ref="scrollContainer1">
-      <div v-for="message in this.messages" class="min-w-full max-w-2xl">
-        <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
-          <span>{{ message.message }}</span>
-        </div>
+  <div class="flex flex-col w-full h-full overflow-y-scroll gap-5 px-3" ref="scrollContainer1">
+    <div v-for="message in this.messages" class="w-full pb-10">
+      <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
+        <span>{{ message.message }}</span>
+      </div>
 
-        <div v-if="message.type == 'message'" class="flex mb-4">
-          <img referrerpolicy="no-referrer" :src="message.from.avatar" alt="Avatar" class="circle avatar mr-1" />
-          <div v-if="message.from.id == this.userStore.MyId"
-            class="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
+      <div v-if="message.type == 'message'" class="flex mb-4">
+        <div v-if="message.from.id == this.userStore.MyId" class="flex w-full justify-end">
+        <div class="flex flex-col items-end">
+          <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
             <span>{{ message.message }}</span>
           </div>
-          <div v-if="message.from.id != this.userStore.MyId"
-            class="mr-2 py-3 px-4 bg-red-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
-            <span>{{ message.message }}</span>
-          </div>
+          <div class="h-3 w-3 bg-blue-400 rounded-full" />
         </div>
+      </div>
+
+      <div v-else class="flex w-full">
+        <div class="flex flex-col">
+          <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
+            <span>{{ message.message }}</span>
+          </div>
+          <div class="h-3 w-3 bg-blue-400 rounded-full" />
+        </div>
+      </div>
       </div>
     </div>
-    <div class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent">
-      <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message here..."
-        class="placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white" />
+  </div>
 
-      <div class="flex justify-center items-center h-full text-white dark:text-white shadow px-2 bg-blue-500 rounded-lg">
-        <Icon @click="sendMessage()" icon="mingcute:send-fill" height="30" />
-      </div>
+  <div class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent px-3">
+    <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message here..."
+      class="placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white" />
+
+    <div class="flex justify-center items-center h-full text-white dark:text-white shadow px-2 bg-blue-500 rounded-lg">
+      <Icon @click="sendMessage()" icon="mingcute:send-fill" height="30" />
     </div>
   </div>
 </template>
