@@ -43,6 +43,8 @@ export class UsersService {
       relations: ["blocked", "blockedBy"],
       where: { id: user1Id },
     });
+    if (!user)
+      throw new NotFoundException({message: "User Not Found"})
     user.blocked.map((block) => {
       if (block.id == user2Id) isblocked = true;
     });
