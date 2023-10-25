@@ -1,6 +1,6 @@
 <!-- ChatComponent.vue -->
 <template>
-  <div class="flex flex-col w-full h-full overflow-y-scroll gap-5 px-3" ref="scrollContainer1">
+  <div class="flex flex-col w-full h-full overflow-y-scroll gap-5 px-3 pb-10" ref="scrollContainer1">
     <div v-for="message in this.messages" class="w-full">
       <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
         <span>{{ message.message }}</span>
@@ -122,69 +122,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
-.chat-container {
-  border: 1px solid #ccc;
-  /* display: flex; */
-  flex-direction: column;
-  border-radius: 8px;
-  height: 95%;
-}
-
-.chat-messages {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  /* justify-content: flex-end; */
-  overflow-y: scroll;
-  height: 500px;
-}
-
-.message {
-  margin: 5px;
-  padding: 10px;
-  border-radius: 8px;
-  word-break: break-word;
-  max-width: 70%;
-}
-
-.message-time {
-  display: flex-end;
-  font-size: 12px;
-  color: #17e484;
-}
-
-.received {
-  align-self: flex-start;
-}
-
-.sent {
-  align-self: flex-end;
-}
-
-.notification {
-  align-self: center;
-}
-
-.chat-input {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 5px;
-}
-
-.chat-input button {
-  margin-left: 10px;
-}
-</style>

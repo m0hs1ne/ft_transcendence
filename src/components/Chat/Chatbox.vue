@@ -1,6 +1,6 @@
 <!-- ChatComponent.vue -->
 <template>
-  <div class="flex flex-col h-full w-full overflow-y-scroll gap-5 px-3" ref="scrollContainer">
+  <div class="flex flex-col h-full w-full overflow-y-scroll gap-5 px-3 pb-10" ref="scrollContainer">
     <div v-for="message in messages" :key="message.id" class="w-full">
       <div v-if="message.type == 'sent'" class="flex w-full justify-end">
         <div class="flex flex-col items-end">
@@ -10,6 +10,7 @@
           <div class="h-3 w-3 bg-blue-400 rounded-full" />
         </div>
       </div>
+      
 
       <div v-else class="flex w-full">
         <div class="flex flex-col">
