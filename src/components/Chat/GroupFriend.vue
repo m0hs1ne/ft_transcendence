@@ -14,7 +14,8 @@
           <div class="w-14 bg-gray-200 rounded-full shadow mr-4">
             <div v-if="friend.avatar" class=" relative w-14">
               <img :src="friend.avatar" alt="Avatar" class="w-14 rounded-full object-cover" />
-              <div v-if="getStatusClass(friend.statusOnline)" class=" absolute bottom-0 right-0 h-5 w-5 rounded-full bg-green-500"/>
+              <div v-if="getStatusClass(friend.statusOnline)"
+              class=" absolute -bottom-0.5 -right-1.5 h-5 w-5 shadow-lg rounded-full bg-green-600"/>
             </div>
             <Icon v-else class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
           </div>

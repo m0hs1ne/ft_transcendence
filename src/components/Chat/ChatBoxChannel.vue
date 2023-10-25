@@ -1,6 +1,6 @@
 <!-- ChatComponent.vue -->
 <template>
-  <div class="flex flex-col w-full h-full overflow-y-scroll gap-5 px-3 pb-10" ref="scrollContainer1">
+  <div class="flex flex-col w-full h-full overflow-y-scroll gap-5 px-5 py-10" ref="scrollContainer1">
     <div v-for="message in this.messages" class="w-full">
       <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
         <span>{{ message.message }}</span>
@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent px-3">
+  <div class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent p-7">
     <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message here..."
       class="placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white" />
 

@@ -5,7 +5,7 @@
 		<!-- <GroupList @object-sent="handleObjectChannel" /> -->
 		<ChatGroupFriend @object-sent="handleObject" />
 
-		<div class="w-full h-full flex flex-col dark:bg-slate-900 p-5 mx-5 custom-box-shadow dark:text-white rounded-xl">
+		<div class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl">
 			<ErrorPopup v-if="this.userStore.error" />
 			<ChatChatbox v-if="displayTargetComponent" :person="this.personObject" class="border-b-2" />
 			<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject" />

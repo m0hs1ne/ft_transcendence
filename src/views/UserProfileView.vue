@@ -164,6 +164,7 @@ export default {
         this.setAchievments();
         console.log("user from id: \n", res.data);
       } catch (error) {
+        this.$router.go(-1);
         console.log("Getting user profile error\n", error);
         this.isError = true;
       }
