@@ -6,7 +6,7 @@
                 <div>
                     <div class="mt-4">
                         <label for="dropdown" class="mr-2">Chose the mode of Game:</label>
-                        <select id="dropdown" v-model="selectedOption"
+                        <select v-model="selectedOption"
                             class="bg-white border border-gray-300 px-4 py-2 rounded">
                             <option value="20">Classic</option>
                             <option value="14">Rapid</option>

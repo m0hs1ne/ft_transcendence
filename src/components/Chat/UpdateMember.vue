@@ -7,7 +7,7 @@
                 <div>
                     <div class="mt-4">
                         <label for="dropdown" class="mr-2 text-xll"> Member Status: </label>
-                        <select id="dropdown" v-model="selectedOptionStatus"
+                        <select v-model="selectedOptionStatus"
                             class="bg-white border border-gray-300 px-4 py-2 rounded">
                             <option value="normal">Normal</option>
                             <option value="banned">banned</option>
@@ -18,7 +18,7 @@
 
                     <div class="mt-4">
                         <label for="dropdown" class="mr-2 text-xll">Member role:</label>
-                        <select id="dropdown" v-model="selectedOptionRole"
+                        <select v-model="selectedOptionRole"
                             class="bg-white border border-gray-300 px-4 py-2 rounded">
                             <option value="admin">Admin</option>
                             <option value="member">Member</option>

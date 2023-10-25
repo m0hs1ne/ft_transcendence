@@ -31,7 +31,7 @@ export default {
       console.log("new query: ", this.query);
       try {
         const response = await axios.post(
-          "http://10.32.120.112:3000/api/users/search",
+          "http://10.32.125.38:3000/api/users/search",
           {
             query: this.query,
           },
@@ -115,7 +115,7 @@ export default {
         Join {{ this.selectedChannel.title }}
       </div>
       <div class="w-full px-10 pt-5">
-        <input type="text" id="first_name"
+        <input type="text"
           class=" font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
           v-model="this.pass" placeholder="Enter Channel password" @input="this.error = ''" required />
       </div>
@@ -138,7 +138,7 @@ export default {
   <div v-else class="flex flex-col justify-start items-center min-h-screen ml-20 dark:bg-slate-800">
     <div class="w-full flex flex-col justify-center items-center px-10">
       <div class="w-full max-w-[400px] py-5">
-        <input type="text" id="first_name"
+        <input type="text"
           class=" font-bold text-xl bg-gray-200 text-gray-900 rounded-lg w-full px-8 py-4 dark:bg-gray-700 dark:text-white"
           @input="this.search" v-model="this.query" placeholder="Search" required />
       </div>

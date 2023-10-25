@@ -1,6 +1,6 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div id="sidebar" class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
+  <div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
     <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly">
       <Icon @click="moveTheBar()" title="moveTheBar" class="h-8 w-8" icon="mingcute:menu-fill" />
       <AlertChannel />
@@ -164,7 +164,3 @@ export default {
   },
 };
 </script>
-
-<style>
-
-</style>

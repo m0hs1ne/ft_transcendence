@@ -16,7 +16,6 @@
         <div class="my-4">
           <label for="dropdown" class="mr-2">Privacy:</label>
           <select
-            id="dropdown"
             v-model="selectedOption"
             class="border dark:bg-slate-800 border-gray-300 px-4 py-2 rounded"
           >
