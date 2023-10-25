@@ -52,8 +52,10 @@ export class UsersController {
   }
 
   @Get("profile/:id")
-  findOtherProfile(@Param("id") id, @Req() req) {
+  findOtherProfile(@Param("id") id:number, @Req() req) {
     const payload = verifyToken(req.headers.cookie);
+    if (typeof id != "number")
+      throw new BadRequestException()
     return this.usersService.profile(id, payload);
   }
 
