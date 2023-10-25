@@ -144,7 +144,7 @@ export default {
       // Get user profile data
       try {
         const res = await axios.get(
-          `http://10.32.125.38:3000/api/users/profile/${this.$route.params.id}`,
+          `http://10.32.120.112:3000/api/users/profile/${this.$route.params.id}`,
           {
             withCredentials: true,
           }
@@ -176,7 +176,7 @@ export default {
         if (this.isFriend) {
           console.log("I' want to delete this user");
           const response = await axios.delete(
-            `http://10.32.125.38:3000/api/users/friends/${parseInt(
+            `http://10.32.120.112:3000/api/users/friends/${parseInt(
               this.$route.params.id
             )}`,
             {
@@ -186,7 +186,7 @@ export default {
           console.log("friendLogic res", response);
         } else {
           const response = await axios.post(
-            "http://10.32.125.38:3000/api/users/friends/",
+            "http://10.32.120.112:3000/api/users/friends/",
             { id: parseInt(this.$route.params.id) },
             {
               withCredentials: true,

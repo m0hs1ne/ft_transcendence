@@ -7,7 +7,7 @@
 
 		<div class="w-full h-full flex flex-col dark:bg-slate-900 p-5 mx-5 custom-box-shadow dark:text-white rounded-xl">
 			<ErrorPopup v-if="this.userStore.error" />
-			<ChatChatbox v-if="displayTargetComponent" :person="this.personObject" class="border-b-2" />
+			<ChatChatbox v-if="displayTargetComponent" :person="personObject" />
 			<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject" />
 		</div>
 		<div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">

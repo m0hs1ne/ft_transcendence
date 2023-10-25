@@ -10,7 +10,7 @@ export default {
   methods: {
     async getLeaderBoard() {
       try {
-        const response = await axios.get("http://10.32.125.38:3000/api/users/leaderboard", {
+        const response = await axios.get("http://10.32.120.112:3000/api/users/leaderboard", {
           withCredentials: true,
         });
         this.leaderboard = response.data;
