@@ -12,6 +12,7 @@ import {
   FindOneOptions,
   FindOptionsWhere,
   ILike,
+  Not,
   Repository,
 } from "typeorm";
 import { User } from "./entities/user.entity";
@@ -128,6 +129,9 @@ export class UsersService {
         "achievement.image",
       ])
       .getOne();
+
+      if (!user)
+        throw new NotFoundException({message: "User Not Found"})
 
       const games = await this.gameRepository
       .createQueryBuilder("game")
