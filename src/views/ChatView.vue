@@ -131,14 +131,13 @@ export default {
 			}
 			if (data.action == 'kick') {
 				console.log(" kicked >>>>>>>>")
-				if (this.userStore.ActiveChannelId == data.chatRoomId) {
+				if ( data.from.id == this.userStore.MyId ) {
 					this.$nextTick(() => {
 						this.displayTargetComponent = false;
 						this.displayChatboxChannel = false;
-
 					});
 				}
-				//this.userStore.fetchDataForDmChatRooms();
+				this.userStore.fetchDataForDmChatRooms();
 			}
 		})
 

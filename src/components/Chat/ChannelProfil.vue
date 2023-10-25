@@ -102,8 +102,8 @@ export default {
       }
       if (this.role.data.role == "owner") this.DeletePermission = true;
       if (this.role.data.role == "admin") this.AddFriend = true;
-
       this.MyRole = this.role.data.role;
+      await this.userStore.fetchChannelById();
     },
     LeaveChannel() {
       this.userStore.action = "Are you sure you wand to Leave this Channel?";
@@ -132,7 +132,8 @@ export default {
       if (
         (data.type == "notification" && data.action == "joined") ||
         (data.type == "notification" && data.action == "status") ||
-        (data.type == "notification" && data.action == "role")
+        (data.type == "notification" && data.action == "role") ||
+        (data.type == "notification" && data.action == "kick")
       ) {
         this.fetchData();
       }

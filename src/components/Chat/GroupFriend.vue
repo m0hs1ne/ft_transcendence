@@ -126,17 +126,18 @@ export default {
     await this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
-      console.log(" receiveMessage form Group Friend ********* ", data);
-      if (
-        (data.type == "notification" && data.action == "joined") ||
-        (data.type == "notification" && data.action == "status") ||
-        (data.type == "notification" && data.action == "kick")
+     
+      if ((data.chatRoomId == this.userStore.ActiveChannelId) &&
+        ((data.type == "notification" && data.action == "joined") ||
+          (data.type == "notification" && data.action == "status"))
       ) {
         this.fetchData();
       }
-      if (data.type == "notification" && data.action == "kick") {
+      if(data.type == "notification" && data.action == "kick" && data.from.id == this.userStore.MyId
+        ) {
+        console.log("I am 0000000000-00")
         this.fetchData();
-        this.SocketNoti();
+       this.SocketNoti();
       }
     });
 
@@ -164,16 +165,5 @@ export default {
 </script>
 
 <style>
-/* Add your CSS styling here */
 
-/* we will explain what these classes do next! */
-/* .v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-} */
 </style>
