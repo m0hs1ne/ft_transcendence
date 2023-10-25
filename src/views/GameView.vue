@@ -222,22 +222,22 @@ export default {
 
     handleKeyDown(event: any) {
       const keyCode = event.keyCode;
-      if (keyCode == 38 && this.PaddleY > 0) {
-        this.PaddleY -= 0.02;
+      if (keyCode == 38 && this.PaddleY - 0.04 > 0) {
+        this.PaddleY -= 0.04;
         if (this.GameSocket) {
           this.GameSocket.emit("PaddleUpdates", {
             pos: this.pos,
             roomId: this.RoomId,
-            Paddle: -0.02,
+            Paddle: -0.04,
           });
         }
-      } else if (keyCode == 40 && this.PaddleY + 0.25 < 1) {
-        this.PaddleY += 0.02;
+      } else if (keyCode == 40 && this.PaddleY + 0.25 + 0.02 < 1) {
+        this.PaddleY += 0.04;
         if (this.GameSocket) {
           this.GameSocket.emit("PaddleUpdates", {
             pos: this.pos,
             roomId: this.RoomId,
-            Paddle: 0.02,
+            Paddle: 0.04,
           });
         }
       }
