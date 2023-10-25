@@ -38,7 +38,7 @@
         </div>
         <div class="flex flex-col container overflow-ellipsis line-clamp-1">
           <span v-if="member.user.id == this.userStore.MyId" class="text-lg font-semibold">
-          {{ member.user.username }}({{this.you }})
+            {{ member.user.username }}({{ this.you }})
           </span>
           <span v-else class="text-lg font-semibold">{{ member.user.username }}</span>
           <p class="text-sm text-green-700">
@@ -91,7 +91,7 @@ export default {
   methods: {
     async fetchData() {
       this.role = await axios.get(
-        `http://10.32.125.38:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
+        `http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true }
       );
 

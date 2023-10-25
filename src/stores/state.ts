@@ -34,15 +34,18 @@ export const useUserStore = defineStore("user", {
     async fetchChannelById() {
       try {
         this.ActiveChannelData = await axios.get(
-          `http://10.32.125.38:3000/api/chat-rooms/${this.ActiveChannelId}/`,
+          `http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}/`,
           { withCredentials: true },
         );
-        console.log("----------------------------------------",this.ActiveChannelData)
+        console.log(
+          "----------------------------------------",
+          this.ActiveChannelData,
+        );
         this.MyId = this.ActiveChannelData.data.id;
         this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
         this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
         this.ActiveChannelTitle = this.ActiveChannelData.data.title;
-       // console.log(this.ActiveChannelData.data.messages);
+        // console.log(this.ActiveChannelData.data.messages);
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }
@@ -58,8 +61,8 @@ export const useUserStore = defineStore("user", {
     async FetchFriend() {
       try {
         this.UserFriends = await axios.get(
-          `http://10.32.125.38:3000/api/users/friends/`,
-          { withCredentials: true }
+          `http://10.32.120.112:3000/api/users/friends/`,
+          { withCredentials: true },
         );
       } catch (error) {
         console.log("fetch friends by id error: ", error);
@@ -76,8 +79,8 @@ export const useUserStore = defineStore("user", {
     async fetchDataForDmChatRooms() {
       try {
         this.DmChatroomsList = await axios.get(
-          `http://10.32.125.38:3000/api/chat-rooms/DM_chatrooms`,
-          { withCredentials: true }
+          `http://10.32.120.112:3000/api/chat-rooms/DM_chatrooms`,
+          { withCredentials: true },
         );
         this.DmChatroomsList = this.DmChatroomsList.data;
       } catch (error) {
@@ -86,10 +89,11 @@ export const useUserStore = defineStore("user", {
     },
 
     async RemoveChatRome() {
-        const t = await axios.delete(`http://10.32.125.38:3000/api/chat-rooms/${this.ActiveChannelId}`,
-        { withCredentials: true });
-     //await this.fetchDataForDmChatRooms();
-      
+      const t = await axios.delete(
+        `http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}`,
+        { withCredentials: true },
+      );
+      //await this.fetchDataForDmChatRooms();
     },
     // async switchToChannael(obj)
     // {
@@ -123,7 +127,7 @@ export const SharedData = defineStore("Shard", {
       // Get user profile data
       try {
         const res = await axios.get(
-          "http://10.32.125.38:3000/api/users/profile/",
+          "http://10.32.120.112:3000/api/users/profile/",
           {
             withCredentials: true,
           },

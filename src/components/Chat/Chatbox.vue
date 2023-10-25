@@ -36,7 +36,7 @@
 <script>
 import axios from "axios";
 import { Icon } from "@iconify/vue";
-
+import GroupFriend from './GroupFriend.vue'
 
 
 export default {
@@ -48,6 +48,7 @@ export default {
   },
   components: {
     Icon,
+    GroupFriend
   },
   data() {
     return {
@@ -71,7 +72,7 @@ export default {
         const scrollContainer = this.$refs.scrollContainer;
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       });
-      this.newMessage = "";
+      this.newMessage = '';
     },
   },
 
