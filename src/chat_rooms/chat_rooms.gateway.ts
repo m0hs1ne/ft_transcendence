@@ -287,7 +287,7 @@ export class ChatRoomsGateway {
           clients,
         );
         if (kick === false) return;
-        if (memberId != payload.sub)
+        if (kick.user.id != payload.sub)
           await this.chatRoomsService.newChatMessage(
             payload.sub,
             chatId,
@@ -298,9 +298,9 @@ export class ChatRoomsGateway {
           );
         else
           await this.chatRoomsService.newChatMessage(
-            payload.sub,
+            kick.user.id,
             chatId,
-            `${kick.user.username} left the chat.`,
+            `${kick.user.username} left the chat3.`,
             "notification",
             clients,
             "kick",
