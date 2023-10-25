@@ -1,16 +1,16 @@
 <template>
-	<div class="flex bg-gray-200 h-screen ml-20 dark:bg-slate-800 p-5">
+	<div class="flex h-screen ml-20 dark:bg-slate-800 p-5 text-gray-700">
 		<!-- Friend List and Group List Section -->
 		<confirmPlay />
 		<!-- <GroupList @object-sent="handleObjectChannel" /> -->
 		<ChatGroupFriend @object-sent="handleObject" />
 
-		<div class="basis-full  ">
+		<div class="w-full flex flex-col dark:bg-slate-900 p-5 mx-5 custom-box-shadow dark:text-white rounded-xl">
 			<ErrorPopup v-if="this.userStore.error" />
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" class="border-b-2" />
 			<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject" />
 		</div>
-		<div class="w-1/4">
+		<div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
 			<ChatUserProfile :person="personObject" v-if="displayTargetComponent" />
 			<ChatChannelProfil v-if="displayChatboxChannel" />
 		</div>
@@ -69,7 +69,9 @@ export default {
 			console.log(object)
 			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
-				console.log(" I am here In person ", object)
+				console.log(" =========================== ", this.displayChatboxChannel)
+				if(this.displayChatboxChannel)
+					this.displayChatboxChannel = 0;
 				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
 					this.displayTargetComponent = false;
 					this.$nextTick(() => {
@@ -88,21 +90,18 @@ export default {
 		IsChannel(object) {
 			console.log("This is an channel ", object)
 			this.displayTargetComponent = false
-			if (object.id != this.displayChatboxChannel) {
-				console.log(" I am here to ", object, this.displayChatboxChannel)
-				if (this.displayChatboxChannel) {
-					this.displayTargetComponent = false;
-					this.displayChatboxChannel = false;
-					this.$nextTick(() => {
-						// Code here will be executed after the next DOM update cycle
-						console.log('DOM updated', object.id);
-						this.displayChatboxChannel = object.id;
-						// Access or manipulate DOM elements here
-					});
-				}
-				else
+
+			if (this.displayChatboxChannel) {
+				this.displayTargetComponent = false;
+				this.displayChatboxChannel = false;
+				this.$nextTick(() => {
+					console.log('DOM updated', object.id);
 					this.displayChatboxChannel = object.id;
+				});
 			}
+			else
+				this.displayChatboxChannel = object.id;
+
 			this.ChannelObject = object;
 		},
 

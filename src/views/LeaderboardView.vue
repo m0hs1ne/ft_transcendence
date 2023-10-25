@@ -4,18 +4,17 @@ import axios from "axios";
 export default {
   data() {
     return {
-      leaderboard: {},
+      leaderboard: [],
     };
   },
   methods: {
     async getLeaderBoard() {
       try {
-        const response = await axios.get("http://10.32.125.38:3000/api/users/leaderboard", {
+        const response = await axios.get("http://10.32.120.112:3000/api/users/leaderboard", {
           withCredentials: true,
         });
         this.leaderboard = response.data;
-        console.log("leaderboard: ", this.leaderboard);
-        this.leaderboard.sort((a, b) => (((b.wins / (b.wins + b.losses)) * 100) - ((a.wins / (a.wins + a.losses)) * 100)));
+        this.leaderboard.sort((a, b) => ((b.wins / (b.wins + b.losses)) - (a.wins / (a.wins + a.losses))));
       } catch (error) {
         console.error("getLeaderBoard:", error);
       }

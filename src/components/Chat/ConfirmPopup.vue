@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
-      <div class="bg-white rounded-lg p-6">
+    <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center dark:bg-slate-800">
+      <div class="bg-white rounded-lg p-6  custom-box-shadow dark:bg-slate-900">
         <h2 class="text-xl font-bold mb-4"> {{ this.userStore.action }}</h2>
         <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           La
@@ -34,7 +34,7 @@ export default {
     async SaveChannel() {
 
       console.log("ok " ,this.userStore.action,'ed');
-      if ( this.userStore.action == 'Leave') {
+      if ( this.userStore.action == 'Are you sure you wand to Leave this Channel?') {
         console.log(" I AM HERE TO ")
         await this.$socket.emit("kickMember",
           {

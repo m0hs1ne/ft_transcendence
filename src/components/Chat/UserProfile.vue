@@ -20,11 +20,11 @@
         @click="play">
         <span class="ml-2 h-10">Play</span>
       </button>
-      <button v-else-if = "this.person.inGame == true" class="flex items-center text-gray-700 hover:text-gray-900">
+      <button v-else-if="this.person.inGame == true" class="flex items-center text-gray-700 hover:text-gray-900">
         <span class="ml-2 h-10">Playing ......</span>
       </button>
 
-    
+
 
     </div>
   </div>
@@ -55,7 +55,7 @@ export default {
   methods: {
     fetchData() {
       // axios
-      //   .post("http://10.32.125.38:3000/api/users/blocked//",
+      //   .post("http://10.32.120.112:3000/api/users/blocked//",
       //     { withCredentials: true })
       //   .then((response) => {
 
@@ -74,7 +74,7 @@ export default {
     Block() {
       console.log(" block user ", this.person)
 
-      axios.post("http://10.32.125.38:3000/api/users/blocked/", {
+      axios.post("http://10.32.120.112:3000/api/users/blocked/", {
 
         id: parseInt(this.person.id)
       }, {
@@ -102,7 +102,7 @@ export default {
   },
   mounted() {
     console.log(" mounted in userprofile ", this.person);
-   
+
 
   },
 };

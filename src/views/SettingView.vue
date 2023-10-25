@@ -41,9 +41,9 @@ export default {
 				const formData = new FormData();
 				formData.append("file", this.selectedFile, this.selectedFile.name);
 
-				// Replace 'http://10.32.125.38:3000/api/users/upload_avatar/' with your server-side endpoint
+				// Replace 'http://10.32.120.112:3000/api/users/upload_avatar/' with your server-side endpoint
 				const response = await axios.post(
-					"http://10.32.125.38:3000/api/users/upload_avatar/",
+					"http://10.32.120.112:3000/api/users/upload_avatar/",
 					formData,
 					{
 						withCredentials: true,
@@ -57,14 +57,13 @@ export default {
 			}
 		},
 		async updateName() {
-			if (this.newName.length < 3 || this.newName.length > 10) {
-				this.error = "Username length should be between 3 and 10";
+			if (this.newName.length < 3 || this.newName.length > 12) {
 				return;
 			}
 			try {
 				// Make a PATCH request to update the username
 				const response = await axios.patch(
-					"http://10.32.125.38:3000/api/users/profile/update/",
+					"http://10.32.120.112:3000/api/users/profile/update/",
 					{
 						username: this.newName,
 					},
@@ -73,9 +72,10 @@ export default {
 					}
 				);
 
-				// Handle the response accordingly
-				console.log("updateName: ", response.data);
-				//this.revDialog();
+
+				// Update the local state with the new avatar URL
+				await this.state.fetchData();
+				this.changeCard(0);
 			} catch (error) {
 				console.error("Error updateName:", error);
 			}
@@ -92,7 +92,7 @@ export default {
 		async enable2FA() {
 			try {
 				const response = await axios.post(
-					"http://10.32.125.38:3000/api/2fa/turn-on/",
+					"http://10.32.120.112:3000/api/2fa/turn-on/",
 					{ tfaCode: this.otpCode },
 					{
 						withCredentials: true,
@@ -105,7 +105,7 @@ export default {
 				}
 
 				// Update the local state with the new avatar URL
-				await axios.get('http://10.32.125.38:3000/api/auth/logout', { withCredentials: true });
+				await axios.get('http://10.32.120.112:3000/api/auth/logout', { withCredentials: true });
 				this.$router.push('/signIn');
 			} catch (error) {
 				console.error("Error enable2FA:", error);
@@ -114,7 +114,7 @@ export default {
 		async disable2FA() {
 			try {
 				const response = await axios.post(
-					"http://10.32.125.38:3000/api/2fa/turn-off/",
+					"http://10.32.120.112:3000/api/2fa/turn-off/",
 					{ tfaCode: this.otpCode },
 					{
 						withCredentials: true,
@@ -209,13 +209,16 @@ export default {
 			<div class="flex w-full justify-start items-center pl-10 pt-7  font-bold text-2xl dark:text-white">
 				Change your Name:
 			</div>
-			<div class="w-full px-10 py-5">
+			<div class="w-full px-10 py-2">
 				<input type="text" id="first_name"
 					class=" font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
 					v-model="this.newName" placeholder="Your new Name" @input="handleInput" required />
 			</div>
-			<p v-if="this.error" class="text-red-500 pb-5">
-				{{ this.error }}
+			<p v-if="this.newName.length < 3" class="text-red-500 pb-2">
+				Zid chi chwiyich 3afak :)
+			</p>
+			<p v-if="this.newName.length > 12" class="text-red-500 pb-2">
+				3aya9tiiiii !!
 			</p>
 			<div class="flex w-full justify-end items-center  font-bold pr-10 pb-5 gap-5">
 				<button type="button" @click="this.updateName"
@@ -232,7 +235,7 @@ export default {
 		<!-- Enabling 2fa Card -->
 		<div v-else-if="this.currentCard == 2"
 			class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-			<img src="http://10.32.125.38:3000/api/2fa/generate" alt="" class="w-64 h-64" />
+			<img src="http://10.32.120.112:3000/api/2fa/generate" alt="" class="w-64 h-64" />
 			<p class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500">
 				Install Google Authenticator app, and scan the above qrcode and enter the given
 				number to turn on 2FA.

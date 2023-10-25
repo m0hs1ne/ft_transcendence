@@ -1,56 +1,32 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <Icon
-    @click="openPopup"
-    title="Check your Inv"
-    class="h-8 w-8"
-    icon="fluent:alert-20-filled"
-  />
-  <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
-    <div class="bg-white rounded-lg p-6">
+  <Icon @click="openPopup" title="Check your Inv" class="h-8 w-8" icon="fluent:alert-20-filled" />
+  <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center  custom-box-shadow dark:bg-slate-800">
+    <div class="bg-white rounded-lg p-6 dark:bg-slate-900">
       <h2 class="text-xl font-bold mb-4">Invitations:</h2>
       <ul class="">
         {{
           this.message
         }}
-        <li
-          v-for="friend in friends"
-          :key="friend.id"
-          class="flex items-center p-2 space-x-4 border-b"
-        >
+        <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
           <div class="flex-shrink-0">
-            <img
-              referrerpolicy="no-referrer"
-              :src="friend.fromUser.avatar"
-              alt="Avatar"
-              class="h-12 rounded-full"
-            />
+            <img referrerpolicy="no-referrer" :src="friend.fromUser.avatar" alt="Avatar" class="h-12 rounded-full" />
           </div>
 
           <div class="flex-grow">
-            <span class="text-lg font-normal"
-              >{{ friend.fromUser.username }}: invite you to join
+            <span class="text-lg font-normal">{{ friend.fromUser.username }}: invite you to join
               {{ friend.chatRoom.title }}
             </span>
           </div>
-          <img
-            referrerpolicy="no-referrer"
-            @click="AccepteInvite(friend)"
+          <img referrerpolicy="no-referrer" @click="AccepteInvite(friend)"
             class="pr-5 m-2 bg-blue-300 h-10 rounded-full hover:bg-green-600 text-white font-bold py-2 px-4"
-            src="./../../assets/icons/checkmark.svg"
-          />
-          <img
-            referrerpolicy="no-referrer"
-            @click="DeclineInvite(friend)"
+            src="./../../assets/icons/checkmark.svg" />
+          <img referrerpolicy="no-referrer" @click="DeclineInvite(friend)"
             class="pr-5 m-2 bg-blue-200 h-10 rounded-full hover:bg-red-600 text-white font-bold py-2 px-4"
-            src="./../../assets/icons/cross.svg"
-          />
+            src="./../../assets/icons/cross.svg" />
         </li>
       </ul>
-      <button
-        @click="closePopup"
-        class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
+      <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Close
       </button>
     </div>
@@ -80,7 +56,7 @@ export default {
     Icon
   },
   methods: {
-    async fetchData() {},
+    async fetchData() { },
     openPopup() {
       if (this.friends.length == 0) this.message = "You don't have any invitation";
       this.isOpend = true;

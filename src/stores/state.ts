@@ -14,13 +14,13 @@ export const useUserStore = defineStore("user", {
     MyRoleInActiveChannelID: "",
     UserFriends: {},
     ChannelInvitation: {},
-    Action:"",
-    MemberRoleStatus:'',
-    error: '',
+    Action: "",
+    MemberRoleStatus: "",
+    error: "",
     ActiveId: {},
-    Opponent:{},
-    creatchallenge:false,
-    UserStatus:'',
+    Opponent: {},
+    creatchallenge: false,
+    UserStatus: "",
   }),
 
   actions: {
@@ -34,7 +34,7 @@ export const useUserStore = defineStore("user", {
     async fetchChannelById() {
       try {
         this.ActiveChannelData = await axios.get(
-          `http://10.32.125.38:3000/api/chat-rooms/${this.ActiveChannelId}/`,
+          `http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}/`,
           { withCredentials: true }
           );
           this.MyId = this.ActiveChannelData.data.id;
@@ -48,18 +48,17 @@ export const useUserStore = defineStore("user", {
     },
 
     UpdateChannelId(id, title) {
-      if(title)
-      {
+      if (title) {
         this.ActiveChannelId = id;
-        this.ActiveChannelTitle = title
-        console.log("update Channel id ", id);
+        this.ActiveChannelTitle = title;
+      
       }
     },
 
     async FetchFriend() {
       try {
         this.UserFriends = await axios.get(
-          `http://10.32.125.38:3000/api/users/friends/`,
+          `http://10.32.120.112:3000/api/users/friends/`,
           { withCredentials: true }
         );
       } catch (error) {
@@ -71,24 +70,24 @@ export const useUserStore = defineStore("user", {
       this.$socket.emit("myChatRooms", {}, () => {});
       console.log(" Noting ");
       this.ChannelList = await this.$socket.on("ChatRoomList");
-      console.log("This is Channel list ", this.ChannelList);
+     // console.log("This is Channel list ", this.ChannelList);
     },
 
     async fetchDataForDmChatRooms() {
       try {
         this.DmChatroomsList = await axios.get(
-          `http://10.32.125.38:3000/api/chat-rooms/DM_chatrooms`,
+          `http://10.32.120.112:3000/api/chat-rooms/DM_chatrooms`,
           { withCredentials: true }
         );
         this.DmChatroomsList = this.DmChatroomsList.data;
       } catch (error) {
         console.log("fetch friends by id error: ", error);
       }
-      console.log("The state in ", this.DmChatroomsList);
+    
     },
 
     async RemoveChatRome() {
-        const t = await axios.delete(`http://10.32.125.38:3000/api/chat-rooms/${this.ActiveChannelId}`,
+        const t = await axios.delete(`http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}`,
         { withCredentials: true });
      //await this.fetchDataForDmChatRooms();
       
@@ -125,10 +124,10 @@ export const SharedData = defineStore("Shard", {
       // Get user profile data
       try {
         const res = await axios.get(
-          "http://10.32.125.38:3000/api/users/profile/",
+          "http://10.32.120.112:3000/api/users/profile/",
           {
             withCredentials: true,
-          }
+          },
         );
         this.userData = res.data;
         this.friends = res.data.friends;
@@ -141,14 +140,12 @@ export const SharedData = defineStore("Shard", {
         console.log("Getting user profile error\n", error);
         this.isError = true;
         this.isLoggedIn = false;
-
       }
 
       this.isLoading = false;
     },
   },
 });
-
 
 export const GameData = defineStore("Game", {
   state: () => ({
@@ -157,9 +154,8 @@ export const GameData = defineStore("Game", {
     random: true,
   }),
 
-  actions:{
-    setMode(limit, title)
-    {
+  actions: {
+    setMode(limit, title) {
       this.modeLimit = limit;
       this.modeTitle = title;
       this.random = true;

@@ -1,59 +1,83 @@
 <template>
   <div>
-    <div class="flex flex-row justify-center ">
-      <img referrerpolicy="no-referrer" @click="openPopup" title="Channel Setting"
-        class="h-10 rounded-full hover:bg-blue-200 hover:scale-150 font-bold"
-        src="./../../assets/icons/setting.svg">
-    </div>
-    <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center bg-black">
-      <div class="bg-white rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-4">Create Channel:</h2>
+    <Icon
+      class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer"
+      @click="openPopup"
+      title="Channel Setting"
+      icon="mingcute:settings-3-fill"
+    />
+
+    <div
+      v-if="isOpend"
+      class="fixed inset-0 flex items-center justify-center dark:bg-slate-800"
+    >
+      <div class="bg-white rounded-lg p-6 custom-box-shadow dark:bg-slate-900">
+        <h2 class="text-xl font-bold mb-4">Update Channel:</h2>
         <div>
-          <input v-model="ChannelName" @keyup.enter="sendMessage" placeholder="Channel Name"
-            class="m-1 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10" />
-          <div class="mt-4">
+          <input
+            v-model="ChannelName"
+            @keyup.enter="sendMessage"
+            placeholder="Channel Name"
+            class="font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
+          />
+          <div class="my-4">
             <label for="dropdown" class="mr-2">Privacy:</label>
-            <select id="dropdown" v-model="selectedOption" class="bg-white border border-gray-300 px-4 py-2 rounded">
+            <select
+              id="dropdown"
+              v-model="selectedOption"
+              class="border dark:bg-slate-800 border-gray-300 px-4 py-2 rounded"
+            >
               <option value="private">Private</option>
               <option value="public">Public</option>
               <option value="protected">Protected</option>
             </select>
           </div>
 
-          <input v-if="selectedOption == 'protected'" type="password" v-model="password"
+          <input
+            v-if="selectedOption == 'protected'"
+            type="password"
+            v-model="password"
             placeholder="Enter your new password"
-            class="m-1 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10" />
-          <p class="mt-2 text-sm text-red-600" v-if="message">
-            Password is required
-          </p>
+            class="font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
+          />
+          <p class="mt-2 text-sm text-red-600" v-if="message">Password is required</p>
         </div>
-        <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          @click="closePopup"
+          class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
           Close
         </button>
-        <button v-if="selectedOption != '' && ChannelName != ''" @click="SaveChannel"
-          class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          v-if="selectedOption != '' && ChannelName != ''"
+          @click="SaveChannel"
+          class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
           Save
         </button>
       </div>
     </div>
-
   </div>
 </template>
-  
+
 <script>
-import { useUserStore } from '../../stores/state.ts';
+import { Icon } from "@iconify/vue";
+import { useUserStore } from "../../stores/state.ts";
 export default {
   setup() {
     const userStore = useUserStore();
     return { userStore };
   },
+  components: {
+    Icon,
+  },
   data() {
     return {
-      ChannelName: '',
-      selectedOption: '',
-      password: '',
+      ChannelName: "",
+      selectedOption: "",
+      password: "",
       isOpend: false,
-      message: false
+      message: false,
     };
   },
   methods: {
@@ -62,31 +86,31 @@ export default {
     },
 
     async SaveChannel() {
-      if (this.selectedOption == "protected" && this.password == '') {
-        this.message = "Password !!!!!"
+      if (this.selectedOption == "protected" && this.password == "") {
+        this.message = "Password !!!!!";
         this.isOpend = true;
-      }
-      else {
+      } else {
         this.isOpend = false;
         console.log(this.selectedOption);
-        this.$socket.emit("updateChatRoom",
+        this.$socket.emit(
+          "updateChatRoom",
           {
             chatId: this.userStore.ActiveChannelId,
             title: this.ChannelName,
             privacy: this.selectedOption,
-            password: this.password
-          }, () => { });
+            password: this.password,
+          },
+          () => {}
+        );
 
         this.$socket.on("ChatRoomList", (data) => {
-          console.log(" this what hello ", data.type)
-          console.log(data)
-
+          console.log(" this what hello ", data.type);
+          console.log(data);
         });
 
-        this.ChannelName = '';
-        this.password = '';
-        this.selectedOption = '';
-
+        this.ChannelName = "";
+        this.password = "";
+        this.selectedOption = "";
       }
       await this.userStore.fetchDataForDmChatRooms();
     },
@@ -97,8 +121,7 @@ export default {
   },
   mounted() {
     this.ChannelName = this.userStore.ActiveChannelTitle;
-    console.log("------------------", this.userStore.ActiveChannelId)
+    console.log("------------------", this.userStore.ActiveChannelId);
   },
 };
 </script>
-  
