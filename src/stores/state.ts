@@ -82,6 +82,7 @@ export const useUserStore = defineStore("user", {
           `http://10.32.125.38:3000/api/chat-rooms/DM_chatrooms`,
           { withCredentials: true },
         );
+        
         this.DmChatroomsList = this.DmChatroomsList.data;
       } catch (error) {
         console.log("fetch friends by id error: ", error);

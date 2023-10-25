@@ -106,10 +106,10 @@ export default {
       await this.userStore.fetchChannelById();
     },
     LeaveChannel() {
-      this.userStore.action = "Are you sure you wand to Leave this Channel?";
+      this.userStore.action = "Are you sure you want to Leave this Channel?";
     },
     RemoveChatRome() {
-      this.userStore.action = "Are you sure you wand to Delete this Channel?";
+      this.userStore.action = "Are you sure you want to Delete this Channel?";
     },
     closePopup() {
       this.isOpend = false;

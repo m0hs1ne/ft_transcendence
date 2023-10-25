@@ -21,7 +21,7 @@
                 </button>
                 <button @click="SaveChannel"
                     class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Send Invit
+                    Send Invite
                 </button>
             </div>
         </div>
@@ -72,6 +72,7 @@ export default {
                 this.gameData.random = false;
                 this.$router.push('/play');
             })
+            
             this.isOpend = false;
             this.userStore.creatchallenge = false;
         },
