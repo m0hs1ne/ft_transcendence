@@ -92,7 +92,6 @@ export default {
       const friendIndex = this.friends.findIndex((friend) => friend.id === frien.id);
       if (friendIndex !== -1) {
         this.friends.splice(friendIndex, 1);
-        console.log("", friendIndex);
       }
     },
     AccepteInvite(frien) {
@@ -101,37 +100,32 @@ export default {
       this.$socket.emit("acceptInvite", {
         id: frien.id,
       });
-
-      //this.userStore.DmChatroomsList.data.push(frien.chatRoom);
-
-      console.log(" I am update in pop inv ", this.userStore.DmChatroomsList);
+      
+     // console.log("This is the active: " ,this.userStore.ActiveChannelId);
       this.isOpend = false;
       this.DeleteFromArray(frien);
+      //this.userStore.UpdateChannelId(frien.chatRoom.id, frien.chatRoom.title)
     },
     DeclineInvite(friend) {
       this.$socket.emit("declineInvite", {
         id: friend.id,
       });
-      console.log(" I am decline this invitation Ask mroin \n");
       this.DeleteFromArray(friend);
       this.isOpend = false;
     },
   },
   mounted() {
-    console.log(" I am in");
+   
     this.fetchData();
     this.$socket.on("Notification", (messages) => {
       // console.log(" This is friends: befor ", this.friends)
       if (messages.type == "invitation") {
-        console.log("The problem of the form of json ");
+       // console.log("The problem of the form of json ");
         this.message = "";
         this.friends.push(messages.invitation);
-        // console.log("I am here in once invitation ", messages.invitation)
-        //   this.friends.push(messages.invitation)
-        //   console.log(" This is friends: " ,this.friends)
-        //   console.log(" This is friends: " ,this.friends[0].from.avatar)
+
       } else if (messages.notifications) {
-        console.log(messages);
+ 
         messages.notifications.forEach((element) => {
           if (element.type == "invitations") {
             console.log("I am invt");

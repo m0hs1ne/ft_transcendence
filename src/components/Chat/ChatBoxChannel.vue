@@ -5,7 +5,7 @@
       <div v-for="message in this.messages" class="min-w-full  max-w-2xl">
         <div v-if="message.type == 'notification'" class="flex flex-row justify-center rounded text-blue-900">
           <span>{{ message.message }}</span>
-        </div>
+        </div> 
 
         <div v-if="message.type == 'message'" class="flex mb-4">
           <img referrerpolicy="no-referrer" :src="message.from.avatar" alt="Avatar" class="circle avatar mr-1 " />
@@ -78,17 +78,20 @@ export default {
   },
 
   async mounted() {
+    
+
+    console.log(this.userStore.ActiveChannelId)
     await this.userStore.fetchChannelById();
     this.messages = this.userStore.ActiveMessageChannelId;
+   // console.log("messs", this.messages)
     //this.userStore.UpdateChannelId(this.channel.id)
-    console.log("I am in mounted", this.userStore.ActiveChannelId)
+   // console.log("I am in mounted", this.userStore.ActiveChannelId)
     this.$socket.on("receiveMessage", (data) => {
-
-      if ((data.type == 'notification' && data.action == 'joined') ||
-        (data.type == 'notification' && data.action == 'status') ||
-        (data.type == 'message' && data.action == 'message')) {
-        console.log(" I am puching .....", data)
-        this.messages.push(data);
+       // console.log( " merwan ",data.chatRoomId)
+        console.log( "Helllo this is my " ,this.userStore.ActiveChannelId, data.chatRoomId)
+      if (this.userStore.ActiveChannelId == data.chatRoomId && ((data.type == 'notification' && data.action == 'joined') ||
+        (data.type == 'notification' && data.action == 'status') || (data.type == 'message' && data.action == 'message'))){
+            this.messages.push(data);
       }
 
     },);
@@ -98,7 +101,6 @@ export default {
     //   const scrollContainer = this.$refs.scrollContainer;
     //   scrollContainer.scrollTop = scrollContainer.scrollHeight;
     // });
-
   },
 };
 </script>

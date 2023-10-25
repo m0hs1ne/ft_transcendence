@@ -25,7 +25,7 @@ export default {
     showToast() {
       setTimeout(() => {
         this.hideToast();
-      }, 2000);
+      }, 3000);
     },
     hideToast() {
       this.userStore.error = '';
