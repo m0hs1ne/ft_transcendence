@@ -56,6 +56,8 @@ export class UsersController {
     if (isNaN(id))
       throw new BadRequestException()
     const payload = verifyToken(req.headers.cookie);
+    if (typeof id != "number")
+      throw new BadRequestException()
     return this.usersService.profile(id, payload);
   }
 
