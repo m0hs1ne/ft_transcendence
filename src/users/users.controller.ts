@@ -56,8 +56,6 @@ export class UsersController {
     if (isNaN(id))
       throw new BadRequestException()
     const payload = verifyToken(req.headers.cookie);
-    if (typeof id != "number")
-      throw new BadRequestException()
     return this.usersService.profile(id, payload);
   }
 
@@ -161,7 +159,7 @@ export class UsersController {
     this.usersService.uploadAvatar(file, payload);
     return {
       statusCode: 200,
-      data: "http://10.32.120.112:3000/" + file.filename,
+      data: "http://10.32.125.38:3000/" + file.filename,
     };
   }
   //Leaderboard

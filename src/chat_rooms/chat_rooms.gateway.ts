@@ -26,7 +26,7 @@ var clients: Map<
 @WebSocketGateway({
   cors: {
     credentials: true,
-    origin: "http://10.32.120.112:5173",
+    origin: "http://10.32.125.38:5173",
   },
 })
 export class ChatRoomsGateway {

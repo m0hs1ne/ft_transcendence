@@ -719,7 +719,7 @@ export class ChatRoomsService {
   async uploadAvatar(avatar, chatId, payload) {
     await this.chatRoomRepository.update(
       { id: chatId },
-      { avatar: "http://10.32.120.112:3000/" + avatar.filename },
+      { avatar: "http://10.32.125.38:3000/" + avatar.filename },
     );
   }
 
