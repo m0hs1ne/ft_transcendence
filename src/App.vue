@@ -24,15 +24,8 @@ export default {
   },
   methods: {
     isSidebarVisible() {
-      const allowedPaths = [
-        "/",
-        "/chat",
-        "/profile",
-        "/search",
-        "/setting",
-        "/leaderboard",
-      ];
-      return allowedPaths.includes(this.$route.path);
+      const path = this.$route.path.toLowerCase();
+      return path != '/signin';
     },
 
 
@@ -142,7 +135,7 @@ export default {
       </div>
     </div>
     <Loading v-if="this.state.isLoading && !this.twoFA" />
-    <Sidebar v-if="this.$route.path != 'signIn' && !this.state.isLoading && !this.twoFA" />
+    <Sidebar v-if="isSidebarVisible() && !this.state.isLoading && !this.twoFA" />
     <RouterView v-if="!this.state.isLoading && !this.twoFA" />
   </main>
 </template>
