@@ -13,6 +13,7 @@
           placeholder="Channel Name"
           class="font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
         />
+        <p class="mt-2 text-sm text-red-600" v-if="ChannelName.length > 8"> May isla7chay al mirdy </p>
         <div class="my-4">
           <label for="dropdown" class="mr-2">Privacy:</label>
           <select
