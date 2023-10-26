@@ -54,21 +54,6 @@ export default {
   },
   methods: {
     fetchData() {
-      // axios
-      //   .post("http://10.32.120.112:3000/api/users/blocked//",
-      //     { withCredentials: true })
-      //   .then((response) => {
-
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error fetching data:", error);
-      //   });
-      //   },
-      //   handleChatClick(Item) {
-      //     // Your click event logic here
-      //     console.log("Prop emitd ");
-      //     // console.log(Item)
-      //
 
     },
     Block() {
@@ -81,7 +66,7 @@ export default {
         withCredentials: true,
       })
         .then((response) => {
-          console.log(response)
+          console.log("response axios " ,response)
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -92,7 +77,7 @@ export default {
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
       console.log(this.person, this.ActiveChannelId)
-      console.log(this.$GameSocket)
+   
 
     },
 
@@ -101,7 +86,7 @@ export default {
     }
   },
   mounted() {
-    console.log(" mounted in userprofile ", this.person);
+
 
 
   },

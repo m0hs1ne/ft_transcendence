@@ -100,38 +100,35 @@ export default {
 			this.ChannelObject = object;
 		},
 
-		handleObject(object) {
+		handleObject(object){
+			
+			console.log("***************************************************************", object.id)
 			if (object.username)
 				this.IsPerson(object)
 			else
 				this.IsChannel(object)
+
 			//IsChannel(object)
 		},
 	},
 
 	async mounted() {
-
-		// this.$socket.on("Motification", (messages) => {
-		// 	console.log("this is notification------------------");
-		// 	console.log(messages);
-		// 	this.userStore.UpdateInvitaion(messages);
-		// 	messages.notifications.forEach((element) => {
-		// 		if (element.type == "invitations") {
-		// 			console.log("elements: ", element);
-		// 			console.log("update notifications")
-		// 		}
-		// 	});
-		// });
+		
 		this.$socket.on("receiveMessage", (data) => {
-			console.log("data from ", data)
-			console.log(this.userStore.ActiveChannelId)
-			if (data.type != 'error') {
-				console.log("I am here: ")
-				//this.userStore.fetchDataForDmChatRooms();
-			}
+			// if (data.type == 'DM')
+			// {
+			// 	console.log("in group frined  list ", this.userStore.DmChatroomsList)
+			// 	console.log("data from ", data)
+			// 	const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
+			// 	if (friendIndex == -1) {
+			// 		console.log(" new data ....");
+			// 		this.userStore.fetchDataForDmChatRooms();
+			// 	}
+			// }
+
 			if (data.action == 'kick') {
 				console.log(" kicked >>>>>>>>")
-				if ( data.from.id == this.userStore.MyId ) {
+				if (data.from.id == this.userStore.MyId) {
 					this.$nextTick(() => {
 						this.displayTargetComponent = false;
 						this.displayChatboxChannel = false;

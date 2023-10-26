@@ -126,7 +126,15 @@ export default {
     await this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
-     
+			if (data.type == 'DM')
+			{
+				const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
+				if (friendIndex == -1) {
+					console.log(" new data ....");
+					this.userStore.fetchDataForDmChatRooms();
+				}
+			}
+
       if ((data.chatRoomId == this.userStore.ActiveChannelId) &&
         ((data.type == "notification" && data.action == "joined") ||
           (data.type == "notification" && data.action == "status"))
@@ -135,7 +143,7 @@ export default {
       }
       if(data.type == "notification" && data.action == "kick" && data.from.id == this.userStore.MyId
         ) {
-        console.log("I am 0000000000-00")
+        
         this.fetchData();
        this.SocketNoti();
       }
@@ -149,7 +157,6 @@ export default {
         console.log(element);
         if (data.id == element.id) {
           element.statusOnline = data.online;
-          console.log(" I am get the id **--------------------------------------");
         }
       });
     });
