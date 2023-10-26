@@ -1,6 +1,15 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="flex w-full h-full flex-col items-center">
+  <div class="flex items-center justify-start w-full rounded-2xl bg-transparent gap-2 px-5 py-3">
+    <Icon class="w-8 h-8 cursor-pointer" icon="ion:arrow-back" @click="this.userStore.viewMode = 'Default'"/>
+    <h1 class="font-bold text-xl">
+      Channel Profile:
+    </h1>
+  </div>
+  <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
+
+
+  <div class="flex h-full flex-col items-center mt-10 mx-10">
     <div class="w-32 h-32 bg-gray-200 rounded-full shadow">
       <Icon class="text-blue-600 h-32 w-32" icon="clarity:group-solid" />
     </div>
@@ -11,9 +20,8 @@
       </span>
     </div>
 
-
     <div
-      class="flex w-full custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-3  flex-row items-center justify-center gap-5">
+      class="flex w-full custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-3 flex-row items-center justify-center gap-5">
       <div class="flex">
         <EditeProfile v-if="this.EditChannel" />
         <ConfirmPopup v-if="this.userStore.action" />
@@ -23,7 +31,7 @@
       <FriendList v-if="AddFriend" />
 
       <Icon @click="LeaveChannel" title="Leave Channel" icon="ion:exit"
-        class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md  cursor-pointer" />
+        class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer" />
 
       <Icon v-if="DeletePermission" icon="ic:round-delete" @click="RemoveChatRome" title="Delete Channel"
         class="text-black dark:text-white h-10 w-10 hover:bg-blue-300 p-1 rounded-md cursor-pointer" />
@@ -142,7 +150,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/* Add your CSS styling here */
-</style>

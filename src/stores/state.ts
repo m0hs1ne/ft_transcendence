@@ -21,6 +21,7 @@ export const useUserStore = defineStore("user", {
     Opponent: {},
     creatchallenge: false,
     UserStatus: "",
+    viewMode: "Default",
   }),
 
   actions: {

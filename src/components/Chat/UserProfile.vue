@@ -8,7 +8,7 @@
     <div class="flex">
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
     </div>
-    <div class="flex flex-col items-center">
+    <div class="flex flex-col items-center"> 
       <button class="flex items-center text-gray-700 hover:text-gray-900"
         @click="this.$router.push(`/users/${this.person.id}`)">
         <span class="ml-2 h-10">View Profil</span>
@@ -34,6 +34,8 @@
 import { useUserStore } from './../../stores/state.ts';
 import GameMode from './GameMode.vue';
 import axios from "axios";
+
+
 export default {
   components: { GameMode },
   setup() {

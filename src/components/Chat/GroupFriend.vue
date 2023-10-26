@@ -1,33 +1,67 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
+  <div
+    class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl"
+  >
     <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly">
-      <Icon @click="moveTheBar()" title="moveTheBar" class="h-8 w-8" icon="mingcute:menu-fill" />
+      <Icon
+        @click="moveTheBar()"
+        title="moveTheBar"
+        class="h-8 w-8"
+        icon="mingcute:menu-fill"
+      />
       <AlertChannel />
       <PopUpinv />
     </div>
-
     <ul>
-      <li v-for="friend in this.userStore.DmChatroomsList" :key="friend.id" @click="handleChatClick(friend)"
-        class="flex w-full items-center p-2 cursor-pointer custom-box-shadow rounded-xl dark:bg-slate-800 mb-3">
+      <li
+        v-for="(conversation, index) in this.userStore.DmChatroomsList"
+        :key="index"
+        @click="handleChatClick(conversation, index)"
+        :class="[
+          'flex',
+          'w-full', 
+          'items-center',
+          'p-2',
+          'cursor-pointer',
+          'custom-box-shadow',
+          'rounded-xl',
+          'hover:bg-slate-200',
+          'dark:hover:bg-slate-600',
+          'mb-3', 
+          this.activeChatId === index ? 'bg-slate-200 dark:bg-slate-600' : 'bg-white dark:bg-slate-800',
+        ]"
+      >
         <div class="flex w-full">
-          <div class="w-14 bg-gray-200 rounded-full shadow mr-4">
-            <div v-if="friend.avatar" class=" relative w-14">
-              <img :src="friend.avatar" alt="Avatar" class="w-14 rounded-full object-cover" />
-              <div v-if="getStatusClass(friend.statusOnline)"
-              class=" absolute -bottom-0.5 -right-1.5 h-5 w-5 shadow-lg rounded-full bg-green-600"/>
+          <div class="w-12 bg-gray-200 rounded-full shadow mr-4">
+            <div v-if="conversation.avatar" class="relative w-12">
+              <img
+                :src="conversation.avatar"
+                alt="Avatar"
+                class="w-12 rounded-full object-cover"
+              />
+              <div
+                v-if="getStatusClass(conversation.statusOnline)"
+                class="absolute -bottom-0.5 -right-1.5 h-5 w-5 shadow-lg rounded-full bg-green-600"
+              />
             </div>
             <Icon v-else class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
           </div>
           <GameMode v-if="this.userStore.creatchallenge" />
           <div v-if="show" class="flex items-center">
-            <span class="text-lg font-bold overflow-ellipsis line-clamp-1">{{ friend.username }} {{ friend.title
-            }}</span>
-            <p class="text-sm text-gray-500">{{ friend.lastmessage }}</p>
+            <span class="text-lg font-bold overflow-ellipsis line-clamp-1"
+              >{{ conversation.username }} {{ conversation.title }}</span
+            >
+            <p class="text-sm text-gray-500">{{ conversation.lastmessage }}</p>
           </div>
         </div>
-        <Icon v-if="friend.inGame == false && friend.statusOnline == true" @click="play(friend)" title="Play"
-          class="text-blue-600 h-10 w-10 ml-3" icon="mingcute:game-2-fill" />
+        <!-- <Icon
+          v-if="conversation.inGame == false && conversation.statusOnline == true"
+          @click="play(conversation)"
+          title="Play"
+          class="text-blue-600 h-10 w-10 ml-3"
+          icon="mingcute:game-2-fill"
+        /> -->
       </li>
     </ul>
   </div>
@@ -40,6 +74,7 @@ import axios from "axios";
 import { useUserStore } from "./../../stores/state.ts";
 import GameMode from "./GameMode.vue";
 import { Icon } from "@iconify/vue";
+import { ref } from "vue";
 
 export default {
   components: {
@@ -56,6 +91,7 @@ export default {
     return {
       friends: [],
       show: true,
+      activeChatId: ref(-1),
     };
   },
   methods: {
@@ -72,11 +108,12 @@ export default {
         this.friends = this.userStore.DmChatroomsList.data;
       }
     },
-    handleChatClick(Item) {
+    handleChatClick(Item, index) {
       // Your click event logic here
       console.log("Prop emitd");
       console.log(Item);
       this.$emit("object-sent", Item);
+      this.activeChatId = index;
       this.userStore.UpdateChannelId(Item.id, Item.title);
     },
 
@@ -105,20 +142,12 @@ export default {
     },
 
     getStatusClass(status) {
-      if (status)
-        return "border-4 border-green-500 ";
+      if (status) return "border-4 border-green-500 ";
     },
 
     moveTheBar() {
       console.log(" dfdf ");
       this.show = !this.show;
-    },
-    play(member) {
-      console.log("This is the member of", member);
-      this.userStore.creatchallenge = true;
-      this.userStore.Opponent = member;
-      console.log(this.person, this.ActiveChannelId);
-      console.log(this.$GameSocket);
     },
   },
 
@@ -127,18 +156,21 @@ export default {
     await this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
-     
-      if ((data.chatRoomId == this.userStore.ActiveChannelId) &&
+      if (
+        data.chatRoomId == this.userStore.ActiveChannelId &&
         ((data.type == "notification" && data.action == "joined") ||
           (data.type == "notification" && data.action == "status"))
       ) {
         this.fetchData();
       }
-      if(data.type == "notification" && data.action == "kick" && data.from.id == this.userStore.MyId
-        ) {
-        console.log("I am 0000000000-00")
+      if (
+        data.type == "notification" &&
+        data.action == "kick" &&
+        data.from.id == this.userStore.MyId
+      ) {
+        console.log("I am 0000000000-00");
         this.fetchData();
-       this.SocketNoti();
+        this.SocketNoti();
       }
     });
 
