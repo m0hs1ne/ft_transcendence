@@ -13,6 +13,7 @@
           placeholder="Channel Name"
           class="font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
         />
+        <p class="mt-2 text-sm text-red-600" v-if="ChannelName.length > 8"> May isla7chay al mirdy </p>
         <div class="my-4">
           <label for="dropdown" class="mr-2">Privacy:</label>
           <select
@@ -41,7 +42,7 @@
         Close
       </button>
       <button
-        v-if="selectedOption != '' && ChannelName != ''"
+        v-if="selectedOption != '' && ChannelName.length < 8 &&  ChannelName.length > 2"
         @click="SaveChannel"
         class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >

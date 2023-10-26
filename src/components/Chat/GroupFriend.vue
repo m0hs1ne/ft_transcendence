@@ -120,7 +120,7 @@ export default {
       // console.log(" Noting ")
       // await this.userStore.fetchDataForDmChatRooms();
       await this.$socket.on("ChatRoomList", (data) => {
-        console.log("This is data: ", data);
+        console.log("This is data ChatRoomList on : ", data);
         if (data.type == "new" || data.type == "updated") {
           this.userStore.fetchDataForDmChatRooms();
         }
@@ -132,10 +132,10 @@ export default {
       });
 
       if (this.userStore.ActiveId.length) {
-        console.log(" I am her to get chat room ", this.userStore.ActiveId);
+       
         this.handleChatClick(this.userStore.ActiveId);
       } else if (this.userStore.DmChatroomsList.length != 0) {
-        console.log(" I am her ", this.userStore.DmChatroomsList);
+       
         this.handleChatClick(this.userStore.DmChatroomsList[0]);
       }
     },
@@ -150,19 +150,26 @@ export default {
     await this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
-      if (
-        data.chatRoomId == this.userStore.ActiveChannelId &&
+      console.log(data , "this data form reciveMesssage ", data)
+			if (data.type == 'DM')
+			{
+				const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
+				if (friendIndex == -1) {
+					console.log(" new data ....");
+					this.userStore.fetchDataForDmChatRooms();
+				}
+			}
+      if((data.type == "notification" && data.action == "joined"))
+        this.fetchData();
+     else if ((data.chatRoomId == this.userStore.ActiveChannelId) &&
         ((data.type == "notification" && data.action == "joined") ||
           (data.type == "notification" && data.action == "status"))
       ) {
         this.fetchData();
       }
-      if (
-        data.type == "notification" &&
-        data.action == "kick" &&
-        data.from.id == this.userStore.MyId
-      ) {
-        console.log("I am 0000000000-00");
+      if(data.type == "notification" && data.action == "kick" && data.from.id == this.userStore.MyId
+        ) {
+        
         this.fetchData();
         this.SocketNoti();
       }
@@ -176,7 +183,6 @@ export default {
         console.log(element);
         if (data.id == element.id) {
           element.statusOnline = data.online;
-          console.log(" I am get the id **--------------------------------------");
         }
       });
     });
@@ -190,3 +196,11 @@ export default {
   },
 };
 </script>
+<style>
+.scrollbar {
+  overflow-y: scroll;
+  scrollbar-width: thin; /* Make the scrollbar thinner */
+
+}
+
+</style>

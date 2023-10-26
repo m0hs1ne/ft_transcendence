@@ -78,8 +78,7 @@ export default {
     updateScreenWidth() {
       console.log("new screen width", window.innerWidth);
       return () => {
-		if (window.innerWidth >= 768)
-			this.userStore.viewMode = 'List';
+        if (window.innerWidth >= 768) this.userStore.viewMode = "List";
         this.userStore.screenWidth = window.innerWidth;
       };
     },
@@ -126,8 +125,13 @@ export default {
     },
 
     handleObject(object) {
+      console.log(
+        "***************************************************************",
+        object.id
+      );
       if (object.username) this.IsPerson(object);
       else this.IsChannel(object);
+
       //IsChannel(object)
     },
   },
@@ -138,6 +142,30 @@ export default {
 
     // Ensure that the screen width is updated initially
     this.updateScreenWidth();
+
+    this.$socket.on("receiveMessage", (data) => {
+      // if (data.type == 'DM')
+      // {
+      // 	console.log("in group frined  list ", this.userStore.DmChatroomsList)
+      // 	console.log("data from ", data)
+      // 	const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
+      // 	if (friendIndex == -1) {
+      // 		console.log(" new data ....");
+      // 		this.userStore.fetchDataForDmChatRooms();
+      // 	}
+      // }
+
+      if (data.action == "kick") {
+        console.log(" kicked >>>>>>>>");
+        if (data.from.id == this.userStore.MyId) {
+          this.$nextTick(() => {
+            this.displayTargetComponent = false;
+            this.displayChatboxChannel = false;
+          });
+        }
+        this.userStore.fetchDataForDmChatRooms();
+      }
+    });
 
     this.$socket.on("receiveMessage", (data) => {
       console.log("data from ", data);

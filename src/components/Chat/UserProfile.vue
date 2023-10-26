@@ -8,7 +8,7 @@
     <div class="flex">
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
     </div>
-    <div class="flex flex-col items-center"> 
+    <div class="flex flex-col items-center">
       <button class="flex items-center text-gray-700 hover:text-gray-900"
         @click="this.$router.push(`/users/${this.person.id}`)">
         <span class="ml-2 h-10">View Profil</span>
@@ -56,21 +56,6 @@ export default {
   },
   methods: {
     fetchData() {
-      // axios
-      //   .post("http://10.32.125.38:3000/api/users/blocked//",
-      //     { withCredentials: true })
-      //   .then((response) => {
-
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error fetching data:", error);
-      //   });
-      //   },
-      //   handleChatClick(Item) {
-      //     // Your click event logic here
-      //     console.log("Prop emitd ");
-      //     // console.log(Item)
-      //
 
     },
     Block() {
@@ -83,7 +68,7 @@ export default {
         withCredentials: true,
       })
         .then((response) => {
-          console.log(response)
+          console.log("response axios ", response)
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -94,7 +79,7 @@ export default {
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
       console.log(this.person, this.ActiveChannelId)
-      console.log(this.$GameSocket)
+
 
     },
 
@@ -103,7 +88,7 @@ export default {
     }
   },
   mounted() {
-    console.log(" mounted in userprofile ", this.person);
+
 
 
   },
