@@ -47,7 +47,7 @@ export class Room {
     this.angle = Math.random() * (Math.PI / 4 - -Math.PI / 4) + -Math.PI / 4;
     this.ballDirection.x = 2 * Math.cos(this.angle);
     this.ballDirection.y = 2 * Math.sin(this.angle);
-    this.BallSpeed = 0.003;
+    this.BallSpeed = 0.002;
   }
 
   Play(): void {
@@ -66,16 +66,27 @@ export class Room {
     this.startGameLoop();
   }
 
-  startGameLoop() {
+  startGameLoop() 
+  {
+    var delay = 0;
     this.IntervalId = setInterval(() => {
       if (this.closeroom == true) {
         clearInterval(this.IntervalId);
         console.log("It should stop know");
       } else {
-        this.ballPosition.x += this.ballDirection.x * this.BallSpeed;
-        this.ballPosition.y += this.ballDirection.y * this.BallSpeed;
-        this.BallSpeed += 0.0000001;
-        this.CheckBall();
+        if(delay == 0)
+        {
+          this.ballPosition.x += this.ballDirection.x * this.BallSpeed;
+          this.ballPosition.y += this.ballDirection.y * this.BallSpeed;
+          this.BallSpeed += 0.0000003;
+        }
+        if(this.CheckBall() == 2)
+        {
+          delay = 1;
+          setTimeout(() => {
+            delay = 0;
+          }, 500);
+        }
         this.LeftPlayer.socket.emit("updateBall", {
           x: this.ballPosition.x,
           y: this.ballPosition.y,
@@ -86,48 +97,67 @@ export class Room {
           y: this.ballPosition.y,
         });
       }
-    }, 1000 / 60);
+    }, 10);
   }
 
-  CheckBall(): void {
-    if (this.checkGoals()) {
-    } else if (!this.checkLeftPadlleCollision()) {
-    } else this.checkRightPadlleCollision();
+  CheckBall(): number {
+    if (this.checkGoals()) 
+      return 2;
+    else if (!this.checkLeftPadlleCollision()) {
+    } 
+    else 
+      this.checkRightPadlleCollision();
     this.checkWallCollision();
+    return 0;
   }
 
-  checkLeftPadlleCollision(): number {
+  delay(): void
+  {
+      setTimeout(() => {
+        console.log("Delay");
+      }, 5000);
+  }
+
+  checkLeftPadlleCollision(): number 
+  {
+    var rad = (45 * Math.PI) / 180;
     if (
       this.ballPosition.x <= 0.03 &&
       this.LeftPlayer.Paddle - 0.01 <= this.ballPosition.y &&
       this.LeftPlayer.Paddle + 0.25 + 0.01 >= this.ballPosition.y
     ) {
-      // var diff = this.ballPosition.y - this.LeftPlayer.Paddle;
-      // var angle = this.map(diff * 100, 0, 25, -Math.PI, Math.PI);
-      // this.ballDirection.x = -2 * Math.cos(angle);
-      // this.ballDirection.y = 2 * Math.sin(angle);
-      this.ballDirection.x *= -1;
+      var diff = this.ballPosition.y - this.LeftPlayer.Paddle;
+      var angle = this.map(diff * 100, 0, 25, -rad, rad);
+      this.ballDirection.x = 2 * Math.cos(angle);
+      this.ballDirection.y = 2 * Math.sin(angle);
+      // this.ballDirection.x *= -1;
       return 0;
     }
     return 1;
   }
-  // map(
-  //   value: number,
-  //   fromMin: number,
-  //   fromMax: number,
-  //   toMin: number,
-  //   toMax: number
-  // ): number {
-  //   return ((value - fromMin) * (toMax - toMin)) / (fromMax - fromMin) + toMin;
-  // }
+  map(
+    value: number,
+    fromMin: number,
+    fromMax: number,
+    toMin: number,
+    toMax: number
+  ): number {
+    return ((value - fromMin) * (toMax - toMin)) / (fromMax - fromMin) + toMin;
+  }
 
-  checkRightPadlleCollision(): number {
+  checkRightPadlleCollision(): number 
+  {
+    var rad = (45 * Math.PI) / 180;
     if (
       this.ballPosition.x >= 0.97 &&
       this.RightPlayer.Paddle - 0.01 <= this.ballPosition.y &&
       this.RightPlayer.Paddle + 0.25 + 0.01 >= this.ballPosition.y
-    ) {
-      this.ballDirection.x *= -1 ;
+    ) 
+    {
+      var diff = this.ballPosition.y - this.RightPlayer.Paddle;
+      var angle = this.map(diff * 100, 0, 25, -rad, rad);
+      this.ballDirection.x = (2 * Math.cos(angle)) * -1;
+      this.ballDirection.y = 2 * Math.sin(angle);
       return 0;
     }
     return 1;
@@ -169,7 +199,7 @@ export class Room {
     });
     this.ballPosition.x = 0.5;
     this.ballPosition.y = 0.5;
-    this.BallSpeed = 0.003;
+    this.BallSpeed = 0.002;
   }
 
   EndTheGame(): void {
