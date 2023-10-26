@@ -165,6 +165,12 @@ export class UsersService {
     const options: FindOneOptions<User> = {
       where: { id },
     };
+
+    const existUsername = await this.userRepository.findOne({
+      where :{username},
+    })
+    if (existUsername)
+      throw new NotAcceptableException({message: "Username already exists."})
     const updatedUser = await this.userRepository.update(
       { id },
       {
