@@ -142,7 +142,7 @@ export default {
       </div>
     </div>
     <Loading v-if="this.state.isLoading && !this.twoFA" />
-    <Sidebar v-if="isSidebarVisible() && !this.state.isLoading && !this.twoFA" />
+    <Sidebar v-if="this.$route.path != 'signin' && !this.state.isLoading && !this.twoFA" />
     <RouterView v-if="!this.state.isLoading && !this.twoFA" />
   </main>
 </template>

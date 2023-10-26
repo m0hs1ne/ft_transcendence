@@ -4,7 +4,7 @@
       class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer"
       @click="openPopup"
       title="Channel Setting"
-      icon="mingcute:settings-3-fill"
+      icon="basil:edit-solid"
     />
 
     <div
@@ -23,7 +23,6 @@
           <div class="my-4">
             <label for="dropdown" class="mr-2">Privacy:</label>
             <select
-              id="dropdown"
               v-model="selectedOption"
               class="border dark:bg-slate-800 border-gray-300 px-4 py-2 rounded"
             >

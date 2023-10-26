@@ -210,7 +210,7 @@ export default {
 				Change your Name:
 			</div>
 			<div class="w-full px-10 py-2">
-				<input type="text" id="first_name"
+				<input type="text"
 					class=" font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
 					v-model="this.newName" placeholder="Your new Name" @input="handleInput" required />
 			</div>

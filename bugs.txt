@@ -1,0 +1,1 @@
+try to change my username to the same name of an other user -> 500 internal server error

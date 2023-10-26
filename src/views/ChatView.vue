@@ -5,15 +5,15 @@
 		<!-- <GroupList @object-sent="handleObjectChannel" /> -->
 		<ChatGroupFriend @object-sent="handleObject" />
 
-		<div class="w-full h-full flex flex-col dark:bg-slate-900 p-5 mx-5 custom-box-shadow dark:text-white rounded-xl">
+		<div class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl">
 			<ErrorPopup v-if="this.userStore.error" />
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" />
-			<ChatBoxChannel v-if="displayChatboxChannel" :channel="ChannelObject" />
+			<ChatBoxChannel v-if="displayChatboxChannel && this.userStore.viewMode === 'Default'" :channel="ChannelObject" />
+			<ChatChannelProfil v-if="displayChatboxChannel && this.userStore.viewMode === 'ChannelSetting'" />
 		</div>
-		<div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
+		<!-- <div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
 			<ChatUserProfile :person="personObject" v-if="displayTargetComponent" />
-			<ChatChannelProfil v-if="displayChatboxChannel" />
-		</div>
+		</div> -->
 	</div>
 </template>
   

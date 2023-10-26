@@ -164,6 +164,7 @@ export default {
         this.setAchievments();
         console.log("user from id: \n", res.data);
       } catch (error) {
+        this.$router.go(-1);
         console.log("Getting user profile error\n", error);
         this.isError = true;
       }
@@ -221,7 +222,8 @@ export default {
 
 <template>
   <Loading v-if="this.isLoading" />
-  <div v-else-if="this.friendTab" class="flex flex-col justify-start items-center min-h-screen dark:bg-slate-800 p-10">
+  <div v-else-if="this.friendTab"
+    class="flex flex-col justify-start items-center ml-20 min-h-screen dark:bg-slate-800 p-10">
     <div class="flex w-full justify-center items-center pb-10">
       <Icon @click="this.friendTab = false" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3" />
       <h1 class="font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis">
@@ -249,7 +251,7 @@ export default {
     </div>
   </div>
 
-  <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
+  <div v-else class="grid grid-cols-1 ml-20 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
       class="h-[400px] md:h-[500px] flex flex-col items-center justify-evenly py-5 rounded-2xl custom-box-shadow dark:bg-slate-900">

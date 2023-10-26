@@ -34,6 +34,8 @@
 import { useUserStore } from './../../stores/state.ts';
 import GameMode from './GameMode.vue';
 import axios from "axios";
+
+
 export default {
   components: { GameMode },
   setup() {
@@ -66,7 +68,7 @@ export default {
         withCredentials: true,
       })
         .then((response) => {
-          console.log("response axios " ,response)
+          console.log("response axios ", response)
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -77,7 +79,7 @@ export default {
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
       console.log(this.person, this.ActiveChannelId)
-   
+
 
     },
 
