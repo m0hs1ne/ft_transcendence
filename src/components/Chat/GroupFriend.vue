@@ -1,7 +1,7 @@
 <!-- FriendListComponent.vue -->
 <template>
   <div
-    class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl"
+    class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl  overflow-y-auto scroll  scrollb    "
   >
     <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly">
       <Icon
@@ -20,7 +20,7 @@
         @click="handleChatClick(conversation, index)"
         :class="[
           'flex',
-          'w-full', 
+          'w-full',
           'items-center',
           'p-2',
           'cursor-pointer',
@@ -28,31 +28,30 @@
           'rounded-xl',
           'hover:bg-slate-200',
           'dark:hover:bg-slate-600',
-          'mb-3', 
-          this.activeChatId === index ? 'bg-slate-200 dark:bg-slate-600' : 'bg-white dark:bg-slate-800',
+          'mb-3',
+          this.activeChatId === index
+            ? 'bg-slate-200 dark:bg-slate-600'
+            : 'bg-white dark:bg-slate-800',
         ]"
       >
         <div class="flex w-full">
           <div class="w-12 bg-gray-200 rounded-full shadow mr-4">
-            <div v-if="conversation.avatar" class="w-12">
-              <img
-                :src="conversation.avatar"
-                alt="Avatar"
-                class="w-12 rounded-full"
-              />
-              <div
-                v-if="getStatusClass(conversation.statusOnline)"
-                class="absolute -bottom-0.5 -right-1.5 h-5 w-5 shadow-lg rounded-full bg-green-600"
-              />
-            </div>
+            <img
+              v-if="conversation.avatar"
+              :src="conversation.avatar"
+              alt="Avatar"
+              class="w-12 h-12 rounded-full object-cover"
+            />
             <Icon v-else class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
           </div>
           <GameMode v-if="this.userStore.creatchallenge" />
-          <div v-if="show" class="flex items-center">
+          <div v-if="show" class="flex flex-col items-start justify-center">
             <span class="text-lg font-bold overflow-ellipsis line-clamp-1"
               >{{ conversation.username }} {{ conversation.title }}</span
             >
-            <p class="text-sm text-gray-500">{{ conversation.lastmessage }}</p>
+            <p class="text-sm text-gray-500">
+              {{ conversation.statusOnline ? "Online" : "Ofline" }}
+            </p>
           </div>
         </div>
         <!-- <Icon
@@ -115,6 +114,7 @@ export default {
       this.$emit("object-sent", Item);
       this.activeChatId = index;
       this.userStore.UpdateChannelId(Item.id, Item.title);
+      this.userStore.viewMode = 'Default';
     },
 
     async SocketNoti() {
@@ -202,3 +202,11 @@ export default {
   },
 };
 </script>
+<style>
+.scrollbar {
+  overflow-y: scroll;
+  scrollbar-width: thin; /* Make the scrollbar thinner */
+
+}
+
+</style>
