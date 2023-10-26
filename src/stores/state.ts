@@ -21,7 +21,8 @@ export const useUserStore = defineStore("user", {
     Opponent: {},
     creatchallenge: false,
     UserStatus: "",
-    viewMode: "Default",
+    viewMode: "List",
+    screenWidth: 1000,
   }),
 
   actions: {
@@ -85,6 +86,7 @@ export const useUserStore = defineStore("user", {
         );
         
         this.DmChatroomsList = this.DmChatroomsList.data;
+        console.log("----------> DmChatroomsList is: ", this.DmChatroomsList);
       } catch (error) {
         console.log("fetch friends by id error: ", error);
       }

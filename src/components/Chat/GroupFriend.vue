@@ -1,23 +1,19 @@
 <!-- FriendListComponent.vue -->
 <template>
   <div
-    class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl"
+    class="flex flex-col w-full md:w-1/2 lg:w-1/3 dark:bg-slate-900 custom-box-shadow dark:text-white rounded-xl overflow-clip"
   >
-    <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly">
-      <Icon
-        @click="moveTheBar()"
-        title="moveTheBar"
-        class="h-8 w-8"
-        icon="mingcute:menu-fill"
-      />
+    <div class="flex w-full flex-row dark:text-white pb-5 justify-evenly p-5">
       <AlertChannel />
       <PopUpinv />
     </div>
-    <ul>
+    <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
+
+    <ul class=" overflow-y-scroll overflow-x-clip px-5 py-5">
       <li
         v-for="(conversation, index) in this.userStore.DmChatroomsList"
         :key="index"
-        @click="handleChatClick(conversation, index)"
+        @click="selectChat(conversation, index)"
         :class="[
           'flex',
           'w-full',
@@ -45,12 +41,12 @@
             <Icon v-else class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
           </div>
           <GameMode v-if="this.userStore.creatchallenge" />
-          <div v-if="show" class="flex flex-col items-start justify-center">
-            <span class="text-lg font-bold overflow-ellipsis line-clamp-1"
+          <div class="flex flex-col items-start justify-center">
+            <span class="text-lg font-bold text-ellipsis line-clamp-1"
               >{{ conversation.username }} {{ conversation.title }}</span
             >
             <p class="text-sm text-gray-500">
-              {{ conversation.statusOnline ? "Online" : "Ofline" }}
+              {{ !conversation.avatar ? conversation.privacy : (conversation.statusOnline ? "Online" : "Ofline") }}
             </p>
           </div>
         </div>
@@ -89,14 +85,13 @@ export default {
   data() {
     return {
       friends: [],
-      show: true,
       activeChatId: ref(-1),
     };
   },
   methods: {
     async fetchData() {
       await this.userStore.fetchDataForDmChatRooms();
-      console.log(" OLO ", this.userStore.DmChatroomsList);
+      console.log(" -------------------------------------------------> OLO ", this.userStore.DmChatroomsList);
       if (
         this.userStore.DmChatroomsList.length == 0 ||
         this.userStore.DmChatroomsList.data == 0
@@ -107,6 +102,11 @@ export default {
         this.friends = this.userStore.DmChatroomsList.data;
       }
     },
+    selectChat(Item, index)
+    {
+      this.handleChatClick(Item, index);
+      this.userStore.viewMode = 'Chat';
+    },
     handleChatClick(Item, index) {
       // Your click event logic here
       console.log("Prop emitd");
@@ -114,7 +114,6 @@ export default {
       this.$emit("object-sent", Item);
       this.activeChatId = index;
       this.userStore.UpdateChannelId(Item.id, Item.title);
-      this.userStore.viewMode = 'Default';
     },
 
     async SocketNoti() {
@@ -143,11 +142,6 @@ export default {
 
     getStatusClass(status) {
       if (status) return "border-4 border-green-500 ";
-    },
-
-    moveTheBar() {
-      console.log(" dfdf ");
-      this.show = !this.show;
     },
   },
 

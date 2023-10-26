@@ -18,3 +18,18 @@ html {
     font-size: 16px;
   }
 }
+
+
+::-webkit-scrollbar {
+  width: 5px; /* Adjust to your preference */
+}
+
+/* Track background */
+::-webkit-scrollbar-track {
+  background: #ffffff00; /* Track background color */
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #838383; /* Scrollbar thumb color */
+}

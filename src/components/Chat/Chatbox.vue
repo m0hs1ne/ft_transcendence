@@ -3,23 +3,38 @@
   <div
     class="flex items-center justify-between w-full rounded-2xl bg-transparent px-5 py-3"
   >
-    <router-link :to="'/users/' + this.person.id" class="flex w-fit">
-      <div class="w-12 bg-gray-200 rounded-full shadow mr-5">
-        <img
-          :src="this.person.avatar"
-          alt="Avatar"
-          class="w-12 rounded-full object-cover"
-        />
-      </div>
-      <div class="flex flex-col items-start justify-center">
-        <h1 class="font-bold text-lg">
-          {{ this.person.username }}
-        </h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400">
-          {{ this.person.inGame ? "Playing ..." : (this.person.statusOnline ? "Online" : "Ofline") }}
-        </p>
-      </div>
-    </router-link>
+    <div class="flex w-fit items-center">
+      <Icon
+        v-if="this.userStore.screenWidth < 768"
+        class="w-8 h-8 cursor-pointer mr-5"
+        icon="ion:arrow-back"
+        @click="this.userStore.viewMode = 'List'"
+      />
+      <router-link :to="'/users/' + this.person.id" class="flex w-fit">
+        <div class="w-12 bg-gray-200 rounded-full shadow mr-5">
+          <img
+            :src="this.person.avatar"
+            alt="Avatar"
+            class="w-12 rounded-full object-cover"
+          />
+        </div>
+        <div class="flex flex-col items-start justify-center">
+          <h1 class="font-bold text-lg">
+            {{ this.person.username }}
+          </h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            {{
+              this.person.inGame
+                ? "Playing ..."
+                : this.person.statusOnline
+                ? "Online"
+                : "Ofline"
+            }}
+          </p>
+        </div>
+      </router-link>
+    </div>
+
     <div class="flex items-center justify-center h-full gap-3">
       <Icon
         v-if="!this.person.inGame && this.person.statusOnline"
@@ -39,12 +54,12 @@
   <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
   <div
-    class="flex flex-col h-full w-full overflow-y-scroll gap-5 px-5 py-10"
-    ref="scrollContainer"
+    class="flex flex-col h-full w-full overflow-y-scroll gap-5 px-5 py-10 scrollbar-thin scrollbar-thumb-gray-300 scrollba"
+    id="messageContainer"
   >
     <div v-for="message in messages" :key="message.id" class="w-full">
       <div v-if="message.type == 'sent'" class="flex w-full justify-end">
-        <div class="flex flex-col items-end">
+        <div class="flex flex-col items-end w-1/3">
           <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
             <span>{{ message.text }}</span>
           </div>
@@ -53,7 +68,7 @@
       </div>
 
       <div v-else class="flex w-full">
-        <div class="flex flex-col">
+        <div class="flex flex-col w-1/3">
           <div class="ml-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
             <span>{{ message.text }}</span>
           </div>

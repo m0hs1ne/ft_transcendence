@@ -3,7 +3,13 @@
   <div
     class="flex items-center justify-between w-full rounded-2xl bg-transparent px-5 py-3"
   >
-    <div class="flex w-fit">
+    <div class="flex w-fit items-center">
+    <Icon
+      v-if="this.userStore.screenWidth < 768"
+      class="w-8 h-8 cursor-pointer mr-5"
+      icon="ion:arrow-back"
+      @click="this.userStore.viewMode = 'List'"
+    />
       <div class="w-12 bg-slate-200 rounded-full shadow mr-5">
         <Icon class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
       </div>
@@ -16,14 +22,12 @@
         </p>
       </div>
     </div>
-    <div class="flex items-center justify-center h-full gap-3">
-      <Icon
-        @click="this.userStore.viewMode = 'ChannelSetting'"
-        title="Block"
-        class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
-        icon="mingcute:settings-3-fill"
-      />
-    </div>
+    <Icon
+      @click="this.userStore.viewMode = 'Channel'"
+      title="Channel Setting"
+      class="text-blue-500 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-100 p-1 rounded-md"
+      icon="mingcute:settings-3-fill"
+    />
   </div>
   <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
