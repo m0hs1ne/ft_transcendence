@@ -114,6 +114,7 @@ export default {
       this.$emit("object-sent", Item);
       this.activeChatId = index;
       this.userStore.UpdateChannelId(Item.id, Item.title);
+      this.userStore.viewMode = 'Default';
     },
 
     async SocketNoti() {
