@@ -251,7 +251,7 @@ export class UsersService {
     friend.friends.push(me);
     this.userRepository.save(friend);
     this.userRepository.save(me);
-    return { message: `${friend.username} was added to your friends.` };
+    return { type: "updated", message: `${friend.username} was added to your friends.` };
   }
 
   async removefriends(id: number, @Req() req) {

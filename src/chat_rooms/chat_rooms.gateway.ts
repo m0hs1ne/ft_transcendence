@@ -18,7 +18,7 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { UsersService } from "src/users/users.service";
 import { User } from "src/users/entities/user.entity";
 
-var clients: Map<
+export var clients: Map<
   number,
   Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 > = new Map();
