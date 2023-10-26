@@ -510,7 +510,7 @@ export class ChatRoomsService {
       }
     });
     if (!fromIsMember) throw new ForbiddenException();
-    if (fromMember.userStatus == "banned")
+    if (action != "kick" && fromMember.userStatus == "banned")
       throw new NotAcceptableException(`You are banned from this chat.`);
     if (fromMember.userStatus == "muted") {
       console.log(fromMember);
