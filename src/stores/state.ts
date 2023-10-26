@@ -23,6 +23,7 @@ export const useUserStore = defineStore("user", {
     UserStatus: "",
     viewMode: "List",
     screenWidth: 1000,
+    activeChatId: -1,
   }),
 
   actions: {

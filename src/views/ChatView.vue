@@ -78,7 +78,8 @@ export default {
     updateScreenWidth() {
       console.log("new screen width", window.innerWidth);
       return () => {
-        if (window.innerWidth >= 768) this.userStore.viewMode = "List";
+        if (window.innerWidth <= 768 && this.userStore.activeChatId == -1)
+          this.userStore.viewMode = "List";
         this.userStore.screenWidth = window.innerWidth;
       };
     },

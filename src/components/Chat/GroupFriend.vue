@@ -25,7 +25,7 @@
           'hover:bg-slate-200',
           'dark:hover:bg-slate-600',
           'mb-3',
-          this.activeChatId === index
+          this.userStore.activeChatId === index
             ? 'bg-slate-200 dark:bg-slate-600'
             : 'bg-white dark:bg-slate-800',
         ]"
@@ -85,7 +85,6 @@ export default {
   data() {
     return {
       friends: [],
-      activeChatId: ref(-1),
     };
   },
   methods: {
@@ -112,7 +111,7 @@ export default {
       console.log("Prop emitd");
       console.log(Item);
       this.$emit("object-sent", Item);
-      this.activeChatId = index;
+      this.userStore.activeChatId = index;
       this.userStore.UpdateChannelId(Item.id, Item.title);
     },
 
