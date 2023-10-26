@@ -42,7 +42,7 @@
         Close
       </button>
       <button
-        v-if="selectedOption != '' && ChannelName != ''"
+        v-if="selectedOption != '' && ChannelName.length < 8 &&  ChannelName.length > 2"
         @click="SaveChannel"
         class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
