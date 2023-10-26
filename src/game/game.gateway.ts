@@ -203,8 +203,10 @@ export class GameGateway {
   @SubscribeMessage("Chall")
   HandlleChallenges(client: any, payload: any): void {
     // console.log(payload);
-    if (payload.type == "refuse") {
-      console.log(payload);
+    if (payload.type == "refuse") 
+    {
+      if(this.Challenge.has(payload.oponentId))
+      this.Challenge.delete(payload.oponentId);
     }
     else if (payload.type == "challenger") 
     {

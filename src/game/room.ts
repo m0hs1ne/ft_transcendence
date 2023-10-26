@@ -66,16 +66,27 @@ export class Room {
     this.startGameLoop();
   }
 
-  startGameLoop() {
+  startGameLoop() 
+  {
+    var delay = 0;
     this.IntervalId = setInterval(() => {
       if (this.closeroom == true) {
         clearInterval(this.IntervalId);
         console.log("It should stop know");
       } else {
-        this.ballPosition.x += this.ballDirection.x * this.BallSpeed;
-        this.ballPosition.y += this.ballDirection.y * this.BallSpeed;
-        this.BallSpeed += 0.0000003;
-        this.CheckBall();
+        if(delay == 0)
+        {
+          this.ballPosition.x += this.ballDirection.x * this.BallSpeed;
+          this.ballPosition.y += this.ballDirection.y * this.BallSpeed;
+          this.BallSpeed += 0.0000003;
+        }
+        if(this.CheckBall() == 2)
+        {
+          delay = 1;
+          setTimeout(() => {
+            delay = 0;
+          }, 500);
+        }
         this.LeftPlayer.socket.emit("updateBall", {
           x: this.ballPosition.x,
           y: this.ballPosition.y,
@@ -89,11 +100,22 @@ export class Room {
     }, 10);
   }
 
-  CheckBall(): void {
-    if (this.checkGoals()) {
-    } else if (!this.checkLeftPadlleCollision()) {
-    } else this.checkRightPadlleCollision();
+  CheckBall(): number {
+    if (this.checkGoals()) 
+      return 2;
+    else if (!this.checkLeftPadlleCollision()) {
+    } 
+    else 
+      this.checkRightPadlleCollision();
     this.checkWallCollision();
+    return 0;
+  }
+
+  delay(): void
+  {
+      setTimeout(() => {
+        console.log("Delay");
+      }, 5000);
   }
 
   checkLeftPadlleCollision(): number 
