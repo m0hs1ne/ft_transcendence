@@ -53,7 +53,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -69,7 +69,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -80,15 +80,16 @@ export class UsersController {
     {
       if (typeof username != "string") throw new BadRequestException("Username should be a string.");
       const payload = verifyToken(req.headers.cookie);
+      const message =await this.usersService.update(payload.sub, username);
       const client = clients.get(payload.sub)
       if (client)
         client.emit('Notification', {type: "updated", message: "Username updated Succesfully"})
-      res.send( await this.usersService.update(payload.sub, username));
+      res.send(message);
     }
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -99,13 +100,16 @@ export class UsersController {
     {
       if (typeof validSession != "boolean") throw new BadRequestException("validSession should be a boolean.");
       const payload = verifyToken(req.headers.cookie);
-      
-      res.send(await this.usersService.updatesession(payload.sub, validSession));
+      const message = await this.usersService.updatesession(payload.sub, validSession);
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Notification', {type: "updated", message: "validSession updated Succesfully"})
+      res.send(message);
     }
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -120,7 +124,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -161,14 +165,14 @@ export class UsersController {
           if (other)
             client.emit('Notification', {type: "updated", message: `${other.username} was added to your friends`})
         }
-        return message;
+        res.send(message);
       }
       else throw new BadRequestException("Id should be an integer number.")
     }
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -186,20 +190,20 @@ export class UsersController {
       {
         const me = await this.usersService.findOne(payload.sub)
         if (me)
-          friend.emit('Notification', {type: "updated", message: `${me.username} added you to his friends`})
+          friend.emit('Notification', {type: "updated", message: `${me.username} removed you from his friends`})
       }
       if (client)
       {
         const other = await this.usersService.findOne(id)
         if (other)
-          client.emit('Notification', {type: "updated", message: `${other.username} was added to your friends`})
+          client.emit('Notification', {type: "updated", message: `${other.username} removed from your friends`})
       }
     res.send(message);
     }
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
 
   }
@@ -215,7 +219,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -231,7 +235,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -245,7 +249,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 
@@ -290,7 +294,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
   //Leaderboard
@@ -313,7 +317,7 @@ export class UsersController {
     catch(e)
     {
       res.statusCode = e.status
-      res.send({message: e.message})
+      res.send({message: e.message, result: "error"})
     }
   }
 }

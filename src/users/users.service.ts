@@ -337,7 +337,7 @@ export class UsersService {
   async uploadAvatar(avatar, payload) {
     await this.userRepository.update(
       { id: payload.sub },
-      { avatar: "http://10.32.125.38:3000/" + avatar.filename },
+      { avatar: "http://localhost:3000/" + avatar.filename },
     );
   }
 
