@@ -17,6 +17,7 @@ import {
   MaxFileSizeValidator,
   Query,
   BadRequestException,
+  Res,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import {
@@ -31,6 +32,7 @@ import { MessageBody } from "@nestjs/websockets";
 import { ChatRoomsService } from "src/chat_rooms/chat_rooms.service";
 import { GameService } from "src/game/game.service";
 import { clients } from "src/chat_rooms/chat_rooms.gateway";
+import { profile } from "console";
 
 @UseGuards(userAuthGuard)
 @Controller("users/")
@@ -41,54 +43,89 @@ export class UsersController {
     private readonly gameservice: GameService,
   ) {}
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
   @Get("profile")
-  findProfile(@Req() req) {
-    const payload = verifyToken(req.headers.cookie);
-    return this.usersService.myprofile(payload.sub);
+  async findProfile(@Req() req,@Res() res) {
+    try
+    {
+      const payload = verifyToken(req.headers.cookie);
+      res.send( await this.usersService.myprofile(payload.sub));
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Get("profile/:id")
-  findOtherProfile(@Param("id") id, @Req() req) {
-    if (isNaN(id))
-      throw new BadRequestException()
-    const payload = verifyToken(req.headers.cookie);
-    return this.usersService.profile(id, payload);
+  async findOtherProfile(@Param("id") id, @Req() req, @Res() res) {
+    try
+    {
+      if (isNaN(id))
+        throw new BadRequestException("Id should be an integer number.")
+      const payload = verifyToken(req.headers.cookie);
+      res.send( await this.usersService.profile(id, payload));
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Patch("profile/update")
-  async update(@MessageBody() body, @Req() req) {
+  async update(@MessageBody() body, @Req() req, @Res() res) {
     const { username } = body;
-    if (typeof username != "string") return;
-    const payload = verifyToken(req.headers.cookie);
-    const client = clients.get(payload.sub)
-    if (client)
-      client.emit('Notification', {type: "updated", message: "Username updated Succesfully"})
-    return await this.usersService.update(payload.sub, username);
+    try
+    {
+      if (typeof username != "string") throw new BadRequestException("Username should be a string.");
+      const payload = verifyToken(req.headers.cookie);
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Notification', {type: "updated", message: "Username updated Succesfully"})
+      res.send( await this.usersService.update(payload.sub, username));
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Patch("profile/validsession")
-  async updatevalidsession(@MessageBody() body, @Req() req) {
+  async updatevalidsession(@MessageBody() body, @Req() req, @Res() res) {
     const { validSession } = body;
-    if (typeof validSession != "boolean") return;
-    const payload = verifyToken(req.headers.cookie);
-    
-    return await this.usersService.updatesession(payload.sub, validSession);
+    try
+    {
+      if (typeof validSession != "boolean") throw new BadRequestException("validSession should be a boolean.");
+      const payload = verifyToken(req.headers.cookie);
+      
+      res.send(await this.usersService.updatesession(payload.sub, validSession));
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   //friends
   @Get("friends")
-  getFriends(@Req() req) {
-    const payload = verifyToken(req.headers.cookie);
-    return this.usersService.getfriends(payload.sub);
+  async getFriends(@Req() req, @Res() res) {
+    try
+    {
+      const payload = verifyToken(req.headers.cookie);
+      res.send(await this.usersService.getfriends(payload.sub));
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Post("/game")
-  async addgame(@MessageBody() body, @Req() req) {
+  async addgame(@MessageBody() body, @Req() req, @Res() res) {
     const { user1Id, user2Id, winner, leftSCore, rightSCore, mode } = body;
 
     console.log(body);
@@ -102,13 +139,48 @@ export class UsersController {
   }
 
   @Post("friends")
-  async addFriends(@MessageBody() body, @Req() req) {
+  async addFriends(@MessageBody() body, @Req() req, @Res() res) {
     const { id } = body;
-    const payload = verifyToken(req.headers.cookie);
-    if (!isNaN(id))
+    try
     {
-      const message =  await this.usersService.addfriends(id, req);
-      const client = clients.get(payload.sub)
+      const payload = verifyToken(req.headers.cookie);
+      if (!isNaN(id))
+      {
+        const message =  await this.usersService.addfriends(id, req);
+        const client = clients.get(payload.sub)
+        const friend = clients.get(id)
+        if (friend)
+        {
+          const me = await this.usersService.findOne(payload.sub)
+          if (me)
+            friend.emit('Notification', {type: "updated", message: `${me.username} added you to his friends`})
+        }
+        if (client)
+        {
+          const other = await this.usersService.findOne(id)
+          if (other)
+            client.emit('Notification', {type: "updated", message: `${other.username} was added to your friends`})
+        }
+        return message;
+      }
+      else throw new BadRequestException("Id should be an integer number.")
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
+  }
+
+  @Delete("friends/:id")
+  async removeFriends(@Param("id") id, @Req() req, @Res() res) {
+    try
+    {
+    if (isNaN(id))
+      throw new BadRequestException("Id should be an integer number.")
+    const payload = verifyToken(req.headers.cookie);
+    const client = clients.get(payload.sub)
+    const message = this.usersService.removefriends(+id, req)
       const friend = clients.get(id)
       if (friend)
       {
@@ -122,43 +194,59 @@ export class UsersController {
         if (other)
           client.emit('Notification', {type: "updated", message: `${other.username} was added to your friends`})
       }
-      return message;
+    res.send(message);
     }
-    else throw new BadRequestException();
-  }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
 
-  @Delete("friends/:id")
-  async removeFriends(@Param("id") id, @Req() req) {
-    if (isNaN(id))
-      throw new BadRequestException()
-    const payload = verifyToken(req.headers.cookie);
-    const client = clients.get(payload.sub)
-    if (client)
-    { 
-      const other = await this.usersService.findOne(id)
-      if (other)
-        client.emit('Notification', {type: "updated", message: `${other.username} was removed from your friends`})
-    }
-    return this.usersService.removefriends(+id, req);
   }
 
   //Blocked
   @Get("blocked")
-  getBlocked(@Req() req) {
+  async getBlocked(@Req() req, @Res() res) {
+    try
+    {
     const payload = verifyToken(req.headers.cookie);
-    return this.usersService.getblocked(payload.sub);
+    res.send(await this.usersService.getblocked(payload.sub));
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Post("blocked")
-  addBlocked(@MessageBody() body, @Req() req) {
+  async addBlocked(@MessageBody() body, @Req() req, @Res() res) {
     //expected: id: user to block
     const { id } = body;
-    if (!isNaN(id)) return this.usersService.addblocked(id, req);
+    try
+    {
+      if (!isNaN(id)) res.send( await this.usersService.addblocked(id, req));
+      else  throw new BadRequestException("Id should be an integer number.")
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Delete("blocked/:id")
-  removeBlocked(@Param("id") id, @Req() req) {
-    if (!isNaN(id)) return this.usersService.removeblocked(id, req);
+  async removeBlocked(@Param("id") id, @Req() req,@Res() res) {
+    try
+    {
+      if (!isNaN(id)) res.send(await this.usersService.removeblocked(id, req));
+      else throw new BadRequestException("Id should be an integer number.")
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 
   @Post("upload_avatar")
@@ -184,19 +272,26 @@ export class UsersController {
       }),
     )
     file: Express.Multer.File,
-    @Req() req,
+    @Req() req,@Res() res,
   ) {
-    const payload = verifyToken(req.headers.cookie);
-    this.usersService.uploadAvatar(file, payload);
-    const client = clients.get(payload.sub)
-    if (client)
-    { 
-        client.emit('Notification', {type: "updated", message: `Avatar was updated successfully`})
+    try
+    {
+      const payload = verifyToken(req.headers.cookie);
+      this.usersService.uploadAvatar(file, payload);
+      const client = clients.get(payload.sub)
+      if (client)
+      { 
+          client.emit('Notification', {type: "updated", message: `Avatar was updated successfully`})
+      }
+      res.send( {
+        data: "http://localhost:3000/" + file.filename,
+      })
     }
-    return {
-      statusCode: 200,
-      data: "http://10.32.125.38:3000/" + file.filename,
-    };
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
   //Leaderboard
   @Get("leaderboard")
@@ -205,11 +300,20 @@ export class UsersController {
   }
 
   @Post("search")
-  async search(@MessageBody() body, @Req() req) {
+  async search(@MessageBody() body, @Req() req,@Res() res) {
     const { query } = body;
-    const payload = verifyToken(req.headers.cookie);
-    const users = await this.usersService.search(query);
-    const chatrooms = await this.chatroomservice.search(query, payload.sub);
-    return { users, chatrooms };
+    try
+    {
+      if (typeof query == 'string') throw new BadRequestException("Query should be an integer string.")
+      const payload = verifyToken(req.headers.cookie);
+      const users = await this.usersService.search(query);
+      const chatrooms = await this.chatroomservice.search(query, payload.sub);
+      res.send({ users, chatrooms });
+    }
+    catch(e)
+    {
+      res.statusCode = e.status
+      res.send({message: e.message})
+    }
   }
 }
