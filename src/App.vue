@@ -45,7 +45,7 @@ export default {
       try {
         console.log("otp code: ", this.otpCode)
         const response = await axios.post(
-          "http://localhost:3000/api/2fa/authenticate/",
+          "http://10.32.120.112:3000/api/2fa/authenticate/",
           { tfaCode: this.otpCode },
           {
             withCredentials: true,
@@ -58,7 +58,7 @@ export default {
         }
 
         await axios.patch(
-          "http://localhost:3000/api/users/profile/validsession/",
+          "http://10.32.120.112:3000/api/users/profile/validsession/",
           {
             validSession: true,
           },
@@ -80,7 +80,7 @@ export default {
       const confirmed = window.confirm('Are you sure you want to log out?');
       if (confirmed) {
         try {
-          await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
+          await axios.get('http://10.32.120.112:3000/api/auth/logout', { withCredentials: true });
           this.twoFA = false;
           this.$router.push('/signIn');
         }
