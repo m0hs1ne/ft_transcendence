@@ -36,11 +36,19 @@
     </div>
 
     <div class="flex items-center justify-center h-full gap-3">
-      <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
+      <Icon
+        v-if="!this.person.inGame && this.person.statusOnline"
+        @click="play()"
+        title="Play"
         class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
-        icon="mingcute:game-2-fill" />
-      <Icon @click="block()" title="Block"
-        class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
+        icon="mingcute:game-2-fill"
+      />
+      <Icon
+        @click="block()"
+        title="Block"
+        class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
+        icon="mdi:user-block"
+      />
     </div>
   </div>
   <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
@@ -51,30 +59,44 @@
   >
     <div v-for="message in messages" :key="message.id" class="w-full">
       <div v-if="message.type == 'sent'" class="flex w-full justify-end">
-        <div class="flex flex-col items-end w-1/3">
+        <div class="flex flex-col items-end w-2/3 lg-w-1/3">
           <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
             <span>{{ message.text }}</span>
           </div>
-          <div class="h-3 w-3 bg-blue-400 rounded-full" />
+          <div class="flex gap-3">
+            <p class="text-gray-500 text-sm mt-1"> You </p>
+            <div class="h-3 w-3 bg-blue-400 rounded-full" />
+          </div>
         </div>
       </div>
 
       <div v-else class="flex w-full">
-        <div class="flex flex-col w-1/3">
+        <div class="flex flex-col w-2/3 lg-w-1/3">
           <div class="ml-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
             <span>{{ message.text }}</span>
           </div>
-          <div class="h-3 w-3 bg-blue-400 rounded-full" />
+          <div class="flex gap-3">
+            <div class="h-3 w-3 bg-blue-400 rounded-full" />
+            <p class="text-gray-500 text-sm mt-1">{{ message.desc }}</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent p-7">
-    <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message here..."
-      class="placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white" />
+  <div
+    class="flex gap-3 items-center justify-center w-full rounded-2xl custom-box-shado bg-transparent p-7"
+  >
+    <input
+      v-model="newMessage"
+      @keyup.enter="sendMessage"
+      placeholder="Type your message here..."
+      class="placeholder:font-light bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
+    />
 
-    <div class="flex justify-center items-center h-full text-white dark:text-white shadow px-2 bg-blue-500 rounded-lg">
+    <div
+      class="flex justify-center items-center h-full text-white dark:text-white shadow px-2 bg-blue-500 rounded-lg"
+    >
       <Icon @click="sendMessage()" icon="mingcute:send-fill" height="30" />
     </div>
   </div>
@@ -143,7 +165,7 @@ export default {
         this.$socket.emit(
           "sendDM",
           { toId: this.person.id, message: this.newMessage },
-          () => { }
+          () => {}
         );
       }
       this.$nextTick(() => {
@@ -157,7 +179,7 @@ export default {
   mounted() {
     this.UserProfile = this.person;
     console.log(" I am in Mounted in chatbox ", this.UserProfile);
-    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
+    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => {});
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
       if (data.type == "DM") {
@@ -183,6 +205,7 @@ export default {
             img: element.from.avatar,
             type: type,
             text: element.message,
+            desc: element.from.username,
           });
         });
       }

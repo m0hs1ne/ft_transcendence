@@ -4,12 +4,12 @@
     class="flex items-center justify-between w-full rounded-2xl bg-transparent px-5 py-3"
   >
     <div class="flex w-fit items-center">
-    <Icon
-      v-if="this.userStore.screenWidth < 768"
-      class="w-8 h-8 cursor-pointer mr-5"
-      icon="ion:arrow-back"
-      @click="this.userStore.viewMode = 'List'"
-    />
+      <Icon
+        v-if="this.userStore.screenWidth < 768"
+        class="w-8 h-8 cursor-pointer mr-5"
+        icon="ion:arrow-back"
+        @click="this.userStore.viewMode = 'List'"
+      />
       <div class="w-12 bg-slate-200 rounded-full shadow mr-5">
         <Icon class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
       </div>
@@ -52,7 +52,10 @@
             <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
               <span>{{ message.message }}</span>
             </div>
-            <div class="h-3 w-3 bg-blue-400 rounded-full" />
+            <div class="flex gap-3">
+              <p class="text-gray-500 text-sm mt-1"> You </p>
+              <div class="h-3 w-3 bg-blue-400 rounded-full" />
+            </div>
           </div>
         </div>
 
@@ -61,7 +64,10 @@
             <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
               <span>{{ message.message }}</span>
             </div>
-            <div class="h-3 w-3 bg-blue-400 rounded-full" />
+            <div class="flex gap-3">
+              <div class="h-3 w-3 bg-blue-400 rounded-full" />
+              <p class="text-gray-500 text-sm mt-1">{{ message.from.username }}</p>
+            </div>
           </div>
         </div>
       </div>
