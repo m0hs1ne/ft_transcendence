@@ -14,6 +14,7 @@ export default {
     const battles = ref(1);
     const winrat = ref(1);
     const friends = ref([]);
+    const games = ref([]);
     const is2FA = ref(false);
     const friendTab = ref(false);
 
@@ -27,39 +28,8 @@ export default {
         (state.userData.wins / (state.userData.wins + state.userData.losses)) * 100
       ) + "%";
     friends.value = state.userData.friends;
+    games.value = state.userData.games;
     is2FA.value = state.userData.is2faEnabled;
-
-    const lastBattles = [
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 4 },
-      },
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 0 },
-      },
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 0 },
-      },
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 0 },
-      },
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 0 },
-      },
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 0 },
-      },
-      {
-        player1: { name: "David goggins", score: 14 },
-        player2: { name: "Jay Lawson", score: 0 },
-      },
-      // Add more elements as needed
-    ];
 
     const achievements = [
       {
@@ -119,7 +89,7 @@ export default {
       username,
       avatar,
       wins,
-      lastBattles,
+      games,
       achievements,
       battles,
       winrat,
@@ -232,12 +202,31 @@ export default {
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
         <div
-          v-for="(battle, index) in lastBattles"
+          v-for="(game, index) in this.games"
           :key="index"
           class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white"
         >
-          <div class="mb-2">{{ battle.player1.name }} ({{ battle.player1.score }})</div>
-          <div>{{ battle.player2.name }} ({{ battle.player2.score }})</div>
+          <div
+            :class="[
+              'mb-2',
+              'font-bold',
+              game.score.split(' ')[0] > game.score.split(' ')[2]
+                ? 'text-green-500'
+                : ' text-red-500',
+            ]"
+          >
+            {{ game.user1.username }} ({{ game.score.split(" ")[0] }})
+          </div>
+          <div
+            :class="[
+              'font-bold',
+              game.score.split(' ')[0] < game.score.split(' ')[2]
+                ? 'text-green-500'
+                : ' text-red-500',
+            ]"
+          >
+            {{ game.user2.username }} ({{ game.score.split(" ")[2] }})
+          </div>
         </div>
       </div>
     </div>

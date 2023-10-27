@@ -90,7 +90,7 @@ export default {
     },
     async openPopup() {
 
-      // const role = await axios.get (`http://10.32.125.38:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`, 
+      // const role = await axios.get (`http://localhost:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`, 
       //           { withCredentials: true },);
 
       //   console.log(role)
