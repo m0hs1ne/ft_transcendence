@@ -72,7 +72,6 @@ export class Room {
     this.IntervalId = setInterval(() => {
       if (this.closeroom == true) {
         clearInterval(this.IntervalId);
-        console.log("It should stop know");
       } else {
         if(delay == 0)
         {
@@ -111,13 +110,6 @@ export class Room {
     return 0;
   }
 
-  delay(): void
-  {
-      setTimeout(() => {
-        console.log("Delay");
-      }, 5000);
-  }
-
   checkLeftPadlleCollision(): number 
   {
     var rad = (45 * Math.PI) / 180;
@@ -130,7 +122,6 @@ export class Room {
       var angle = this.map(diff * 100, 0, 25, -rad, rad);
       this.ballDirection.x = 2 * Math.cos(angle);
       this.ballDirection.y = 2 * Math.sin(angle);
-      // this.ballDirection.x *= -1;
       return 0;
     }
     return 1;
