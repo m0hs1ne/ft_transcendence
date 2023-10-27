@@ -22,6 +22,7 @@
         </p>
       </div>
     </div>
+
     <Icon
       @click="this.userStore.viewMode = 'Channel'"
       title="Channel Setting"

@@ -194,7 +194,7 @@ export default {
 
     <!-- <LastBattlesCard /> -->
     <div
-      class="h-[400px] md:h-[450px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
+    class="h-[400px] md:h-[450px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
     >
       <div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
         <h1 class="font-semibold text-2xl dark:text-white">Last Battles</h1>

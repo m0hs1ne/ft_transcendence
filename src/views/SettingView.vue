@@ -28,6 +28,7 @@ export default {
 
 		// For Info Card
 		async updateAvatar(event) {
+			this.state.isLoading = true;
 			this.selectedFile = event.target.files[0];
 			console.log("selectedFile: ", this.selectedFile);
 			try {
@@ -50,11 +51,10 @@ export default {
 					}
 				);
 
-				// Update the local state with the new avatar URL
-				await this.state.fetchData();
 			} catch (error) {
 				console.error("Error updating avatar:", error);
 			}
+			this.state.isLoading = false;
 		},
 		async updateName() {
 			if (this.newName.length < 3 || this.newName.length > 12) {
@@ -72,11 +72,17 @@ export default {
 					}
 				);
 
+				if (response.data.result)
+				{
+					this.error = response.data.message;
+					return;
+				}
 
 				// Update the local state with the new avatar URL
-				await this.state.fetchData();
-				this.changeCard(0);
+				// this.changeCard(0);
+				console.log("respone of updatename: ", response);
 			} catch (error) {
+				this.error = error;
 				console.error("Error updateName:", error);
 			}
 		},
@@ -126,8 +132,6 @@ export default {
 					return;
 				}
 
-				// Update the local state with the new avatar URL
-				await this.state.fetchData();
 				this.changeCard(0);
 			} catch (error) {
 				console.error("Error disable2FA:", error);
@@ -214,7 +218,10 @@ export default {
 					class=" font-bold bg-gray-200 text-gray-900 text-sm rounded-lg w-full p-2.5 dark:bg-gray-700 dark:text-white"
 					v-model="this.newName" placeholder="Your new Name" @input="handleInput" required />
 			</div>
-			<p v-if="this.newName.length < 3" class="text-red-500 pb-2">
+			<p v-if="this.error" class="text-red-500 pb-5">
+				{{ this.error }}
+			</p>
+			<p v-else-if="this.newName.length < 3" class="text-red-500 pb-2">
 				Zid chi chwiyich 3afak :)
 			</p>
 			<p v-if="this.newName.length > 12" class="text-red-500 pb-2">

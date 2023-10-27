@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import Loading from "../components/Loading/Loading.vue";
+import Opps from "../components/Shared/Opps.vue";
 import axios from "axios";
 import ProfileStat from "./../components/Profile/ProfileStat.vue";
 import { SharedData, useUserStore } from "./../stores/state.ts";
@@ -48,6 +49,7 @@ export default {
     ProfileStat,
     Icon,
     Loading,
+    Opps,
   },
   methods: {
     setAchievments() {
@@ -109,6 +111,7 @@ export default {
     async fetchData() {
       this.isNotMe = this.state.userData.id != this.$route.params.id;
       this.isLoading = true;
+      this.isError = false;
       // Get user profile data
       try {
         const res = await axios.get(
@@ -133,7 +136,6 @@ export default {
         this.setAchievments();
         console.log("user from id: \n", res.data);
       } catch (error) {
-        this.$router.go(-1);
         console.log("Getting user profile error\n", error);
         this.isError = true;
       }
@@ -142,9 +144,9 @@ export default {
 
     async friendLogic() {
       this.isLoading = true;
+      this.isError = true;
       try {
         if (this.isFriend) {
-          console.log("I' want to delete this user");
           const response = await axios.delete(
             `http://localhost:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
             {
@@ -162,10 +164,9 @@ export default {
           );
           console.log("friendLogic res", response);
         }
-        // Update the local state with the new avatar URL
-        await this.state.fetchData();
       } catch (error) {
         console.error("Error friendLogic:", error);
+        this.isError = false;
       }
       this.isLoading = false;
     },
@@ -178,7 +179,7 @@ export default {
     await this.fetchData();
   },
   async updated() {
-    if (this.userData.id != this.$route.params.id) {
+    if (this.userData.id != this.$route.params.id && !this.isError) {
       await this.fetchData();
     }
   },
@@ -187,6 +188,7 @@ export default {
 
 <template>
   <Loading v-if="this.isLoading" />
+  <Opps v-else-if="this.isError" />
   <div
     v-else-if="this.friendTab"
     class="flex flex-col justify-start items-center ml-20 min-h-screen dark:bg-slate-800 p-10"
@@ -302,7 +304,7 @@ export default {
 
     <!-- <LastBattlesCard /> -->
     <div
-      class="h-[400px] md:h-[450px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
+      class="h-[400px] md:h-[500px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
     >
       <div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
         <h1 class="font-semibold text-2xl dark:text-white">Last Battles</h1>

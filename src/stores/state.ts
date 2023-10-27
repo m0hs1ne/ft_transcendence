@@ -163,6 +163,24 @@ export const SharedData = defineStore("Shard", {
       }
       this.isLoading = false;
     },
+
+    async updateData() {
+      try {
+          const res = await axios.get(
+            "http://localhost:3000/api/users/profile/",
+            {
+              withCredentials: true,
+            }
+          );
+          this.userData = res.data;
+          this.friends = res.data.friends;
+          this.blocked = res.data.blocked;
+        
+      } catch (error) {
+        console.log("update Data user profile error\n", error);
+        this.isError = true;
+      }
+    },
   },
 });
 

@@ -21,7 +21,7 @@ export default {
 				try {
 					await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
 					this.$socket.disconnect();
-					this.$router.push('/signIn');
+					this.$router.replace('/signIn');
 
 				}
 				catch (error) {
@@ -77,9 +77,6 @@ export default {
 						class="object-cover w-[28px] h-[28px] rounded-full">
 				</div>
 			</router-link>
-			<div title="Theme" @click="" class="flex items-center p-3 m-3 cursor-pointer">
-				<Icon class="text-gray-600 dark:text-gray-400" icon="mingcute:notification-fill" height="28" />
-			</div>
 			<div title="LogOut" @click="confirmLogout" class="flex items-center p-3 m-3 cursor-pointer">
 				<Icon class="text-gray-600 dark:text-gray-400" icon="ion:log-out" height="28" />
 			</div>

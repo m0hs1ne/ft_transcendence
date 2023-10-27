@@ -4,12 +4,12 @@
     {{ this.userStore.screenWidth }} -->
     <!-- Friend List and Group List Section -->
     <confirmPlay />
+
     <!-- <GroupList @object-sent="handleObjectChannel" /> -->
     <ChatGroupFriend
       v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
       @object-sent="handleObject"
     />
-
     <div
       v-if="
         this.userStore.screenWidth >= 768 ||
@@ -19,7 +19,10 @@
       class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl"
     >
       <ErrorPopup v-if="this.userStore.error" />
-      <ChatChatbox v-if="displayTargetComponent" :person="personObject" />
+      <ChatChatbox
+        v-if="displayTargetComponent && this.userStore.viewMode === 'Chat'"
+        :person="personObject"
+      />
       <ChatBoxChannel
         v-if="displayChatboxChannel && this.userStore.viewMode === 'Chat'"
         :channel="ChannelObject"
@@ -86,10 +89,6 @@ export default {
   },
 
   methods: {
-    viewModesTracker() {
-      // if width is small
-    },
-
     IsPerson(object) {
       console.log(object);
       // this.displayChatboxChannel = false;

@@ -103,15 +103,16 @@ export default {
     },
     selectChat(Item, index)
     {
-      this.handleChatClick(Item, index);
+      this.userStore.activeChatId = index;
       this.userStore.viewMode = 'Chat';
+      this.handleChatClick(Item, index);
     },
     handleChatClick(Item, index) {
       // Your click event logic here
+      console.log("-----------------------------", Item.id)
       console.log("Prop emitd");
       console.log(Item);
       this.$emit("object-sent", Item);
-      this.userStore.activeChatId = index;
       this.userStore.UpdateChannelId(Item.id, Item.title);
     },
 
@@ -131,11 +132,9 @@ export default {
       });
 
       if (this.userStore.ActiveId.length) {
-       
-        this.handleChatClick(this.userStore.ActiveId);
+        this.handleChatClick(this.userStore.ActiveId, 0);
       } else if (this.userStore.DmChatroomsList.length != 0) {
-       
-        this.handleChatClick(this.userStore.DmChatroomsList[0]);
+        this.handleChatClick(this.userStore.DmChatroomsList[0], 0);
       }
     },
 
