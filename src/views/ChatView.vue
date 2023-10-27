@@ -57,14 +57,9 @@ export default {
 	computed: {
 		// Computed property to track the screen width
 		updateScreenWidth() {
-			console.log("new screen width", window.innerWidth);
+			
 			return () => {
-				if (window.innerWidth > 768) {
-					console.log("Ithem clicked******************* " , this.userStore.activeChatId)
-					
-				}
 				if (window.innerWidth <= 768 && this.userStore.activeChatId == -1) {
-					console.log("Ithem clicked " ,this.userStore.ItemClicked)
 					this.userStore.viewMode = "List";
 				}
 				this.userStore.screenWidth = window.innerWidth;
@@ -113,8 +108,14 @@ export default {
 		},
 
 		handleObject(object) {
-			if(!!object)
+		
+			// console.log(this.userStore.ItemClicked)
+			 if(!object.id && this.userStore.ItemClicked)
+			 {
+				console.log("I+++++++++++++++++++++++++++++++ ", object)
 				object = this.userStore.ItemClicked;
+				
+			 }
 			if (object.username) this.IsPerson(object);
 			else this.IsChannel(object);
 
