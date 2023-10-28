@@ -34,7 +34,8 @@
         class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
     </div>
   </div>
-  <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
+
+  <hr class="w-20 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
   <div
     class="flex flex-col h-full w-full overflow-y-scroll gap-5 px-5 py-10 scrollbar-thin scrollbar-thumb-gray-300 scrollba"
@@ -125,7 +126,7 @@ export default {
 
       axios
         .post(
-          "http://10.32.120.112:3000/api/users/blocked/",
+          "http://localhost:3000/api/users/blocked/",
           {
             id: parseInt(this.person.id),
           },

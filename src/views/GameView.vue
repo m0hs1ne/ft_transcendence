@@ -9,8 +9,8 @@
       class="text-gray-100 dark:text-white shadow w-fit mt-3 py-2 px-4 bg-gray-500 rounded-md  font-bold">
       Withdraw
     </button>
-    <WinModel v-if="phase === 'N'" />
-    <LoseModel v-if="phase === 'L'" />
+    <WinModel v-if="phase === 'N'" :limit="mode" />
+    <LoseModel v-if="phase === 'L'" :limit="mode" />
   </div>
 </template>
 

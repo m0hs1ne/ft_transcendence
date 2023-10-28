@@ -33,7 +33,7 @@ export default {
         return;
       try {
         const response = await axios.post(
-          "http://10.32.120.112:3000/api/users/search",
+          "http://localhost:3000/api/users/search",
           {
             query: this.query,
           },

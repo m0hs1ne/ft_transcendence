@@ -61,7 +61,7 @@ export default {
     Block() {
       console.log(" block user ", this.person)
 
-      axios.post("http://10.32.120.112:3000/api/users/blocked/", {
+      axios.post("http://localhost:3000/api/users/blocked/", {
 
         id: parseInt(this.person.id)
       }, {
