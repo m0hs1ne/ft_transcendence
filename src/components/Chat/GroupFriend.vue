@@ -9,10 +9,8 @@
     <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
     <ul class=" overflow-y-scroll overflow-x-clip px-5 py-5">
-      <li 
-      v-for="(conversation, index) in this.userStore.DmChatroomsList" :key="index"
-        @click="selectChat(conversation, index)"
-        :class="[
+      <li v-for="(conversation, index) in this.userStore.DmChatroomsList" :key="index"
+        @click="selectChat(conversation, index)" :class="[
           'flex',
           'w-full',
           'items-center',
@@ -40,10 +38,10 @@
             <p class="text-sm text-gray-500">
               {{
                 !conversation.avatar
-                  ? conversation.privacy
-                  : conversation.statusOnline
+                ? conversation.privacy
+                : conversation.statusOnline
                   ? "Online"
-                  : "Ofline"
+                  : "offline"
               }}
             </p>
           </div>
@@ -142,7 +140,7 @@ export default {
     await this.Events();
 
     this.$socket.on("receiveMessage", (data) => {
-      console.log(data , "this data form reciveMesssage ", data)
+      console.log(data, "this data form reciveMesssage ", data)
       if (data.type == 'DM') {
         const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
         if (friendIndex == -1) {

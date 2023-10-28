@@ -95,7 +95,7 @@ export default {
   methods: {
     async fetchData() {
       this.role = await axios.get(
-        `http://localhost:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
+        `http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true }
       );
 
@@ -132,7 +132,7 @@ export default {
       }
       
     });
-    this.$socket.on("receiveMessage", (data) => {
+    await this.$socket.on("receiveMessage", (data) => {
       console.log("receiveMessage form channel profile--------- ", data);
       if (
         (data.type == "notification" && data.action == "joined") ||
@@ -140,6 +140,8 @@ export default {
         (data.type == "notification" && data.action == "role") ||
         (data.type == "notification" && data.action == "kick")
       ) {
+        if(data.action == "kick" && data.from.id == this.userStore.MyId)
+          return;
         this.fetchData();
       }
     });

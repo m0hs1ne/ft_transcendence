@@ -43,7 +43,7 @@ export default {
       try {
         console.log("otp code: ", this.otpCode);
         const response = await axios.post(
-          "http://localhost:3000/api/2fa/authenticate/",
+          "http://10.32.120.112:3000/api/2fa/authenticate/",
           { tfaCode: this.otpCode },
           {
             withCredentials: true,
@@ -56,7 +56,7 @@ export default {
         }
 
         await axios.patch(
-          "http://localhost:3000/api/users/profile/validsession/",
+          "http://10.32.120.112:3000/api/users/profile/validsession/",
           {
             validSession: true,
           },
@@ -76,7 +76,7 @@ export default {
       const confirmed = window.confirm("Are you sure you want to log out?");
       if (confirmed) {
         try {
-          await axios.get("http://localhost:3000/api/auth/logout", {
+          await axios.get("http://10.32.120.112:3000/api/auth/logout", {
             withCredentials: true,
           });
           this.twoFA = false;
@@ -111,49 +111,31 @@ export default {
 
 <template>
   <main class="font-Poppins">
-    <div
-      v-if="this.twoFA"
-      class="m-auto flex items-center justify-center h-screen dark:bg-slate-800"
-    >
+    <div v-if="this.twoFA" class="m-auto flex items-center justify-center h-screen dark:bg-slate-800">
       <div
-        class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
-      >
-        <h2
-          class="flex w-full justify-start items-center py-5 px-10 font-light text-xl text-gray-500"
-        >
+        class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
+        <h2 class="flex w-full justify-start items-center py-5 px-10 font-light text-xl text-gray-500">
           Enter virifcation code from Google Authenticator app.
         </h2>
         <div class="flex flex-col justify-center items-center text-center">
-          <input
-            v-model="this.otpCode"
-            class="bg-gray-200 shadow m-2 border h-10 w-full text-center rounded placeholder-gray-500"
-            type="text"
-            inputmode="numeric"
-            maxlength="6"
-            placeholder="******"
-            @input="handleInput"
-          />
+          <input v-model="this.otpCode"
+            class="bg-gray-200 shadow m-2 border h-10 w-full text-center rounded placeholder-gray-500" type="text"
+            inputmode="numeric" maxlength="6" placeholder="******" @input="handleInput" />
           <p v-if="this.error" class="text-red-500 pb-5">
             {{ this.error }}
           </p>
           <p v-else class="text-red-500 pb-5">
-            {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }}
-          </p>
-          <div class="flex items-center justify-center w-full gap-5 font-medium">
-            <button
-              @click="this.validate2FA()"
-              :disabled="this.otpCode.length < 6"
-              class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg"
-            >
-              Submit
-            </button>
-            <button
-              @click="this.confirmLogout()"
-              class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-gray-500 rounded-lg"
-            >
-              Logout
-            </button>
-          </div>
+            {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }} </p>
+              <div class="flex items-center justify-center w-full gap-5 font-medium">
+                <button @click="this.validate2FA()" :disabled="this.otpCode.length < 6"
+                  class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg">
+                  Submit
+                </button>
+                <button @click="this.confirmLogout()"
+                  class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-gray-500 rounded-lg">
+                  Logout
+                </button>
+              </div>
         </div>
       </div>
     </div>

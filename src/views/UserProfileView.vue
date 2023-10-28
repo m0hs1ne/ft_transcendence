@@ -116,7 +116,7 @@ export default {
       // Get user profile data
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/users/profile/${this.$route.params.id}`,
+          `http://10.32.120.112:3000/api/users/profile/${this.$route.params.id}`,
           {
             withCredentials: true,
           }
@@ -149,7 +149,7 @@ export default {
       try {
         if (this.isFriend) {
           const response = await axios.delete(
-            `http://localhost:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
+            `http://10.32.120.112:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
             {
               withCredentials: true,
             }
@@ -157,7 +157,7 @@ export default {
           console.log("friendLogic res", response);
         } else {
           const response = await axios.post(
-            "http://localhost:3000/api/users/friends/",
+            "http://10.32.120.112:3000/api/users/friends/",
             { id: parseInt(this.$route.params.id) },
             {
               withCredentials: true,
@@ -190,10 +190,8 @@ export default {
 <template>
   <Loading v-if="this.isLoading" />
   <Opps v-else-if="this.isError" />
-  <div
-    v-else-if="this.friendTab"
-    class="flex flex-col justify-start items-center ml-20 min-h-screen dark:bg-slate-800 p-10"
-  >
+  <div v-else-if="this.friendTab"
+    class="flex flex-col justify-start items-center ml-20 min-h-screen dark:bg-slate-800 p-10">
     <div class="flex w-full justify-center items-center pb-10">
       <Icon @click="this.friendTab = false" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3" />
       <h1 class="font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis">
@@ -256,9 +254,7 @@ export default {
     </div>
 
     <!-- <LastBattlesCard /> -->
-    <div
-      class="h-[400px] md:h-[500px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
-    >
+    <div class="h-[400px] md:h-[500px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
         <h1 class="font-semibold text-2xl dark:text-white">Last Battles</h1>
         <div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
@@ -267,20 +263,20 @@ export default {
         <div v-for="(game, index) in this.games" :key="index"
           class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
           <div :class="[
-            'mb-2',
-            'font-bold',
-            game.score.split(' ')[0] > game.score.split(' ')[2]
-              ? 'text-green-500'
-              : ' text-red-500',
-          ]">
+                      'mb-2',
+                      'font-bold',
+                      game.score.split(' ')[0] > game.score.split(' ')[2]
+                        ? 'text-green-500'
+                        : ' text-red-500',
+                    ]">
             {{ game.user1.username }} ({{ game.score.split(" ")[0] }})
           </div>
           <div :class="[
-            'font-bold',
-            game.score.split(' ')[0] < game.score.split(' ')[2]
-              ? 'text-green-500'
-              : ' text-red-500',
-          ]">
+                      'font-bold',
+                      game.score.split(' ')[0] < game.score.split(' ')[2]
+                        ? 'text-green-500'
+                        : ' text-red-500',
+                    ]">
             {{ game.user2.username }} ({{ game.score.split(" ")[2] }})
           </div>
         </div>

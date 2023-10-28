@@ -49,8 +49,8 @@ export default {
           id : this.userStore.ActiveChannelId
         })
    
+        this.userStore.ActiveChannelId = -1
       }
-      this.userStore.ActiveChannelId = -1
       // console.log("I am her in error")
       // console.log(this.userStore.DmChatroomsList)
       this.userStore.action = ''

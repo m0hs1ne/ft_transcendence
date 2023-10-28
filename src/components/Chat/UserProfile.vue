@@ -1,9 +1,9 @@
-<!-- FriendListComponent.vue -->
-<template>
-  <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
+FriendListComponent.vue
+ <template>
+  <!-- <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
     <GameMode v-if="this.userStore.creatchallenge" />
     <div class="flex-shrink-0">
-      <img referrerpolicy="no-referrer" :src="this.person.avatar" alt="Avatar" class="h-40 rounded-full" />
+      <img referrerpolicy="no-referrer" :src="this.person.avatar" alt="Avatar" class="h-40 rounded-full" />kalsdjaskldjl;aksjdlkasjdkajsdlkj
     </div>
     <div class="flex">
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
@@ -26,11 +26,11 @@
 
 
 
-    </div>
-  </div>
+    </div>  -->
+  <!-- </div> -->
 </template>
 
-<script>
+<!-- <script>
 import { useUserStore } from './../../stores/state.ts';
 import GameMode from './GameMode.vue';
 import axios from "axios";
@@ -61,7 +61,7 @@ export default {
     Block() {
       console.log(" block user ", this.person)
 
-      axios.post("http://localhost:3000/api/users/blocked/", {
+      axios.post("http://10.32.120.112:3000/api/users/blocked/", {
 
         id: parseInt(this.person.id)
       }, {
@@ -94,7 +94,7 @@ export default {
 
   },
 };
-</script>
+</script> -->
 
 <style>
 /* Add your CSS styling here */
