@@ -70,6 +70,7 @@ export class UsersService {
         "users.losses",
         "users.avatar",
         "users.validSession",
+        "users.loggedFirstTime",
         "users.is2faEnabled",
         "friends.id",
         "friends.username",
