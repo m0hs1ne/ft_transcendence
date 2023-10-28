@@ -110,7 +110,11 @@ export class ChatRoomsService {
         "chatRoom.privacy",
       ])
       .getMany();
-    for (const userChat of userChats) mychatRooms.push(userChat.chatRoom);
+    for (const userChat of userChats)
+    {
+      if (userChat.userStatus != 'banned')
+        mychatRooms.push(userChat.chatRoom)
+    }
     if (!mychatRooms)
       throw new NotFoundException({ message: `You didn't join any chat.` });
     return mychatRooms;
