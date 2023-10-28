@@ -52,7 +52,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -68,7 +68,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -88,7 +88,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -108,7 +108,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -123,7 +123,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -171,7 +171,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -202,7 +202,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
 
@@ -218,7 +218,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -234,7 +234,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -248,7 +248,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -293,7 +293,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -308,7 +308,7 @@ export class UsersController {
     const { query } = body;
     try
     {
-      //if (typeof query == 'string') throw new BadRequestException("Query should be an integer string.")
+      if (typeof query == 'string') throw new BadRequestException("Query should be an integer string.")
       const payload = verifyToken(req.headers.cookie);
       const users = await this.usersService.search(query);
       const chatrooms = await this.chatroomservice.search(query, payload.sub);
@@ -316,7 +316,7 @@ export class UsersController {
     }
     catch(e)
     {
-      //res.statusCode = e.status
+      res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }

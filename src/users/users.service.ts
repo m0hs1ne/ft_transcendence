@@ -291,7 +291,7 @@ export class UsersService {
     };
     const friend =await this.userRepository
     .createQueryBuilder("user")
-    .leftJoinAndSelect("user.blockedBy", "friend")
+    .leftJoinAndSelect("user.blockedBy", "blockedBy")
     .where("user.id = :id", { id })
     .getOne();
     if (!friend) {
@@ -300,13 +300,14 @@ export class UsersService {
     const payload = verifyToken(req.headers.cookie);
     const me = await this.userRepository
       .createQueryBuilder("user")
-      .leftJoinAndSelect("user.blocked", "friend")
+      .leftJoinAndSelect("user.blocked", "blocked")
       .where("user.id = :id", { id: payload.sub })
       .getOne();
     me.blocked.push(friend);
     friend.blockedBy.push(me);
     this.removefriends(id, req);
     this.userRepository.save(me);
+    this.userRepository.save(friend);
     return { message: `${friend.username} was added to your blocked list.` };
   }
 
