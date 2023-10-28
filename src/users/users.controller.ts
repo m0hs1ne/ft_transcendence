@@ -229,12 +229,28 @@ export class UsersController {
     const { id } = body;
     try
     {
+      const payload = verifyToken(req.headers.cookie);
       if (!isNaN(id)) res.send( await this.usersService.addblocked(id, req));
       else  throw new BadRequestException("Id should be an integer number.")
+      const client = clients.get(payload.sub)
+
+      const friend = clients.get(id)
+      if (friend)
+      {
+        const me = await this.usersService.findOne(payload.sub)
+        if (me)
+          friend.emit('Notification', {type: "updated", message: `${me.username} blocked you`})
+      }
+      if (client)
+      {
+        const other = await this.usersService.findOne(id)
+        if (other)
+          client.emit('Notification', {type: "updated", message: `${other.username} added to your block list`})
+      }
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -245,10 +261,15 @@ export class UsersController {
     {
       if (!isNaN(id)) res.send(await this.usersService.removeblocked(id, req));
       else throw new BadRequestException("Id should be an integer number.")
+      const payload = verifyToken(req.headers.cookie);
+      const client = clients.get(payload.sub)
+      const other = await this.usersService.findOne(id)
+      if (client)
+        client.emit('Notification', {type: "updated", message: `${other.username} was deleted from your block list`})
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
