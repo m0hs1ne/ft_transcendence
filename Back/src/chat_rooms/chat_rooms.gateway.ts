@@ -115,6 +115,7 @@ export class ChatRoomsGateway {
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
       if (typeof title === "string" && typeof privacy === "string") {
+        if (!validateCharacters(title)) throw new ForbiddenException()
         const chatroom = await this.chatRoomsService.create(
           { title, privacy, owner, ifProtectedPass: password },
           payload,
