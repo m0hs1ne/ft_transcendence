@@ -2,13 +2,15 @@
 import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import axios from "axios";
-import { useUserStore } from "./../stores/state.ts";
+import { useUserStore, SharedData } from "./../stores/state.ts";
 
 
 export default {
   setup() {
+    const isError = ref(false);
+    const state = SharedData();
     const chatApi = useUserStore();
-    return { chatApi };
+    return { chatApi, state, isError };
   },
   data() {
     return {
@@ -47,6 +49,7 @@ export default {
         this.channels = response.data.chatrooms;
       } catch (error) {
         console.error("Error searching users:", error);
+        this.isError = true;
       }
     },
 
@@ -110,7 +113,20 @@ export default {
 </script>
 
 <template>
-  <div v-if="this.joinChannel" class="flex flex-col justify-center items-center min-h-screen ml-20 lg:ml-24 dark:bg-slate-800">
+      <div v-if="this.isError" class="flex items-center justify-center h-screen dark:bg-slate-800 p-10">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-200">Opps!!</h1>
+        <p class="text-lg text-gray-600 mt-4 mx-20 lg:mx-40 dark:text-gray-400">
+          Something went wrong. feel free to contact us if the problem presists.
+        </p>
+        <div class="flex gap-5 items-center justify-center w-full">
+          <button @click="this.$router.push('/')" class="mt-8 text-blue-500 hover:underline text-lg">Go to Home</button>
+<button @click="this.$router.go(-1)" class="mt-8 text-blue-500 hover:underline text-lg">Go Back</button>
+          <button @click="this.isError = false" class="mt-8 text-blue-500 hover:underline text-lg">Refresh</button>
+        </div>
+      </div>
+    </div>
+  <div v-else-if="this.joinChannel" class="flex flex-col justify-center items-center min-h-screen ml-20 lg:ml-24 dark:bg-slate-800">
     <div
       class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="flex w-full justify-start items-center pl-10 pt-7  font-bold text-2xl dark:text-white">

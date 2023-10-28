@@ -6,7 +6,7 @@
       :limit="mode" />
     <canvas v-if="phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
     <button v-if="phase === 'P'" @click="$router.go(-1)"
-      class="text-gray-100 dark:text-white shadow w-fit mt-3 py-2 px-4 bg-gray-500 rounded-md  font-bold">
+      class="text-gray-100 dark:text-white shadow w-fit mt-3 py-5 px-7 bg-gray-500 rounded-md text-2xl font-bold">
       Withdraw
     </button>
     <WinModel v-if="phase === 'N'" />

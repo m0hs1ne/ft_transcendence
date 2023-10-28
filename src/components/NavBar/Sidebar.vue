@@ -25,7 +25,8 @@ export default {
 
 				}
 				catch (error) {
-					console.log("logdout error: ", error)
+					console.log("logdout error: ", error);
+					this.isError = true;
 				}
 			}
 		}

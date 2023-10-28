@@ -113,6 +113,12 @@ export default {
         Your Friends:
       </h1>
     </div>
+    <div v-if="!this.friends.length" class="h-full flex flex-col items-center">
+      <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+      <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
+        lonely 😔
+      </p>
+    </div>
     <div v-for="(element, index) in this.friends" :key="index"
       class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
       <router-link :to="'/users/' + element.id" class="flex items-center justify-between min-w-full">
@@ -133,14 +139,15 @@ export default {
     </div>
   </div>
 
-  <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10 ml-20 lg:ml-24 min-h-screen dark:bg-slate-800">
+  <div v-else class="grid grid-cols-1 h-full md:grid-cols-2 gap-10 p-10 ml-20 lg:ml-24 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
-    <div class="flex flex-col gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
+    <div
+      class="flex flex-col max-h-[600px] gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="w-40 md:w-60 bg-gray-300 rounded-full shadow">
         <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar"
           class=" w-full h-full object-cover rounded-full" />
       </div>
-      <p class="font-semibold text-3xl tracking-wide mx-5 mb-10 dark:text-white">
+      <p class="font-semibold text-3xl tracking-wide mx-5 mb-5 dark:text-white">
         {{ this.username }}
       </p>
       <div class="flex items-center">
@@ -157,13 +164,13 @@ export default {
     </div>
 
     <!-- <LastBattlesCard /> -->
-    <div class="flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
+    <div class="flex flex-col max-h-[600px] items-center rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
         <h1 class="font-semibold text-2xl dark:text-white">Last Battles</h1>
         <div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
-        <div v-if="!this.games.length" class="h-full flex flex-col items-center">
+        <div v-if="!this.games" class="h-full flex flex-col items-center">
           <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
           <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
             No Battles yet!!
