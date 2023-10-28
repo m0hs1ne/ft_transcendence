@@ -18,11 +18,13 @@ import {
   Query,
   BadRequestException,
   Res,
+  ForbiddenException,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import {
   generateRandomString,
   userAuthGuard,
+  validateCharacters,
   verifyToken,
 } from "../utils/guard";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -52,7 +54,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -68,7 +70,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -79,6 +81,7 @@ export class UsersController {
     try
     {
       if (typeof username != "string") throw new BadRequestException("Username should be a string.");
+      if (!validateCharacters(username)) throw new ForbiddenException()
       const payload = verifyToken(req.headers.cookie);
       const message =await this.usersService.update(payload.sub, username);
       const client = clients.get(payload.sub)
@@ -88,7 +91,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -108,7 +111,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -123,7 +126,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -171,7 +174,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -202,7 +205,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
 
@@ -218,7 +221,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -234,7 +237,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -248,7 +251,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -293,7 +296,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -308,7 +311,7 @@ export class UsersController {
     const { query } = body;
     try
     {
-      if (typeof query == 'string') throw new BadRequestException("Query should be an integer string.")
+      if (!validateCharacters(query)) throw new ForbiddenException()
       const payload = verifyToken(req.headers.cookie);
       const users = await this.usersService.search(query);
       const chatrooms = await this.chatroomservice.search(query, payload.sub);
@@ -316,7 +319,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
