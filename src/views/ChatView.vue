@@ -74,7 +74,11 @@ export default {
 		IsPerson(object) {
 			console.log(object);
 			if (this.userStore.DmChatroomsList.length == 0)
+			{
+				this.userStore.ItemClicked = {}
+				this.displayTargetComponent = false;
 				return;
+			}
 			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
 				// console.log(" =========================== ", this.displayChatboxChannel);
@@ -97,6 +101,7 @@ export default {
 			if ( this.userStore.ActiveChannelId == -1)
 			{
 				
+				this.userStore.ItemClicked = {}
 				this.displayTargetComponent = false;
 				this.displayChatboxChannel = false;
 				return 
