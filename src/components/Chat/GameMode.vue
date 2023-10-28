@@ -30,7 +30,7 @@
 </template>
     
 <script>
-import { useUserStore , GameData} from '../../stores/state.ts';
+import { useUserStore, GameData } from '../../stores/state.ts';
 export default {
     setup() {
         const userStore = useUserStore();
@@ -40,7 +40,7 @@ export default {
     data() {
         return {
             ChannelName: '',
-            selectedOption: 'classic',
+            selectedOption: '20',
             password: '',
             isOpend: false,
             message: false
@@ -68,11 +68,10 @@ export default {
                     mode: this.selectedOption,
                 })
             this.$GameSocket.on("start", (data) => {
-                console.log("start a sahbi", data)
+               
                 this.gameData.random = false;
                 this.$router.push('/play');
             })
-            
             this.isOpend = false;
             this.userStore.creatchallenge = false;
         },
@@ -85,8 +84,6 @@ export default {
     },
     mounted() {
         this.isOpend = true;
-
-
 
     },
 };

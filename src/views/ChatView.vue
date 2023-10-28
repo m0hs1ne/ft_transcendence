@@ -1,5 +1,6 @@
 <template>
-	<div class="flex h-screen ml-20 lg:ml-24 dark:bg-slate-800 p-5 text-gray-700">
+	<div class="flex h-screen ml-20 dark:bg-slate-800 p-5 text-gray-700">
+	
 		<ChatGroupFriend v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
 			@object-sent="handleObject" />
 
@@ -73,8 +74,7 @@ export default {
 
 		IsPerson(object) {
 			console.log(object);
-			if (this.userStore.DmChatroomsList.length == 0)
-			{
+			if (this.userStore.DmChatroomsList.length == 0) {
 				this.userStore.ItemClicked = {}
 				this.displayTargetComponent = false;
 				return;
@@ -96,15 +96,14 @@ export default {
 		IsChannel(object) {
 			//console.log("This is an channel ", this.userStore.ActiveChannelId );
 			//console.log(" I am -----------------------------------222-----------------------------------", this.userStore.DmChatroomsList.length)
-			
+
 			this.displayTargetComponent = false;
-			if ( this.userStore.ActiveChannelId == -1)
-			{
-				
+			if (this.userStore.ActiveChannelId == -1) {
+
 				this.userStore.ItemClicked = {}
 				this.displayTargetComponent = false;
 				this.displayChatboxChannel = false;
-				return 
+				return
 			}
 			if (this.displayChatboxChannel) {
 				this.displayTargetComponent = false;
@@ -135,6 +134,14 @@ export default {
 		// Ensure that the screen width is updated initially
 		this.updateScreenWidth();
 
+
+		this.$socket.on("Notification", async (data) => {
+			if (data.type === "updated") {
+				{
+					console.log("I am her in" , this.userStore.DmChatroomsList)
+				}
+			}
+		});
 		this.$socket.on("receiveMessage", (data) => {
 
 
@@ -165,7 +172,7 @@ export default {
 
 		await this.$socket.on("ChatRoomList", (data) => {
 			if (data.type == "remove") {
-//				console.log(this.userStore.DmChatroomsList)
+				//				console.log(this.userStore.DmChatroomsList)
 				this.userStore.fetchDataForDmChatRooms();
 				console.log(this.userStore.DmChatroomsList)
 			}

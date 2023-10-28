@@ -108,7 +108,7 @@ export default {
   <div v-if="this.friendTab"
     class="flex flex-col justify-start items-center min-h-screen dark:bg-slate-800 p-10 ml-20 lg:ml-24">
     <div class="flex w-full justify-center items-center pb-10">
-      <Icon @click="this.friendTab = false" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3" />
+      <Icon @click="this.friendTab = false" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3 cursor-pointer" />
       <h1 class="font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis">
         Your Friends:
       </h1>
@@ -170,7 +170,7 @@ export default {
         <div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
-        <div v-if="!this.games" class="h-full flex flex-col items-center">
+        <div v-if="!this.games.length" class="h-full flex flex-col items-center">
           <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
           <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
             No Battles yet!!

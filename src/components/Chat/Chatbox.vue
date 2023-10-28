@@ -1,5 +1,6 @@
 <!-- ChatComponent.vue -->
 <template>
+  <GameMode v-if="this.userStore.creatchallenge" />
   <div class="flex items-center justify-between w-full rounded-2xl bg-transparent px-5 py-3">
     <div class="flex w-fit items-center">
       <Icon v-if="this.userStore.screenWidth < 768" class="w-8 h-8 cursor-pointer mr-5" icon="ion:arrow-back"
@@ -18,7 +19,7 @@
               ? "Playing ..."
               : this.person.statusOnline
                 ? "Online"
-                : "Ofline"
+                : "offline"
             }}
           </p>
         </div>
@@ -29,7 +30,7 @@
       <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
         class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
-      <Icon @click="block()" title="Block"
+      <Icon v-if=" this.NAtoBlock" @click="block()" title="Block"
         class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
     </div>
   </div>
@@ -80,6 +81,7 @@ import axios from "axios";
 import { Icon } from "@iconify/vue";
 import GroupFriend from "./GroupFriend.vue";
 import { useUserStore } from "./../../stores/state.ts";
+import GameMode from './GameMode.vue';
 
 export default {
   setup() {
@@ -95,6 +97,7 @@ export default {
   components: {
     Icon,
     GroupFriend,
+    GameMode
   },
   data() {
     return {
@@ -102,6 +105,7 @@ export default {
       newMessage: "",
       UserProfile: {},
       length: 0,
+      NAtoBlock :true
     };
   },
   methods: {
@@ -109,10 +113,14 @@ export default {
       //console.log("This is the member of", this.person);
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
+      setTimeout(() => {
+        this.NAtoBlock = true;
+      }, 7000); // 10 seconds
+      this.NAtoBlock = false;
       //console.log(this.person, this.ActiveChannelId);
       //console.log(this.$GameSocket);
     },
-    block() {
+     block() {
       console.log(" block user ", this.person);
 
       axios
@@ -131,8 +139,8 @@ export default {
         .catch((error) => {
           //console.error("Error fetching data:", error);
         });
-     // this.userStore.fetchDataForDmChatRooms();
-     // console.log("The ,, ", this.userStore.DmChatroomsList)
+   //   await this.userStore.fetchDataForDmChatRooms();
+      // console.log("The ,, ", this.userStore.DmChatroomsList)
     },
     sendMessage() {
       //console.log("I AM SENDmessage function ", this.person);
@@ -152,45 +160,50 @@ export default {
   },
 
   mounted() {
+   
+      this.UserProfile = this.person;
 
-    this.UserProfile = this.person;
-    
-    console.log(" I am in Mounted in chatbox ", this.UserProfile);
-    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
-    this.$socket.on("receiveMessage", (data) => {
-      //this.messages.img = data.message.from.avatar
-      console.log(" I am receve some messages ")
-      if (data.type == "DM") {
-        var type = "";
-        if (data.message.from.id != this.person.id) type = "sent";
-        else type = "received";
-
-        this.messages.push({
-          img: data.message.from.avatar,
-          type: type,
-          text: data.message.message,
-        });
-      }
-      if (data.type == "DMMessages") {
-        data.messages.forEach((element) => {
+      console.log(" I am in Mounted in chatbox ", this.UserProfile);
+      this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
+      this.$socket.on("receiveMessage", (data) => {
+        //this.messages.img = data.message.from.avatar
+        console.log(" I am receve some messages ")
+        if (data.type == "DM") {
           var type = "";
-          if (element.from.id != this.person.id) type = "sent";
+          if (data.message.from.id != this.person.id) type = "sent";
           else type = "received";
 
           this.messages.push({
-            // id: Date.now(),
-            img: element.from.avatar,
+            img: data.message.from.avatar,
             type: type,
-            text: element.message,
-            desc: element.from.username,
+            text: data.message.message,
           });
+        }
+        if (data.type == "DMMessages") {
+          data.messages.forEach((element) => {
+            var type = "";
+            if (element.from.id != this.person.id) type = "sent";
+            else type = "received";
+
+            this.messages.push({
+              // id: Date.now(),
+              img: element.from.avatar,
+              type: type,
+              text: element.message,
+              desc: element.from.username,
+            });
+          });
+        }
+
+
+
+
+
+        this.$nextTick(() => {
+          const scrollContainer = this.$refs.scrollContainer;
+          if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
         });
-      }
-      this.$nextTick(() => {
-        const scrollContainer = this.$refs.scrollContainer;
-        if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
       });
-    });
-  },
+    },
 };
 </script>

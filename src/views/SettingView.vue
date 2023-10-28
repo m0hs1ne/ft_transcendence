@@ -29,6 +29,8 @@ export default {
 
 		// For Info Card
 		async updateAvatar(event) {
+			this.isError = false;
+
 			this.state.isLoading = true;
 			this.selectedFile = event.target.files[0];
 			console.log("selectedFile: ", this.selectedFile);
@@ -98,6 +100,8 @@ export default {
 		},
 
 		async enable2FA() {
+			this.isError = false;
+
 			try {
 				const response = await axios.post(
 					"http://localhost:3000/api/2fa/turn-on/",
@@ -122,6 +126,8 @@ export default {
 			}
 		},
 		async disable2FA() {
+			this.isError = false;
+
 			try {
 				const response = await axios.post(
 					"http://localhost:3000/api/2fa/turn-off/",
@@ -161,7 +167,7 @@ export default {
 </script>
 
 <template>
-	    <div v-if="this.isError" class="flex items-center justify-center h-screen dark:bg-slate-800 p-10">
+	    <div v-if="this.isError" class="flex ml-20 lg:ml-24 items-center justify-center h-screen dark:bg-slate-800 p-10">
       <div class="text-center">
         <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-200">Opps!!</h1>
         <p class="text-lg text-gray-600 mt-4 mx-20 lg:mx-40 dark:text-gray-400">

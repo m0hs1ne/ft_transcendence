@@ -15,6 +15,8 @@ export default {
 	},
 	methods: {
 		async confirmLogout() {
+			this.isError = false;
+
 			const tmp = this.isDark;
 			const confirmed = window.confirm('Are you sure you want to log out?');
 			if (confirmed) {

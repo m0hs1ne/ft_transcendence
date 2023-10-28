@@ -30,6 +30,8 @@ export default {
   },
   methods: {
     async search(event) {
+      this.isError = false;
+
       console.log("new query: ", this.query);
       if (!this.query)
         return;
@@ -113,7 +115,7 @@ export default {
 </script>
 
 <template>
-      <div v-if="this.isError" class="flex items-center justify-center h-screen dark:bg-slate-800 p-10">
+      <div v-if="this.isError" class="flex ml-20 lg:ml-24 items-center justify-center h-screen dark:bg-slate-800 p-10">
       <div class="text-center">
         <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-200">Opps!!</h1>
         <p class="text-lg text-gray-600 mt-4 mx-20 lg:mx-40 dark:text-gray-400">
@@ -174,7 +176,7 @@ export default {
       </div>
       <hr class="w-full max-w-[500px] my-2 px-5 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
-      <div v-if="this.userTab && !this.users.length" class="h-full flex flex-col items-center">
+      <div v-if="this.userTab && !this.users" class="h-full flex flex-col items-center">
         <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
         <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
           {{ this.query ? "There is no results for that" : "Search for users!!" }}
@@ -199,7 +201,7 @@ export default {
         </router-link>
       </div>
 
-      <div v-if="!this.userTab && !this.channels.length" class="h-full flex flex-col items-center">
+      <div v-if="!this.userTab && !this.channels" class="h-full flex flex-col items-center">
         <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
         <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
           {{ this.query ? "There is no results for that!!" : "Search for channels!!" }}

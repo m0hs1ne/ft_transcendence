@@ -157,7 +157,8 @@ export default {
           data.type == "notification" &&
           data.action == "joined") ||
         (data.type == "notification" && data.action == "status") ||
-        (data.type == "message" && data.action == "message")
+        (data.type == "message" && data.action == "message" || 
+         (data.type == "notification" && data.action == "role" ))
       ) {
         this.messages.push(data);
       }
