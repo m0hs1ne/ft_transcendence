@@ -107,8 +107,6 @@ export class UsersService {
   }
 
   async profile(id: number, payload) {
-    if (await this.checkUserisBlockedByUser(id, payload.sub))
-      throw new NotAcceptableException();
     const user = await this.userRepository
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.friends", "friends")
