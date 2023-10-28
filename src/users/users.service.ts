@@ -291,7 +291,7 @@ export class UsersService {
     };
     const friend =await this.userRepository
     .createQueryBuilder("user")
-    .leftJoinAndSelect("user.blockedBy", "blockedBy")
+    .leftJoinAndSelect("user.blockedBy", "friend")
     .where("user.id = :id", { id })
     .getOne();
     if (!friend) {
