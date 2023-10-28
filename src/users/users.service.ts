@@ -289,17 +289,15 @@ export class UsersService {
     const blockedId: FindOptionsWhere<User> = {
       id: id,
     };
-    const friend = await this.userRepository.findOne({
-      relations: ["blockedBy"],
-      where: { id: id },
-    });
+    const friend =await this.userRepository
+    .createQueryBuilder("user")
+    .leftJoinAndSelect("user.blockedBy", "friend")
+    .where("user.id = :id", { id })
+    .getOne();
     if (!friend) {
       throw new NotFoundException();
     }
     const payload = verifyToken(req.headers.cookie);
-    const myId: FindOptionsWhere<User> = {
-      id: payload.sub,
-    };
     const me = await this.userRepository
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.blocked", "friend")
@@ -311,6 +309,7 @@ export class UsersService {
     this.userRepository.save(me);
     return { message: `${friend.username} was added to your blocked list.` };
   }
+
 
   async removeblocked(id: number, @Req() req) {
     const payload = verifyToken(req.headers.cookie);
