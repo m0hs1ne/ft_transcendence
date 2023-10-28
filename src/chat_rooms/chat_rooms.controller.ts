@@ -72,7 +72,7 @@ export class ChatRoomsController {
         const messages = await this.chatroomservice.getMessages('chat', id, payload)
         const props = await this.chatroomservice.findOneById(id)
         let details = {id:payload.sub, chatId: props.id, title:props.title, members, messages}
-        return details
+        res.send( details)
       } 
         catch(e){
           res.send({message: e.message, result: "error"})
