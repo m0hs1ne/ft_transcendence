@@ -13,7 +13,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
-import { checkPassword, verifyToken } from "src/utils/guard";
+import { checkPassword, validateCharacters, verifyToken } from "src/utils/guard";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { UsersService } from "src/users/users.service";
 import { User } from "src/users/entities/user.entity";
@@ -112,7 +112,9 @@ export class ChatRoomsGateway {
     const { title, privacy, password, owner } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
-      if (typeof title === "string" && typeof privacy === "string") {
+      if ((typeof title === "string" && typeof privacy === "string") ) {
+        if(!validateCharacters(title)) throw new BadRequestException("title should not contain special characters");
+        if(!validateCharacters(privacy)) throw new BadRequestException("privacy should not contain special characters");
         const chatroom = await this.chatRoomsService.create(
           { title, privacy, owner, ifProtectedPass: password },
           payload,
@@ -158,6 +160,8 @@ export class ChatRoomsGateway {
     password: string; */
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(updateChatRoomDto.title)) throw new BadRequestException("title should not contain special characters");
+      if(!validateCharacters(updateChatRoomDto.privacy)) throw new BadRequestException("privacy should not contain special characters");
       const chatroom = await this.chatRoomsService.update(
         updateChatRoomDto.chatId,
         updateChatRoomDto,
@@ -204,6 +208,7 @@ export class ChatRoomsGateway {
     const { memberId, chatId, role } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(role)) throw new BadRequestException("role should not contain special characters");
       if (
         typeof memberId === "number" &&
         typeof chatId === "number" &&
@@ -246,6 +251,7 @@ export class ChatRoomsGateway {
     const { memberId, chatId, status, mutedFor } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(status)) throw new BadRequestException("status should not contain special characters");
       if (
         typeof memberId === "number" &&
         typeof chatId === "number" &&
@@ -494,6 +500,7 @@ export class ChatRoomsGateway {
     const { chatId, message } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(message)) throw new BadRequestException("message should not contain special characters");
       if (chatId && message)
         await this.chatRoomsService.newChatMessage(
           payload.sub,
@@ -516,6 +523,7 @@ export class ChatRoomsGateway {
     const { toId, message } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(message)) throw new BadRequestException("message should not contain special characters");
       if (typeof toId === "number" && typeof message === "string") {
         const msg = await this.chatRoomsService.newDMMessage(
           payload.sub,
@@ -538,6 +546,8 @@ export class ChatRoomsGateway {
     // expected params: toId: id of user to send to | title: title of chatroom
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(mode)) throw new BadRequestException("mode should not contain special characters" );
+      if(!validateCharacters(toId)) throw new BadRequestException("toId should not contain special characters" );
       if (typeof toId === "number" && typeof mode === "string") {
         const to = await this.userService.profile(toId, payload);
         const from = await this.userService.myprofile(payload.sub);

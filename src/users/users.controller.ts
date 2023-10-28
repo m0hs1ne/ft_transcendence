@@ -23,6 +23,7 @@ import { UsersService } from "./users.service";
 import {
   generateRandomString,
   userAuthGuard,
+  validateCharacters,
   verifyToken,
 } from "../utils/guard";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -78,7 +79,7 @@ export class UsersController {
     const { username } = body;
     try
     {
-      if (typeof username != "string") throw new BadRequestException("Username should be a string.");
+      if (typeof username != "string"|| !validateCharacters(username)) throw new BadRequestException("Username should be a string.");
       const payload = verifyToken(req.headers.cookie);
       const message =await this.usersService.update(payload.sub, username);
       const client = clients.get(payload.sub)
@@ -308,7 +309,7 @@ export class UsersController {
     const { query } = body;
     try
     {
-      if (typeof query == 'string') throw new BadRequestException("Query should be an integer string.")
+      if(!validateCharacters(query)) throw new BadRequestException("Query should be a string.");
       const payload = verifyToken(req.headers.cookie);
       const users = await this.usersService.search(query);
       const chatrooms = await this.chatroomservice.search(query, payload.sub);
