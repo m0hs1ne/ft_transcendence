@@ -35,7 +35,7 @@ export class AuthController {
   async callback(@Req() req: RequestWithUser, @Res() res) {
     const payload = await this.authService.login(req.user, false);
     res.cookie("jwt", payload, { httpOnly: true });
-    res.redirect("http://localhost:5173/confirmDetails");
+    res.redirect("http://localhost:5173/");
   }
 
   /**
@@ -53,6 +53,30 @@ export class AuthController {
       access_token: jwt,
     });
     res.end();
+  }
+
+  @Get("check")
+  @UseGuards(userAuthGuard)
+  async check(@Req() req: Request, @Res() res: Response) {
+    const payload = verifyToken(req.headers.cookie);
+    const user = await this.userService.findOne(payload.sub);
+    if(user.loggedFirstTime === false){
+      res.send({firstTime: true});
+    }
+    else{
+      res.send({firstTime: false});
+    }
+    res.end();
+  }
+
+  @Get("change")
+  @UseGuards(userAuthGuard)
+  async change(@Req() req: Request, @Res() res: Response) {
+    const payload = verifyToken(req.headers.cookie);
+    const user = await this.userService.findOne(payload.sub);
+    if(user.loggedFirstTime === false){
+      this.userService.updateLoggedFirstTime(payload.sub);
+    }
   }
 
   /**
@@ -83,6 +107,6 @@ export class AuthController {
   async googleCallback(@Req() req: RequestWithUser, @Res() res) {
     const payload = await this.authService.login(req.user, false);
     res.cookie("jwt", payload, { httpOnly: true });
-    res.redirect("http://localhost:5173/confirmDetails");
+    res.redirect("http://localhost:5173/");
   }
 }

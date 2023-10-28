@@ -334,6 +334,15 @@ export class UsersService {
     await this.userRepository.save(user);
   }
 
+  async updateLoggedFirstTime(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) return;
+    user.loggedFirstTime = true;
+    await this.userRepository.save(user);
+  }
+
   async uploadAvatar(avatar, payload) {
     await this.userRepository.update(
       { id: payload.sub },
