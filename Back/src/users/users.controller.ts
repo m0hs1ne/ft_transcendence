@@ -83,7 +83,7 @@ export class UsersController {
       const message =await this.usersService.update(payload.sub, username);
       const client = clients.get(payload.sub)
       if (client)
-        client.emit('Notification', {type: "updated", message: "Username updated Succesfully"})
+        client.emit('Notification', {type: "updated", message: "Username was updated Succesfully"})
       res.send(message);
     }
     catch(e)
