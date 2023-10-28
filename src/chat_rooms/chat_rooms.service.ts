@@ -101,7 +101,6 @@ export class ChatRoomsService {
       .createQueryBuilder("user_chat")
       .leftJoinAndSelect("user_chat.chatRoom", "chatRoom")
       .where("user_chat.userId = :id ", { id })
-      .andWhere('user_chat.userStatus != :status', { status: 'banned' })
       .select([
         "user_chat.id",
         "user_chat.userStatus",
@@ -111,11 +110,11 @@ export class ChatRoomsService {
         "chatRoom.privacy",
       ])
       .getMany();
-    // for (const userChat of userChats)
-    // {
-    //   if (userChat.userStatus != 'banned')
-    //     mychatRooms.push(userChat.chatRoom)
-    // }
+    for (const userChat of userChats)
+    {
+      if (userChat.userStatus != 'banned')
+        mychatRooms.push(userChat.chatRoom)
+    }
     if (!mychatRooms)
       throw new NotFoundException({ message: `You didn't join any chat.` });
     return mychatRooms;

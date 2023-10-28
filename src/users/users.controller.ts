@@ -271,7 +271,7 @@ export class UsersController {
 
       const client = clients.get(payload.sub)
 
-      const friend = clients.get(+id)
+      const friend = clients.get(id)
       if (friend)
       {
         const me = await this.usersService.findOne(payload.sub)
