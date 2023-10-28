@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-col justify-start items-center min-h-screen ml-20 dark:bg-slate-800 p-10">
+  <div class="flex flex-col justify-start items-center min-h-screen ml-20 lg:ml-24 dark:bg-slate-800 p-10">
     <h1 class=" font-semibold text-4xl dark:text-white pb-10">
       Leaderboard:
     </h1>

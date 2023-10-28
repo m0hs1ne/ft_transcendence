@@ -192,7 +192,7 @@ export default {
   <Opps v-else-if="this.isError" />
   <div
     v-else-if="this.friendTab"
-    class="flex flex-col justify-start items-center ml-20 min-h-screen dark:bg-slate-800 p-10"
+    class="flex flex-col justify-start items-center ml-20 lg:ml-24 min-h-screen dark:bg-slate-800 p-10"
   >
     <div class="flex w-full justify-center items-center pb-10">
       <Icon @click="this.friendTab = false" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3" />
@@ -221,14 +221,14 @@ export default {
     </div>
   </div>
 
-  <div v-else class="grid grid-cols-1 ml-20 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
+  <div v-else class="grid grid-cols-1 ml-20 lg:ml-24 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
-      class="flex flex-col items-center justify-evenly py-5 rounded-2xl custom-box-shadow dark:bg-slate-900">
-      <div class="w-40 h-40 bg-gray-300 rounded-full shadow">
-        <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-40 h-40" />
+      class="flex flex-col gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
+      <div class="w-40 md:w-60 bg-gray-300 rounded-full shadow">
+        <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class=" w-full h-full object-cover rounded-full" />
       </div>
-      <p class="font-semibold text-3xl tracking-wide mx-5 dark:text-white">
+      <p class="font-semibold text-3xl tracking-wide mx-5 mb-10 dark:text-white">
         {{ this.username }}
       </p>
       <div class="flex items-center">

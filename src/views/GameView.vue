@@ -2,8 +2,13 @@
 <template>
   <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
     <WaitingModel v-if="phase === 'W'" />
-    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"/>
+    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"
+      :limit="mode" />
     <canvas v-if="phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
+    <button v-if="phase === 'P'" @click="$router.go(-1)"
+      class="text-gray-100 dark:text-white shadow w-fit mt-3 py-2 px-4 bg-gray-500 rounded-md  font-bold">
+      Withdraw
+    </button>
     <WinModel v-if="phase === 'N'" />
     <LoseModel v-if="phase === 'L'" />
   </div>
@@ -50,6 +55,7 @@ export default {
       Context: null as CanvasRenderingContext2D | null,
       Canvas: null as HTMLCanvasElement | null,
       GameSocket: null as Socket | null,
+      mode: '',
     };
   },
 
@@ -150,13 +156,12 @@ export default {
           this.RoomId = data.id;
           this.pos = data.pos;
           this.phase = 'P';
-          if (this.pos === "Left")
-          {
+          this.mode = data.mode;
+          if (this.pos === "Left") {
             this.leftID = data.CurrentID;
             this.rightID = data.OpponentID;
           }
-          else
-          {
+          else {
             this.rightID = data.CurrentID;
             this.leftID = data.OpponentID;
           }
@@ -166,15 +171,13 @@ export default {
         });
 
         this.GameSocket.on("Score", (data: any) => {
-          if (this.pos === "Left")
-          {
-            console.log("LEFT SCORE" ,data);
+          if (this.pos === "Left") {
+            console.log("LEFT SCORE", data);
             this.leftScore = data.Current;
             this.rightScore = data.Oponent;
           }
-          else
-          {
-            console.log("RIGHT SCORE" ,data);
+          else {
+            console.log("RIGHT SCORE", data);
 
             this.rightScore = data.Current;
             this.leftScore = data.Oponent;
@@ -266,18 +269,17 @@ export default {
     console.log("mounted ");
     this.GameSocket = app.config.globalProperties.$GameSocket;
     this.EventsHandler();
-    if(this.gameData.random)
-        this.JoinGameEvent();
+    if (this.gameData.random)
+      this.JoinGameEvent();
   },
   unmounted() {
     this.EventsKiller();
-    if(this.GameSocket)
-    {    
+    if (this.GameSocket) {
       this.GameSocket.emit("PlayerLeave", {
-      roomId: this.RoomId,
-      pos: this.pos,
-      mode: this.gameData.modeLimit,
-    });
+        roomId: this.RoomId,
+        pos: this.pos,
+        mode: this.gameData.modeLimit,
+      });
     }
     clearInterval(this.intervalId);
     console.log("Unmounted");

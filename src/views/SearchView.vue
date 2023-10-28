@@ -110,7 +110,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="this.joinChannel" class="flex flex-col justify-center items-center min-h-screen ml-20 dark:bg-slate-800">
+  <div v-if="this.joinChannel" class="flex flex-col justify-center items-center min-h-screen ml-20 lg:ml-24 dark:bg-slate-800">
     <div
       class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="flex w-full justify-start items-center pl-10 pt-7  font-bold text-2xl dark:text-white">
@@ -137,7 +137,7 @@ export default {
     </div>
   </div>
 
-  <div v-else class="flex flex-col justify-start items-center min-h-screen ml-20 dark:bg-slate-800">
+  <div v-else class="flex flex-col justify-start items-center min-h-screen ml-20 lg:ml-24 dark:bg-slate-800">
     <div class="w-full flex flex-col justify-center items-center px-10">
       <div class="w-full max-w-[400px] py-5">
         <input type="text"
