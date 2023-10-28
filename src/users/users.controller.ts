@@ -261,6 +261,7 @@ export class UsersController {
   async removeBlocked(@Param("id") id, @Req() req,@Res() res) {
     try
     {
+
       if (!isNaN(id)) res.send(await this.usersService.removeblocked(id, req));
       else throw new BadRequestException("Id should be an integer number.")
       const payload = verifyToken(req.headers.cookie);

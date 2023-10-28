@@ -311,13 +311,15 @@ export class UsersService {
 
 
   async removeblocked(id: number, @Req() req) {
+
     const payload = verifyToken(req.headers.cookie);
     await this.userRepository.query(
       `DELETE FROM blocked WHERE ("userId" = $2 AND "blockedId" = $1)`,
       [id, payload.sub],
     );
+
     await this.userRepository.query(
-      `DELETE FROM blockedBy WHERE ("userId" = $1 AND "blockedById" = $2)`,
+      `DELETE FROM "blockedBy" WHERE ("userId" = $1 AND "blockedById" = $2)`,
       [id, payload.sub],
     );
     return { message: `${id} was removed from your friends` };
