@@ -44,7 +44,7 @@ export default {
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">
-			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
+			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem] md:w-[10rem] lg:w-[15rem]">
 		</div>
 
 		<!-- Tabs -->

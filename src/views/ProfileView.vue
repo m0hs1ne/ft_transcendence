@@ -156,11 +156,12 @@ export default {
   </div>
 
   <div
+    v-else
     class="grid grid-cols-1 md:grid-cols-2 gap-10 p-10 ml-20 min-h-screen dark:bg-slate-800"
   >
     <!-- <ProfileCard /> -->
     <div
-      class="h-[400px] md:h-[450px] flex flex-col items-center justify-evenly py-5 rounded-2xl custom-box-shadow dark:bg-slate-900"
+      class="flex flex-col items-center md:justify-evenly py-10 rounded-2xl custom-box-shadow dark:bg-slate-900"
     >
       <div class="w-40 h-40 bg-gray-300 rounded-full shadow">
         <img
@@ -170,10 +171,10 @@ export default {
           class="object-cover rounded-full w-40 h-40"
         />
       </div>
-      <p class="font-semibold text-3xl tracking-wide mx-5 dark:text-white">
+      <p class="font-semibold text-3xl tracking-wide mx-5 mt-2 dark:text-white">
         {{ this.username }}
       </p>
-      <div class="flex items-center">
+      <div class="flex items-center mt-3">
         <ProfileStat :title="this.battles" description="Battles" />
         <div
           class="w-0.5 h-[60px] mx-3 rotate-180 bg-neutral-600 dark:bg-neutral-200"
@@ -186,7 +187,7 @@ export default {
       </div>
       <div
         @click="this.friendTab = true"
-        class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 rounded-lg shadow-lg"
+        class="flex items-center h-[50px] px-3 mt-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 rounded-lg shadow-lg"
       >
         View Friends
       </div>
@@ -194,14 +195,20 @@ export default {
 
     <!-- <LastBattlesCard /> -->
     <div
-    class="h-[400px] md:h-[450px] flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
+    class="flex flex-col items-center rounded-2xl custom-box-shadow dark:bg-slate-900"
     >
       <div class="flex flex-col items-center w-full rounded-t-2xl gap-3 pt-3">
         <h1 class="font-semibold text-2xl dark:text-white">Last Battles</h1>
         <div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
-        <div
+        <div  v-if="!this.games.length" class="h-full flex flex-col items-center">
+          <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+          <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
+            No Battles yet!!
+          </p>
+        </div>
+        <div v-else
           v-for="(game, index) in this.games"
           :key="index"
           class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white"

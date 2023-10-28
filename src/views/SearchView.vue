@@ -29,6 +29,8 @@ export default {
   methods: {
     async search(event) {
       console.log("new query: ", this.query);
+      if (!this.query)
+        return;
       try {
         const response = await axios.post(
           "http://localhost:3000/api/users/search",
@@ -156,7 +158,13 @@ export default {
       </div>
       <hr class="w-full max-w-[500px] my-2 px-5 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
-      <div v-if="this.userTab" v-for="(player, index) in this.users"
+      <div v-if="this.userTab && !this.users.length" class="h-full flex flex-col items-center">
+        <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+        <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
+          {{ this.query ? "There is no results for that" : "Search for users!!" }}
+        </p>
+      </div>
+      <div v-else-if="this.userTab" v-for="(player, index) in this.users"
         class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
         <router-link :to="'/users/' + player.id" class="flex items-center justify-between min-w-full">
           <div class="flex items-center">
@@ -175,7 +183,13 @@ export default {
         </router-link>
       </div>
 
-      <div v-else v-for="(channel, index) in this.channels"
+      <div v-if="!this.userTab && !this.channels.length" class="h-full flex flex-col items-center">
+        <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+        <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
+          {{ this.query ? "There is no results for that!!" : "Search for channels!!" }}
+        </p>
+      </div>
+      <div v-else-if="!this.userTab" v-for="(channel, index) in this.channels"
         class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
         <div class="flex items-center justify-between min-w-full">
           <div class="flex items-center">

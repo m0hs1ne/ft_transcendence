@@ -110,7 +110,7 @@ export default {
 </script>
 
 <template>
-  <main class="font-Poppins">
+  <main class="font-Poppins dark:bg-slate-800">
     <div
       v-if="this.twoFA"
       class="m-auto flex items-center justify-center h-screen dark:bg-slate-800"
