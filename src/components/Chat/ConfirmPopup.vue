@@ -34,8 +34,8 @@ export default {
     async SaveChannel() {
 
       console.log("ok " ,this.userStore.action,'ed');
-      if ( this.userStore.action == 'Are you sure you wand to Leave this Channel?') {
-        console.log(" I AM HERE TO ")
+      if ( this.userStore.action == 'Are you sure you want to Leave this Channel?') {
+     //   console.log(" I AM HERE TO ")
         await this.$socket.emit("kickMember",
           {
             memberId: this.userStore.MyId,
@@ -48,10 +48,11 @@ export default {
         {
           id : this.userStore.ActiveChannelId
         })
-        //this.userStore.RemoveChatRome();
+   
       }
-      console.log("I am her in error")
-      //await this.userStore.fetchDataForDmChatRooms();
+      this.userStore.ActiveChannelId = -1
+      // console.log("I am her in error")
+      // console.log(this.userStore.DmChatroomsList)
       this.userStore.action = ''
     },
 

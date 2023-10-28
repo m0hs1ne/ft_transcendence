@@ -57,7 +57,6 @@ export default {
 	computed: {
 		// Computed property to track the screen width
 		updateScreenWidth() {
-			
 			return () => {
 				if (window.innerWidth <= 768 && this.userStore.activeChatId == -1) {
 					this.userStore.viewMode = "List";
@@ -74,6 +73,8 @@ export default {
 
 		IsPerson(object) {
 			console.log(object);
+			if (this.userStore.DmChatroomsList.length == 0)
+				return;
 			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
 				// console.log(" =========================== ", this.displayChatboxChannel);
@@ -81,10 +82,7 @@ export default {
 				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
 					this.displayTargetComponent = false;
 					this.$nextTick(() => {
-						// Code here will be executed after the next DOM update cycle
-						console.log("DOM updated", object.id);
 						this.displayTargetComponent = object.id;
-						// Access or manipulate DOM elements here
 					});
 				} else this.displayTargetComponent = object.id;
 			}
@@ -92,14 +90,21 @@ export default {
 		},
 
 		IsChannel(object) {
-			console.log("This is an channel ", object);
+			//console.log("This is an channel ", this.userStore.ActiveChannelId );
+			//console.log(" I am -----------------------------------222-----------------------------------", this.userStore.DmChatroomsList.length)
+			
 			this.displayTargetComponent = false;
-
+			if ( this.userStore.ActiveChannelId == -1)
+			{
+				
+				this.displayTargetComponent = false;
+				this.displayChatboxChannel = false;
+				return 
+			}
 			if (this.displayChatboxChannel) {
 				this.displayTargetComponent = false;
 				this.displayChatboxChannel = false;
 				this.$nextTick(() => {
-					console.log("DOM updated", object.id);
 					this.displayChatboxChannel = object.id;
 				});
 			} else this.displayChatboxChannel = object.id;
@@ -108,30 +113,25 @@ export default {
 		},
 
 		handleObject(object) {
-		
 			// console.log(this.userStore.ItemClicked)
-			 if(!object.id && this.userStore.ItemClicked)
-			 {
-				console.log("I+++++++++++++++++++++++++++++++ ", object)
+			if (!object.id && this.userStore.ItemClicked) {
+				console.log(" I am her ")
 				object = this.userStore.ItemClicked;
-				
-			 }
+			}
 			if (object.username) this.IsPerson(object);
 			else this.IsChannel(object);
-
-			//IsChannel(object)
 		},
 	},
 
 	async mounted() {
 		// Attach an event listener to the window resize event
-		window.addEventListener("resize" , this.updateScreenWidth);
+		window.addEventListener("resize", this.updateScreenWidth);
 
 		// Ensure that the screen width is updated initially
 		this.updateScreenWidth();
 
 		this.$socket.on("receiveMessage", (data) => {
-		
+
 
 			if (data.action == "kick") {
 				console.log(" kicked >>>>>>>>");
@@ -144,14 +144,8 @@ export default {
 				this.userStore.fetchDataForDmChatRooms();
 			}
 		});
-        console.log("window W: " ,window.innerWidth);
+		console.log("window W: ", window.innerWidth);
 		this.$socket.on("receiveMessage", (data) => {
-			//console.log("data from ", data);
-		//	console.log(this.userStore.ActiveChannelId);
-			if (data.type != "error") {
-				console.log("I am here: ");
-				//this.userStore.fetchDataForDmChatRooms();
-			}
 			if (data.action == "kick") {
 				console.log(" kicked >>>>>>>>");
 				if (data.from.id == this.userStore.MyId) {
@@ -164,14 +158,11 @@ export default {
 			}
 		});
 
-		this.$socket.on("ChatRoomList", (data) => {
+		await this.$socket.on("ChatRoomList", (data) => {
 			if (data.type == "remove") {
-				console.log("Rmovee >>>>>> ");
-				// this.$nextTick(() => {
-				// 	this.displayTargetComponent = false;
-				// 	this.displayChatboxChannel = false;
-				// 	});
+//				console.log(this.userStore.DmChatroomsList)
 				this.userStore.fetchDataForDmChatRooms();
+				console.log(this.userStore.DmChatroomsList)
 			}
 		});
 
