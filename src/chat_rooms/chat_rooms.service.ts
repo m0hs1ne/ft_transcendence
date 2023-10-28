@@ -104,6 +104,7 @@ export class ChatRoomsService {
       // .where('user_chat.userStatus != :status', { status: 'banned' })
       .select([
         "user_chat.id",
+        "user_chat.userStatus",
         "chatRoom.id",
         "chatRoom.owner",
         "chatRoom.title",
