@@ -1,6 +1,7 @@
 <script>
 import { RouterView } from "vue-router";
 import Sidebar from "./components/NavBar/Sidebar.vue";
+import ConfirmPlay from "./components/Chat/ConfirmPlay.vue";
 import Loading from "./components/Loading/Loading.vue";
 import { SharedData } from "./stores/state.ts";
 import axios from "axios";
@@ -105,17 +106,18 @@ export default {
     Loading,
     Sidebar,
     RouterView,
+    ConfirmPlay,
   },
 };
 </script>
 
 <template>
   <main class="font-Poppins">
-    <div v-if="this.twoFA" class="m-auto flex items-center justify-center h-screen dark:bg-slate-800">
+    <div v-if="this.twoFA" class="m-auto z-0 flex items-center justify-center h-screen dark:bg-slate-800">
       <div
-        class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-        <h2 class="flex w-full justify-start items-center py-5 px-10 font-light text-xl text-gray-500">
-          Enter virifcation code from Google Authenticator app.
+      class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
+      <h2 class="flex w-full justify-start items-center py-5 px-10 font-light text-xl text-gray-500">
+        Enter virifcation code from Google Authenticator app.
         </h2>
         <div class="flex flex-col justify-center items-center text-center">
           <input v-model="this.otpCode"
@@ -136,11 +138,12 @@ export default {
                   Logout
                 </button>
               </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <Loading v-if="this.state.isLoading && !this.twoFA" />
-    <Sidebar v-if="isSidebarVisible() && !this.state.isLoading && !this.twoFA" />
-    <RouterView v-if="!this.state.isLoading && !this.twoFA" />
-  </main>
-</template>
+        <Loading v-if="this.state.isLoading && !this.twoFA" />
+        <Sidebar v-if="isSidebarVisible() && !this.state.isLoading && !this.twoFA" />
+        <RouterView v-if="!this.state.isLoading && !this.twoFA" />
+        <ConfirmPlay/>
+      </main>
+    </template>

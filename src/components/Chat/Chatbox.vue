@@ -30,7 +30,7 @@
       <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
         class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
-      <Icon @click="block()" title="Block"
+      <Icon v-if=" this.NAtoBlock" @click="block()" title="Block"
         class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
     </div>
   </div>
@@ -105,6 +105,7 @@ export default {
       newMessage: "",
       UserProfile: {},
       length: 0,
+      NAtoBlock :true
     };
   },
   methods: {
@@ -112,6 +113,10 @@ export default {
       //console.log("This is the member of", this.person);
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
+      setTimeout(() => {
+        this.NAtoBlock = true;
+      }, 7000); // 10 seconds
+      this.NAtoBlock = false;
       //console.log(this.person, this.ActiveChannelId);
       //console.log(this.$GameSocket);
     },
@@ -120,7 +125,7 @@ export default {
 
       axios
         .post(
-          "http://localhost:3000/api/users/blocked/",
+          "http://10.32.120.112:3000/api/users/blocked/",
           {
             id: parseInt(this.person.id),
           },
