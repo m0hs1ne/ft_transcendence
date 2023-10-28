@@ -53,7 +53,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -69,7 +69,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -89,7 +89,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -109,7 +109,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -124,7 +124,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -172,7 +172,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -203,7 +203,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
 
@@ -219,7 +219,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -315,7 +315,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
@@ -338,7 +338,7 @@ export class UsersController {
     }
     catch(e)
     {
-      res.statusCode = e.status
+      // res.statusCode = e.status
       res.send({message: e.message, result: "error"})
     }
   }
