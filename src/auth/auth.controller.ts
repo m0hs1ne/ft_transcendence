@@ -63,7 +63,7 @@ export class AuthController {
     if(user.loggedFirstTime === false){
       res.send({firstTime: true});
     }
-    else{
+    else {
       res.send({firstTime: false});
     }
     res.end();

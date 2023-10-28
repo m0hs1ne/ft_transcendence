@@ -83,7 +83,9 @@ export class GameGateway {
   }
   @SubscribeMessage("joinRoom")
 
-  handleJoinRoom(client: Socket, payload: any): void {
+  handleJoinRoom(client: Socket, payload: any): void 
+  {
+    console.log("JoinRoom");
     if (!this.ValidateClient(client)) { }
     else
       this.CheckQueus(payload.mode, client);
@@ -105,6 +107,7 @@ export class GameGateway {
   }
 
   CheckQueus(mode: string, client: Socket) {
+    console.log(mode);
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
       this.Queus.set(mode, Queu);

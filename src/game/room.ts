@@ -56,12 +56,14 @@ export class Room {
       pos: "Right",
       CurrentID: this.RightPlayer.id,
       OpponentID: this.LeftPlayer.id,
+      mode: this.GameMode,
     });
     this.LeftPlayer.socket.emit("startGame", {
       id: this.roomId,
       pos: "Left",
       CurrentID: this.LeftPlayer.id,
       OpponentID: this.RightPlayer.id,
+      mode: this.GameMode,
     });
     this.startGameLoop();
   }
