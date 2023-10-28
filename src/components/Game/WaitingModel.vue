@@ -4,6 +4,9 @@
         <div class="flex w-full justify-center items-center  font-bold text-2xl dark:text-white">
             Waiting for opponent!
         </div>
+        <p class="font text-xl text-gray-400 pb-3 text-center">
+            Use <span class="text-green-500 font-bold">UP</span> and <span class="text-green-500 font-bold">DOWN</span> keys to control your paddle!
+        </p>
         <div class="w-16 h-16 border-8 border-dashed rounded-full animate-spin border-blue-600"></div>
         <button @click="$router.go(-1)"
             class="text-gray-100 dark:text-white shadow w-fit mt-5 py-3 px-5 bg-gray-500 rounded-md  font-bold">

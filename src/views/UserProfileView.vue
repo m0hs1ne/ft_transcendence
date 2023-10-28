@@ -219,14 +219,14 @@ export default {
     </div>
   </div>
 
-  <div v-else class="grid grid-cols-1 ml-20 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
+  <div v-else class="grid grid-cols-1 ml-20 lg:ml-24 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
-      class="h-[400px] md:h-[500px] flex flex-col items-center justify-evenly py-5 rounded-2xl custom-box-shadow dark:bg-slate-900">
-      <div class="w-40 h-40 bg-gray-300 rounded-full shadow">
-        <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class="object-cover rounded-full w-40 h-40" />
+      class="flex flex-col gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
+      <div class="w-40 md:w-60 bg-gray-300 rounded-full shadow">
+        <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar" class=" w-full h-full object-cover rounded-full" />
       </div>
-      <p class="font-semibold text-3xl tracking-wide mx-5 dark:text-white">
+      <p class="font-semibold text-3xl tracking-wide mx-5 mb-10 dark:text-white">
         {{ this.username }}
       </p>
       <div class="flex items-center">
@@ -260,7 +260,13 @@ export default {
         <div class="w-full h-px bg-gray-800 dark:bg-neutral-300"></div>
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
-        <div v-for="(game, index) in this.games" :key="index"
+        <div  v-if="!this.games.length" class="h-full flex flex-col items-center">
+          <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+          <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
+            No Battles yet!!
+          </p>
+        </div>
+        <div v-else v-for="(game, index) in this.games" :key="index"
           class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
           <div :class="[
                       'mb-2',

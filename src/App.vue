@@ -23,7 +23,7 @@ export default {
   methods: {
     isSidebarVisible() {
       const path = this.$route.path.toLowerCase();
-      return path != "/signin";
+      return path != "/signin" && path != '/play';
     },
 
     routerGard() {

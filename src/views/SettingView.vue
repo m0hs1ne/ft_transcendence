@@ -157,7 +157,7 @@ export default {
 </script>
 
 <template>
-	<div class="m-auto flex items-center justify-center h-screen ml-20 dark:bg-slate-800">
+	<div class="m-auto flex items-center justify-center h-screen ml-20 lg:ml-24 dark:bg-slate-800">
 		<!-- Info Card -->
 		<div v-if="this.currentCard == 0"
 			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] py-20 rounded-2xl custom-box-shadow dark:bg-slate-900">

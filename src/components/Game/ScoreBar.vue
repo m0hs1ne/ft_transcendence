@@ -10,10 +10,17 @@ export default {
         rightID: '',
         rightScore: Number,
         leftScore: Number,
+        limit: '',
     },
     setup(props) {
         const leftData = ref({});
         const rightData = ref({});
+        const modes = {
+            '20': 'Classic',
+            '14': 'Rapid',
+            '3': 'Blitz',
+            '1': 'Bullet',
+        };
 
         const fetchData = async () => {
             // Get user profile data
@@ -39,7 +46,7 @@ export default {
             }
         };
 
-        return { leftData, rightData, fetchData }
+        return { leftData, rightData, fetchData, modes }
     },
     async mounted() {
         await this.fetchData();
@@ -60,9 +67,16 @@ export default {
             </p>
         </div>
 
-        <p class=" font-bold text-xl dark:text-white w-20 text-center">
-            {{ leftScore }} | {{ rightScore }}
-        </p>
+        <div class="flex flex-col items-center justify-center">
+            <p class="font-bold text-xl dark:text-white text-center line-clamp-1">
+                {{ this.modes[limit] }}
+            </p>
+            <hr class="w-full max-w-[100px] my-3 px-1 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
+            <p class="font-bold text-xl dark:text-white text-center line-clamp-1">
+                {{ leftScore }} : {{ rightScore }}
+            </p>
+        </div>
+
         <div class="flex items-center justify-end w-50 md:w-80 ">
             <p class=" font-semibold md:text-xl tracking-wide mx-2 dark:text-white overflow-ellipsis">
                 {{ this.rightData.username }}
