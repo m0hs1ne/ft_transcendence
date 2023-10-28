@@ -112,6 +112,7 @@ export default {
 
 				// Update the local state with the new avatar URL
 				await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
+				this.$socket.disconnect();
 				this.$router.push('/signIn');
 			} catch (error) {
 				console.error("Error enable2FA:", error);

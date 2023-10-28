@@ -1,39 +1,17 @@
 <template>
   <div class="flex h-screen ml-20 dark:bg-slate-800 p-5 text-gray-700">
-    <!-- {{ this.userStore.viewMode }}
-    {{ this.userStore.screenWidth }} -->
-    <!-- Friend List and Group List Section -->
-    <confirmPlay />
-
-    <!-- <GroupList @object-sent="handleObjectChannel" /> -->
-    <ChatGroupFriend
-      v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
-      @object-sent="handleObject"
-    />
-    <div
-      v-if="
-        this.userStore.screenWidth >= 768 ||
-        this.userStore.viewMode === 'Chat' ||
-        this.userStore.viewMode === 'Channel'
-      "
-      class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl"
-    >
+    <ChatGroupFriend v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
+      @object-sent="handleObject" />
+      <!-- {{ this.userStore.activeChatId }} {{ this.userStore.viewMode  }} {{ displayTargetComponent }} {{ displayChatboxChannel }} -->
+    <div v-if="this.userStore.screenWidth >= 768 ||
+      this.userStore.viewMode === 'Chat' ||
+      this.userStore.viewMode === 'Channel'
+      " class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl">
       <ErrorPopup v-if="this.userStore.error" />
-      <ChatChatbox
-        v-if="displayTargetComponent && this.userStore.viewMode === 'Chat'"
-        :person="personObject"
-      />
-      <ChatBoxChannel
-        v-if="displayChatboxChannel && this.userStore.viewMode === 'Chat'"
-        :channel="ChannelObject"
-      />
-      <ChatChannelProfil
-        v-if="displayChatboxChannel && this.userStore.viewMode === 'Channel'"
-      />
+      <ChatChatbox v-if="displayTargetComponent && this.userStore.viewMode === 'Chat'" :person="personObject" />
+      <ChatBoxChannel v-if="displayChatboxChannel && this.userStore.viewMode === 'Chat'" :channel="ChannelObject" />
+      <ChatChannelProfil v-if="displayChatboxChannel && this.userStore.viewMode === 'Channel'" />
     </div>
-    <!-- <div class="flex flex-col w-1/4 dark:bg-slate-900 p-5 custom-box-shadow dark:text-white rounded-xl">
-			<ChatUserProfile :person="personObject" v-if="displayTargetComponent" />
-		</div> -->
   </div>
 </template>
 
@@ -79,34 +57,39 @@ export default {
   computed: {
     // Computed property to track the screen width
     updateScreenWidth() {
-      console.log("new screen width", window.innerWidth);
+
       return () => {
-        if (window.innerWidth <= 768 && this.userStore.activeChatId == -1)
+        if (window.innerWidth <= 768 && this.userStore.activeChatId == -1) {
           this.userStore.viewMode = "List";
+        }
         this.userStore.screenWidth = window.innerWidth;
       };
     },
   },
 
-  methods: {
-    IsPerson(object) {
-      console.log(object);
-      // this.displayChatboxChannel = false;
-      if (object.id != this.displayTargetComponent) {
-        console.log(" =========================== ", this.displayChatboxChannel);
-        if (this.displayChatboxChannel) this.displayChatboxChannel = 0;
-        if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
-          this.displayTargetComponent = false;
-          this.$nextTick(() => {
-            // Code here will be executed after the next DOM update cycle
-            console.log("DOM updated", object.id);
-            this.displayTargetComponent = object.id;
-            // Access or manipulate DOM elements here
-          });
-        } else this.displayTargetComponent = object.id;
-      }
-      this.personObject = object;
-    },
+	methods: {
+		viewModesTracker() {
+			// if width is small
+		},
+
+		IsPerson(object) {
+			console.log(object);
+			// this.displayChatboxChannel = false;
+			if (object.id != this.displayTargetComponent) {
+				// console.log(" =========================== ", this.displayChatboxChannel);
+				if (this.displayChatboxChannel) this.displayChatboxChannel = 0;
+				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
+					this.displayTargetComponent = false;
+					this.$nextTick(() => {
+						// Code here will be executed after the next DOM update cycle
+						console.log("DOM updated", object.id);
+						this.displayTargetComponent = object.id;
+						// Access or manipulate DOM elements here
+					});
+				} else this.displayTargetComponent = object.id;
+			}
+			this.personObject = object;
+		},
 
     IsChannel(object) {
       console.log("This is an channel ", object);
@@ -125,10 +108,13 @@ export default {
     },
 
     handleObject(object) {
-      console.log(
-        "***************************************************************",
-        object.id
-      );
+
+      // console.log(this.userStore.ItemClicked)
+      if (!object.id && this.userStore.ItemClicked) {
+        console.log("I+++++++++++++++++++++++++++++++ ", object)
+        object = this.userStore.ItemClicked;
+
+      }
       if (object.username) this.IsPerson(object);
       else this.IsChannel(object);
 
@@ -144,16 +130,7 @@ export default {
     this.updateScreenWidth();
 
     this.$socket.on("receiveMessage", (data) => {
-      // if (data.type == 'DM')
-      // {
-      // 	console.log("in group frined  list ", this.userStore.DmChatroomsList)
-      // 	console.log("data from ", data)
-      // 	const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
-      // 	if (friendIndex == -1) {
-      // 		console.log(" new data ....");
-      // 		this.userStore.fetchDataForDmChatRooms();
-      // 	}
-      // }
+
 
       if (data.action == "kick") {
         console.log(" kicked >>>>>>>>");
@@ -166,10 +143,10 @@ export default {
         this.userStore.fetchDataForDmChatRooms();
       }
     });
-
+    console.log("window W: ", window.innerWidth);
     this.$socket.on("receiveMessage", (data) => {
-      console.log("data from ", data);
-      console.log(this.userStore.ActiveChannelId);
+      //console.log("data from ", data);
+      //	console.log(this.userStore.ActiveChannelId);
       if (data.type != "error") {
         console.log("I am here: ");
         //this.userStore.fetchDataForDmChatRooms();
@@ -204,6 +181,7 @@ export default {
   },
   beforeUnmount() {
     // Remove the event listener when the component is unmounted
+    console.log("this.updateScreenWidth ====> ", this.updateScreenWidth)
     window.removeEventListener("resize", this.updateScreenWidth);
   },
 };

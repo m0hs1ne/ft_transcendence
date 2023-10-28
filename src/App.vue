@@ -80,6 +80,7 @@ export default {
             withCredentials: true,
           });
           this.twoFA = false;
+					this.$socket.disconnect();
           this.$router.push("/signIn");
         } catch (error) {
           console.log("logdout error: ", error);

@@ -1,93 +1,63 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div
-    class="flex items-center justify-start w-full rounded-2xl bg-transparent gap-2 px-5 py-5"
-  >
-    <Icon
-      class="w-8 h-8 cursor-pointer"
-      icon="ion:arrow-back"
-      @click="this.userStore.viewMode = 'Chat'"
-    />
+  <div class="flex items-center justify-start w-full rounded-2xl bg-transparent gap-2 px-5 py-5">
+    <Icon class="w-8 h-8 cursor-pointer" icon="ion:arrow-back" @click="this.userStore.viewMode = 'Chat'" />
     <h1 class="font-bold text-xl">Channel Profile:</h1>
   </div>
   <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
 
-    <div class="flex h-full flex-col items-center pt-10 px-10 overflow-y-scroll">
-      <div class="w-32 h-32 bg-gray-200 rounded-full shadow">
-        <Icon class="text-blue-600 h-32 w-32" icon="clarity:group-solid" />
+  <div class="flex h-full flex-col items-center pt-10 px-10 overflow-y-scroll">
+    <div class="w-32 h-32 bg-gray-200 rounded-full shadow">
+      <Icon class="text-blue-600 h-32 w-32" icon="clarity:group-solid" />
+    </div>
+
+    <div class="flex italic text-2xl mt-1.5">
+      <span class="text-center dark:text-white text-lg font-bold">
+        {{ this.userStore.ActiveChannelTitle }}
+      </span>
+    </div>
+
+    <div
+      class="flex w-fit custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-10 flex-row items-center justify-center gap-5">
+      <div class="flex">
+        <EditeProfile v-if="this.EditChannel" />
+        <ConfirmPopup v-if="this.userStore.action" />
+        <UpdateMember v-if="this.userStore.MemberRoleStatus" />
       </div>
 
-      <div class="flex italic text-2xl mt-1.5">
-        <span class="text-center dark:text-white text-lg font-bold">
-          {{ this.userStore.ActiveChannelTitle }}
+      <FriendList v-if="AddFriend" />
+
+      <Icon @click="LeaveChannel" title="Leave Channel" icon="ion:exit"
+        class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer" />
+
+      <Icon v-if="DeletePermission" icon="ic:round-delete" @click="RemoveChatRome" title="Delete Channel"
+        class="text-black dark:text-white h-10 w-10 hover:bg-blue-300 p-1 rounded-md cursor-pointer" />
+    </div>
+
+    <div v-for="member in this.userStore.ActiveMembersChannelId"
+      class="flex w-full h-fit gap-2 mb-3 custom-box-shadow p-3 dark:bg-slate-800 rounded-lg flex-row items-center">
+      <div class="w-14 bg-gray-300 rounded-full">
+        <img referrerpolicy="no-referrer" :src="member.user.avatar" alt="Avatar" title="View Profil"
+          class="w-14 rounded-full" />
+      </div>
+      <div class="flex flex-col container overflow-ellipsis line-clamp-1">
+        <span v-if="member.user.id == this.userStore.MyId" class="text-lg font-semibold">
+          {{ member.user.username }}({{ this.you }})
         </span>
+        <span v-else class="text-lg font-semibold">{{ member.user.username }}</span>
+        <p class="text-sm text-green-700">
+          {{ member.role }} ({{ member.userStatus }})
+        </p>
       </div>
 
-      <div
-        class="flex w-fit custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-10 flex-row items-center justify-center gap-5"
-      >
-        <div class="flex">
-          <EditeProfile v-if="this.EditChannel" />
-          <ConfirmPopup v-if="this.userStore.action" />
-          <UpdateMember v-if="this.userStore.MemberRoleStatus" />
-        </div>
-
-        <FriendList v-if="AddFriend" />
-
-        <Icon
-          @click="LeaveChannel"
-          title="Leave Channel"
-          icon="ion:exit"
-          class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer"
-        />
-
-        <Icon
-          v-if="DeletePermission"
-          icon="ic:round-delete"
-          @click="RemoveChatRome"
-          title="Delete Channel"
-          class="text-black dark:text-white h-10 w-10 hover:bg-blue-300 p-1 rounded-md cursor-pointer"
-        />
-      </div>
-
-      <div
-        v-for="member in this.userStore.ActiveMembersChannelId"
-        class="flex w-full h-fit gap-2 mb-3 custom-box-shadow p-3 dark:bg-slate-800 rounded-lg flex-row items-center"
-      >
-        <div class="w-14 bg-gray-300 rounded-full">
-          <img
-            referrerpolicy="no-referrer"
-            :src="member.user.avatar"
-            alt="Avatar"
-            title="View Profil"
-            class="w-14 rounded-full"
-          />
-        </div>
-        <div class="flex flex-col container overflow-ellipsis line-clamp-1">
-          <span
-            v-if="member.user.id == this.userStore.MyId"
-            class="text-lg font-semibold"
-          >
-            {{ member.user.username }}({{ this.you }})
-          </span>
-          <span v-else class="text-lg font-semibold">{{ member.user.username }}</span>
-          <p class="text-sm text-green-700">
-            {{ member.role }} ({{ member.userStatus }})
-          </p>
-        </div>
-
-        <div v-if="this.MyRole != 'member'" class="flex-grow">
-          <Icon
-            v-if="member.role != 'owner' && member.user.id != this.userStore.MyId"
-            @click="UpdateMember(member)"
-            title="Setting"
-            class="text-blue-500 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-100 p-1 rounded-md"
-            icon="mingcute:settings-3-fill"
-          />
-        </div>
+      <div v-if="this.MyRole != 'member'" class="flex-grow">
+        <Icon v-if="member.role != 'owner' && member.user.id != this.userStore.MyId" @click="UpdateMember(member)"
+          title="Setting" class="text-blue-500 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-100 p-1 rounded-md"
+          icon="mingcute:settings-3-fill" />
       </div>
     </div>
+  </div>
 </template>
 
 <script>

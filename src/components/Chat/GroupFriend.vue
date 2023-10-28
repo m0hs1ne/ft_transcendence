@@ -9,7 +9,7 @@
     </div>
     <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
-    <ul class=" overflow-y-scroll overflow-x-clip px-5 py-5">
+    <ul class="overflow-y-scroll overflow-x-clip px-5 py-5">
       <li
         v-for="(conversation, index) in this.userStore.DmChatroomsList"
         :key="index"
@@ -25,7 +25,7 @@
           'hover:bg-slate-200',
           'dark:hover:bg-slate-600',
           'mb-3',
-          this.userStore.activeChatId === index
+          this.activeChatId === index
             ? 'bg-slate-200 dark:bg-slate-600'
             : 'bg-white dark:bg-slate-800',
         ]"
@@ -46,12 +46,18 @@
               >{{ conversation.username }} {{ conversation.title }}</span
             >
             <p class="text-sm text-gray-500">
-              {{ !conversation.avatar ? conversation.privacy : (conversation.statusOnline ? "Online" : "Ofline") }}
+              {{
+                !conversation.avatar
+                  ? conversation.privacy
+                  : conversation.statusOnline
+                  ? "Online"
+                  : "Ofline"
+              }}
             </p>
           </div>
         </div>
         <!-- <Icon
-          v-if="conversation.inGame == false && conversation.statusOnline == true"
+          v-if="conversation.iqnGame == false && conversation.statusOnline == true"
           @click="play(conversation)"
           title="Play"
           class="text-blue-600 h-10 w-10 ml-3"
@@ -84,43 +90,43 @@ export default {
   },
   data() {
     return {
+      activeChatId: -1,
       friends: [],
     };
   },
   methods: {
     async fetchData() {
       await this.userStore.fetchDataForDmChatRooms();
-      console.log(" -------------------------------------------------> OLO ", this.userStore.DmChatroomsList);
+      //console.log(" -------------------------------------------------> OLO ", this.userStore.DmChatroomsList);
       if (
         this.userStore.DmChatroomsList.length == 0 ||
         this.userStore.DmChatroomsList.data == 0
       )
         this.message = " 5liha 3la allah ";
       else {
-        console.log(" this.userStore.DmChatroomsList ", this.userStore.DmChatroomsList);
+        //console.log(" this.userStore.DmChatroomsList ", this.userStore.DmChatroomsList);
         this.friends = this.userStore.DmChatroomsList.data;
       }
     },
-    selectChat(Item, index)
-    {
-      this.userStore.activeChatId = index;
-      this.userStore.viewMode = 'Chat';
-      this.handleChatClick(Item, index);
+    selectChat(Item, index) {
+      this.activeChatId = index;
+      this.userStore.viewMode = "Chat";
+      this.userStore.ItemClicked = Item;
+      this.userStore.IndexItemClicked = index;
     },
     handleChatClick(Item, index) {
       // Your click event logic here
-      console.log("-----------------------------", Item.id)
-      console.log("Prop emitd");
-      console.log(Item);
+      //console.log("Prop emitd");
+      //console.log(Item);
       this.$emit("object-sent", Item);
       this.userStore.UpdateChannelId(Item.id, Item.title);
     },
 
     async SocketNoti() {
-      // console.log(" Noting ")
+      // //console.log(" Noting ")
       // await this.userStore.fetchDataForDmChatRooms();
       await this.$socket.on("ChatRoomList", (data) => {
-        console.log("This is data ChatRoomList on : ", data);
+        //console.log("This is data ChatRoomList on : ", data);
         if (data.type == "new" || data.type == "updated") {
           this.userStore.fetchDataForDmChatRooms();
         }
@@ -131,11 +137,12 @@ export default {
         }
       });
 
-      if (this.userStore.ActiveId.length) {
-        this.handleChatClick(this.userStore.ActiveId, 0);
-      } else if (this.userStore.DmChatroomsList.length != 0) {
-        this.handleChatClick(this.userStore.DmChatroomsList[0], 0);
-      }
+      // if (this.userStore.ActiveId.length) {
+
+      //   this.handleChatClick(this.userStore.ActiveId);
+      // } else if (this.userStore.DmChatroomsList.length != 0) {
+      //   this.handleChatClick(this.userStore.DmChatroomsList[0]);
+      // }
     },
 
     getStatusClass(status) {
@@ -148,37 +155,40 @@ export default {
     await this.SocketNoti();
 
     this.$socket.on("receiveMessage", (data) => {
-      console.log(data , "this data form reciveMesssage ", data)
-			if (data.type == 'DM')
-			{
-				const friendIndex = this.userStore.DmChatroomsList.findIndex((friend) => friend.id === data.message.from.id);
-				if (friendIndex == -1) {
-					console.log(" new data ....");
-					this.userStore.fetchDataForDmChatRooms();
-				}
-			}
-      if((data.type == "notification" && data.action == "joined"))
-        this.fetchData();
-     else if ((data.chatRoomId == this.userStore.ActiveChannelId) &&
+      // //console.log(data , "this data form reciveMesssage ", data)
+      if (data.type == "DM") {
+        const friendIndex = this.userStore.DmChatroomsList.findIndex(
+          (friend) => friend.id === data.message.from.id
+        );
+        if (friendIndex == -1) {
+          ////console.log(" new data ....");
+          this.userStore.fetchDataForDmChatRooms();
+        }
+      }
+      if (data.type == "notification" && data.action == "joined") this.fetchData();
+      else if (
+        data.chatRoomId == this.userStore.ActiveChannelId &&
         ((data.type == "notification" && data.action == "joined") ||
           (data.type == "notification" && data.action == "status"))
       ) {
         this.fetchData();
       }
-      if(data.type == "notification" && data.action == "kick" && data.from.id == this.userStore.MyId
-        ) {
-        
+      if (
+        data.type == "notification" &&
+        data.action == "kick" &&
+        data.from.id == this.userStore.MyId
+      ) {
         this.fetchData();
         this.SocketNoti();
       }
     });
 
     this.$socket.on("userStatus", (data) => {
-      console.log(" receiveMessage  user Status  ********* ", data);
-      console.log(this.userStore.DmChatroomsList);
+      // //console.log(" receiveMessage  user Status  ********* ", data);
+      // //console.log(this.userStore.DmChatroomsList);
       //   this.userStore.fetchDataForDmChatRooms();
       this.userStore.DmChatroomsList.forEach((element) => {
-        console.log(element);
+        //console.log(element);
         if (data.id == element.id) {
           element.statusOnline = data.online;
         }
@@ -198,7 +208,5 @@ export default {
 .scrollbar {
   overflow-y: scroll;
   scrollbar-width: thin; /* Make the scrollbar thinner */
-
 }
-
 </style>

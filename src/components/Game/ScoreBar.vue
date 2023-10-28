@@ -31,6 +31,7 @@ export default {
                         withCredentials: true,
                     }
                 );
+
                 leftData.value = res1.data;
                 rightData.value = res2.data;
             } catch (error) {
