@@ -184,21 +184,22 @@ export class UsersController {
     if (isNaN(id))
       throw new BadRequestException("Id should be an integer number.")
     const payload = verifyToken(req.headers.cookie);
-    const client = clients.get(payload.sub)
     const message = this.usersService.removefriends(+id, req)
-      const friend = clients.get(id)
-      if (friend)
-      {
-        const me = await this.usersService.findOne(payload.sub)
-        if (me)
-          friend.emit('Notification', {type: "updated", message: `${me.username} removed you from his friends`})
-      }
-      if (client)
-      {
-        const other = await this.usersService.findOne(id)
-        if (other)
-          client.emit('Notification', {type: "updated", message: `${other.username} removed from your friends`})
-      }
+
+    const client = clients.get(payload.sub)
+    const friend = clients.get(+id)
+    if (friend)
+    {
+      const me = await this.usersService.findOne(payload.sub)
+      if (me)
+        friend.emit('Notification', {type: "updated", message: `${me.username} removed you from his friends`})
+    }
+    if (client)
+    {
+      const other = await this.usersService.findOne(id)
+      if (other)
+        client.emit('Notification', {type: "updated", message: `${other.username} removed from your friends`})
+    }
     res.send(message);
     }
     catch(e)
@@ -263,10 +264,26 @@ export class UsersController {
       if (!isNaN(id)) res.send(await this.usersService.removeblocked(id, req));
       else throw new BadRequestException("Id should be an integer number.")
       const payload = verifyToken(req.headers.cookie);
+      // const client = clients.get(payload.sub)
+      // const other = await this.usersService.findOne(id)
+      // if (client)
+      //   client.emit('Notification', {type: "updated", message: `${other.username} was deleted from your block list`})
+
       const client = clients.get(payload.sub)
-      const other = await this.usersService.findOne(id)
+
+      const friend = clients.get(id)
+      if (friend)
+      {
+        const me = await this.usersService.findOne(payload.sub)
+        if (me)
+          friend.emit('Notification', {type: "updated", message: `${me.username} deleted you from his blocked list`})
+      }
       if (client)
-        client.emit('Notification', {type: "updated", message: `${other.username} was deleted from your block list`})
+      {
+        const other = await this.usersService.findOne(id)
+        if (other)
+          client.emit('Notification', {type: "updated", message: `${other.username} removed from your block list`})
+      }
     }
     catch(e)
     {
