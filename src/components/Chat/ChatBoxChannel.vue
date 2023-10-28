@@ -144,12 +144,11 @@ export default {
   },
 
   async mounted() {
-    console.log(this.userStore.ActiveChannelId);
+    console.log("ppppp pp " ,this.userStore.ActiveChannelId);
+
     await this.userStore.fetchChannelById();
     this.messages = this.userStore.ActiveMessageChannelId;
-    // console.log("messs", this.messages)
-    //this.userStore.UpdateChannelId(this.channel.id)
-    // console.log("I am in mounted", this.userStore.ActiveChannelId)
+    
     this.$socket.on("receiveMessage", (data) => {
       // console.log( " merwan ",data.chatRoomId)
       console.log("Helllo this is my ", this.userStore.ActiveChannelId, data.chatRoomId);

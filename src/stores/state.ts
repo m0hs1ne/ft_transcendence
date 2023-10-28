@@ -5,7 +5,7 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     MyId: null,
     ChannelList: [],
-    DmChatroomsList: [{}],
+    DmChatroomsList: [],
     ActiveChannelData: [],
     ActiveChannelId: null,
     ActiveChannelTitle: "",
@@ -25,8 +25,6 @@ export const useUserStore = defineStore("user", {
     screenWidth: 1000,
     ItemClicked :"",
     IndexItemClicked:""
-
-
   }),
 
   actions: {
@@ -38,15 +36,14 @@ export const useUserStore = defineStore("user", {
     },
 
     async fetchChannelById() {
+      if(this.ActiveChannelId == null)
+         return
       try {
         this.ActiveChannelData = await axios.get(
           `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`,
           { withCredentials: true },
         );
-        console.log(
-          "----------------------------------------",
-          this.ActiveChannelData,
-        );
+       
         this.MyId = this.ActiveChannelData.data.id;
         this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
         this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
@@ -75,27 +72,32 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async GfetchData() {
-      this.$socket.emit("myChatRooms", {}, () => {});
-      console.log(" Noting ");
-      this.ChannelList = await this.$socket.on("ChatRoomList");
-      // console.log("This is Channel list ", this.ChannelList);
-    },
+    // async GfetchData() {
+    //   this.$socket.emit("myChatRooms", {}, () => {});
+    //   console.log(" Noting ");
+    //   this.ChannelList = await this.$socket.on("ChatRoomList");
+    //   // console.log("This is Channel list ", this.ChannelList);
+    // },
 
     async fetchDataForDmChatRooms() {
       try {
-        console.log("---------------------------------------------------------->  " ,this.ItemClicked)
         this.DmChatroomsList = await axios.get(
           `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
           { withCredentials: true },
-        );
-
-        this.DmChatroomsList = this.DmChatroomsList.data;
-        console.log("----------> DmChatroomsList is: ");
+          );
+          
+          this.DmChatroomsList = this.DmChatroomsList.data;
+          console.log("---------------------------------------------------------->  " , this.DmChatroomsList)
       } catch (error) {
         console.log("fetch friends by id error: ", error);
       }
-      
+      console.log(this.DmChatroomsList.length)
+      if(this.DmChatroomsList.length == 0)
+      {
+         this.ItemClicked = ""
+         this.ActiveChannelId = null
+      }
+
     },
 
     async RemoveChatRome() {
@@ -105,18 +107,7 @@ export const useUserStore = defineStore("user", {
       );
       //await this.fetchDataForDmChatRooms();
     },
-    // async switchToChannael(obj)
-    // {
-
-    //   this.ActiveId = obj;
-    //   this.UpdateChannelId(obj.id, obj.title);
-    //   console.log(" 1 -----------------------------> active id is: ", this.ActiveId);
-    //   await this.fetchChannelById();
-    //   console.log(" 2 -----------------------------> active id is: ", this.ActiveId);
-    //   await this.fetchDataForDmChatRooms();
-    //   console.log(" 3 -----------------------------> active id is: ", this.ActiveId);
-    //   console.log(" 4 -----------------------------> active id is: ", this.ActiveId)
-    // }
+  
   },
 });
 

@@ -65,6 +65,9 @@ export default {
 
       console.log("This Friends : ", this.userStore.UserFriends.data)
       console.log("This Members : ", this.members);
+      if (this.friends.length === 0) {
+        this.message = "you don't have any friends to invite them";
+      }
 
       this.userStore.UserFriends.data.forEach(element => {
         // to get friends not found in the channel
@@ -80,20 +83,14 @@ export default {
         if (boool) {
           this.friends.push(element);
         }
-        console.log("fff ", this.friends.length)
         if (this.friends.length === 0) {
           this.message = "you don't have any friends to invite them";
-          console.log("you dont have any frineds to invite them ")
+        
         }
         //this.friends.push(element);
       });
     },
     async openPopup() {
-
-      // const role = await axios.get (`http://localhost:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`, 
-      //           { withCredentials: true },);
-
-      //   console.log(role)
       this.isOpend = true;
     },
     closePopup() {

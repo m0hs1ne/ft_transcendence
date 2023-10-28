@@ -37,7 +37,7 @@
 
   <div
     class="flex flex-col h-full w-full overflow-y-scroll gap-5 px-5 py-10 scrollbar-thin scrollbar-thumb-gray-300 scrollba"
-    id="messageContainer">
+    id="messageContainer" ref="scrollContainer">
     <div v-for="message in messages" :key="message.id" class="w-full">
       <div v-if="message.type == 'sent'" class="flex w-full justify-end">
         <div class="flex flex-col items-end w-2/3 lg-w-1/3">
@@ -112,8 +112,8 @@ export default {
       //console.log(this.person, this.ActiveChannelId);
       //console.log(this.$GameSocket);
     },
-    Block() {
-      //console.log(" block user ", this.person);
+    block() {
+      console.log(" block user ", this.person);
 
       axios
         .post(
@@ -131,6 +131,8 @@ export default {
         .catch((error) => {
           //console.error("Error fetching data:", error);
         });
+     // this.userStore.fetchDataForDmChatRooms();
+     // console.log("The ,, ", this.userStore.DmChatroomsList)
     },
     sendMessage() {
       //console.log("I AM SENDmessage function ", this.person);
@@ -150,18 +152,20 @@ export default {
   },
 
   mounted() {
+
     this.UserProfile = this.person;
-    //console.log(" I am in Mounted in chatbox ", this.UserProfile);
+    
+    console.log(" I am in Mounted in chatbox ", this.UserProfile);
     this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
+      console.log(" I am receve some messages ")
       if (data.type == "DM") {
         var type = "";
         if (data.message.from.id != this.person.id) type = "sent";
         else type = "received";
 
         this.messages.push({
-          // id: Date.now(),
           img: data.message.from.avatar,
           type: type,
           text: data.message.message,

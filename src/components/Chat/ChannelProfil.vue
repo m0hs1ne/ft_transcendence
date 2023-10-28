@@ -130,6 +130,7 @@ export default {
       if (data.type == "updated") {
         this.fetchData();
       }
+      
     });
     this.$socket.on("receiveMessage", (data) => {
       console.log("receiveMessage form channel profile--------- ", data);
