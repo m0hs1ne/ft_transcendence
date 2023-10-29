@@ -25,6 +25,8 @@ import {
   userAuthGuard,
   validateCharacters,
   verifyToken,
+  isValidFileType,
+  isValidFileSize,
 } from "../utils/guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Express } from "express";
@@ -306,37 +308,36 @@ export class UsersController {
       }),
     }),
   )
-  async uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new FileTypeValidator({ fileType: ".(png|jpeg|jpg)" }),
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
-    @Req() req,@Res() res,
-  ) {
-    try
-    {
-      const payload = verifyToken(req.headers.cookie);
-      this.usersService.uploadAvatar(file, payload);
-      const client = clients.get(payload.sub)
-      if (client)
-      { 
-          client.emit('Notification', {type: "updated", message: `Avatar was updated successfully`})
-      }
-      res.send( {
-        data: "http://localhost:3000/" + file.filename,
-      })
+async uploadFile(
+  @UploadedFile() file: Express.Multer.File,
+  @Req() req,
+  @Res() res,
+) {
+  try {
+    const payload = verifyToken(req.headers.cookie);
+    
+    if (!isValidFileType(file)) {
+      throw new Error('Invalid file type. Only PNG, JPEG, and JPG files are allowed.');
     }
-    catch(e)
-    {
-      // res.statusCode = e.status
-      res.send({message: e.message, result: "error"})
+    
+    if (!isValidFileSize(file)) {
+      throw new Error('File size exceeds the maximum limit of 4MB.');
     }
+
+    this.usersService.uploadAvatar(file, payload);
+    
+    const client = clients.get(payload.sub);
+    if (client) {
+      client.emit('Notification', { type: 'updated', message: 'Avatar was updated successfully' });
+    }
+    
+    res.send({
+      data: `http://localhost:3000/${file.filename}`,
+    });
+  } catch (e) {
+    res.send({ message: e.message, result: 'error' });
   }
+}
   //Leaderboard
   @Get("leaderboard")
   getleaderboard() {
