@@ -12,8 +12,6 @@ import { verifyToken } from "src/utils/guard";
 import { LessThanOrEqual } from "typeorm";
 import { StringifyOptions } from "querystring";
 import { clients } from "src/chat_rooms/chat_rooms.gateway";
-import { Req } from "@nestjs/common";
-import { UsersService } from "src/users/users.service";
 
 @WebSocketGateway({
   namespace: "/game",
@@ -23,9 +21,7 @@ import { UsersService } from "src/users/users.service";
   },
 })
 export class GameGateway {
-  constructor(private readonly gameService: GameService,
-    private readonly userService: UsersService
-    ) { }
+  constructor(private readonly gameService: GameService) { }
 
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
@@ -48,7 +44,7 @@ export class GameGateway {
     }
   }
 
-  async handleDisconnect(client: Socket, @Req() req) {
+  handleDisconnect(client: Socket) {
     try {
       const Payload = verifyToken(client.handshake.headers.cookie);
       if (this.rooms.has(this.clients.get(Payload.sub))) {
@@ -62,17 +58,6 @@ export class GameGateway {
           this.rooms.get(this.clients.get(Payload.sub)).RightPlayer.id,
           false,
         );
-        const cookie = verifyToken(req.handshake.cookie)
-        const myfriends = await this.userService.getfriends(cookie.sub);
-        if (myfriends) {
-          for (const friend of myfriends) {
-            const client = clients.get(friend.id);
-            if (client) {
-              client.emit("userStatus", { id: cookie.sub, inGame: false });
-            }
-          }
-        }
-
         this.clients.delete(this.rooms.get(this.clients.get(Payload.sub)).LeftPlayer.id);
         this.clients.delete(this.rooms.get(this.clients.get(Payload.sub)).RightPlayer.id);
         this.rooms.delete(this.clients.get(Payload.sub));
@@ -98,11 +83,13 @@ export class GameGateway {
     }
   }
   @SubscribeMessage("joinRoom")
-  handleJoinRoom(client: Socket, payload: any, @Req() req) 
+
+  handleJoinRoom(client: Socket, payload: any): void 
   {
+    console.log("JoinRoom");
     if (!this.ValidateClient(client)) { }
     else
-      this.CheckQueus(payload, client, req);
+      this.CheckQueus(payload.mode, client);
   }
 
   ValidateClient(client: Socket): number {
@@ -120,8 +107,8 @@ export class GameGateway {
     }
   }
 
-  async CheckQueus(mode: string, client: Socket, @Req() req) 
-  {
+  CheckQueus(mode: string, client: Socket) {
+    console.log(mode);
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
       this.Queus.set(mode, Queu);
@@ -142,24 +129,10 @@ export class GameGateway {
         );
         room.roomId = uuidv4();
         console.log(`Room Id ${room.roomId}`);
-        console.log("parse mode : ", parseInt(mode), "mode : ", mode);
-        
-        room.mode = mode;
         room.GameMode = parseInt(mode);
         room.RightPlayer.id = payload1.sub;
         room.LeftPlayer.id = payload2.sub;
         this.gameService.setInGame(payload1.sub, payload2.sub, true);
-        const cookie = verifyToken(req.handshake.cookie)
-        const myfriends = await this.userService.getfriends(cookie.sub);
-        if (myfriends) {
-          for (const friend of myfriends) {
-            const client = clients.get(friend.id);
-            if (client) {
-              client.emit("userStatus", { id: cookie.sub, inGame: true });
-            }
-          }
-        }
-
         this.clients.set(payload1.sub, room.roomId);
         this.clients.set(payload2.sub, room.roomId);
         this.rooms.set(room.roomId, room);
@@ -196,7 +169,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage("PlayerLeave")
-  async HandlePlayerLeave(client: any, payload: any, @Req() req) {
+  HandlePlayerLeave(client: any, payload: any): void {
     if (this.rooms.has(payload.roomId)) {
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
       this.UpdateDbScore(payload.roomId);
@@ -207,16 +180,7 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
-      const cookie = verifyToken(req.handshake.cookie)
-      const myfriends = await this.userService.getfriends(cookie.sub);
-      if (myfriends) {
-        for (const friend of myfriends) {
-          const client = clients.get(friend.id);
-          if (client) {
-            client.emit("userStatus", { id: cookie.sub, inGame: false });
-          }
-        }
-      }
+
       this.rooms.delete(payload.roomId);
     }
     if (this.rooms.get(payload.roomId)) {
@@ -235,7 +199,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage("DeleteRoom")
-  async DeleteRoom(client: any, payload: any, @Req() req) {
+  DeleteRoom(client: any, payload: any): void {
     if (this.rooms.has(payload.roomId)) {
       this.UpdateDbScore(payload.roomId);
       if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
@@ -249,16 +213,6 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
-      const cookie = verifyToken(req.handshake.cookie)
-      const myfriends = await this.userService.getfriends(cookie.sub);
-      if (myfriends) {
-        for (const friend of myfriends) {
-          const client = clients.get(friend.id);
-          if (client) {
-            client.emit("userStatus", { id: payload.sub, inGame: false });
-          }
-        }
-      }
       this.rooms.delete(payload.roomId);
     }
   }
@@ -282,7 +236,7 @@ export class GameGateway {
       rightSocket.emit("Notification", {type: "updated", message: "A game was added"})
   }
   @SubscribeMessage("Chall")
-  async HandlleChallenges(client: any, payload: any, @Req() req) {
+  HandlleChallenges(client: any, payload: any): void {
     if (payload.type == "refuse") {
       if (this.Challenge.has(payload.oponentId))
         this.Challenge.delete(payload.oponentId);
@@ -291,24 +245,14 @@ export class GameGateway {
       this.Challenge.set(payload.oponentId, client);
     }
     else if (payload.type == "opp") {
+      console.log(payload);
       if (this.Challenge.has(payload.oponentId)) {
         let room: Room = new Room(this.Challenge.get(payload.oponentId), client);
         room.roomId = uuidv4();
-        room.GameMode = parseInt(payload.mode);
+        room.GameMode = payload.mode;
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
-
         this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
-        const cookie = verifyToken(req.handshake.cookie)
-        const myfriends = await this.userService.getfriends(cookie.sub);
-        if (myfriends) {
-          for (const friend of myfriends) {
-            const client = clients.get(friend.id);
-            if (client) {
-              client.emit("userStatus", { id: cookie.sub, inGame: true });
-            }
-          }
-        }
         this.clients.set(room.LeftPlayer.id, room.roomId);
         this.clients.set(room.RightPlayer.id, room.roomId);
         this.rooms.set(room.roomId, room);
