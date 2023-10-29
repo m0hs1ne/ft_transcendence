@@ -271,9 +271,10 @@ export class UsersService {
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.blocked", "blocked")
       .where("users.id = :id", { id })
-      .select(["blocked.id", "blocked.username", "blocked.avatar"])
+      .select(["users.id","blocked.id", "blocked.username", "blocked.avatar"])
       .getOne();
-    return blocked;
+
+    return blocked.blocked;
   }
 
   async addAchievement(title, id) {
