@@ -57,7 +57,7 @@ export default {
     };
   },
 
-  mounted() {
+  created() {
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("resize", this.CanvasResize);
   },
