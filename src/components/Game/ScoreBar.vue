@@ -61,17 +61,17 @@ export default {
 <template>
     <div class="p-2.5 flex items-center justify-between rounded-full custom-box-shadow dark:bg-slate-900">
         <div class="flex items-center justify-start w-50 md:w-60 ">
-            <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-300 rounded-full shadow">
+            <div class="w-16 h-16 md:w-24 md:h-24 bg-gray-300 rounded-full shadow">
                 <img referrerpolicy="no-referrer" :src="this.leftData.avatar" alt="Avatar"
-                    class=" aspect-square object-cover rounded-full w-20 h-20 md:w-24 md:h-24">
+                    class=" aspect-square object-cover rounded-full w-16 h-16 md:w-24 md:h-24">
             </div>
-            <p class=" font-semibold tracking-wide mx-2  dark:text-white overflow-ellipsis">
+            <p class=" font-semibold tracking-wide mx-2  dark:text-white overflow-ellipsis line-clamp-1">
                 {{ this.leftData.username }}
             </p>
         </div>
 
-        <div class="flex flex-col items-center justify-center">
-            <p class="font-bold text-xl dark:text-white text-center line-clamp-1">
+        <div class="flex flex-col items-center justify-center px-1">
+            <p class="font-bold  md:text-xl dark:text-white text-center line-clamp-1">
                 {{ this.modes[limit] }}
             </p>
             <hr class="w-full max-w-[100px] my-1 px-1 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
@@ -81,12 +81,12 @@ export default {
         </div>
 
         <div class="flex items-center justify-end w-50 md:w-60 ">
-            <p class=" font-semibold tracking-wide mx-2 dark:text-white overflow-ellipsis">
+            <p class=" font-semibold tracking-wide mx-2 dark:text-white overflow-ellipsis line-clamp-1">
                 {{ this.rightData.username }}
             </p>
-            <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-300 rounded-full shadow">
+            <div class="w-16 h-16 md:w-24 md:h-24 bg-gray-300 rounded-full shadow">
                 <img referrerpolicy="no-referrer" :src="this.rightData.avatar" alt="Avatar"
-                    class=" aspect-square object-cover rounded-full w-20 h-20 md:w-24 md:h-24">
+                    class=" aspect-square object-cover rounded-full w-16 h-16 md:w-24 md:h-24">
             </div>
         </div>
     </div>

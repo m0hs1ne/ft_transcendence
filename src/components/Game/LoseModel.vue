@@ -6,7 +6,7 @@
                 Hardluck!!&nbsp;
             </span>
             <span class="text-red-600">
-                You lose, in {{ limit }}
+                You lose
             </span>
         </div>
         <div class="flex items-center justify-center w-full gap-5  font-bold text-xl">

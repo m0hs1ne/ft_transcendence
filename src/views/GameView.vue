@@ -57,7 +57,7 @@ export default {
     };
   },
 
-  mounted() {
+  created() {
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("resize", this.CanvasResize);
   },
@@ -226,7 +226,7 @@ export default {
       if (keyCode == 38 && this.PaddleY - 0.04 > 0) {
         this.PaddleY -= 0.04;
         if (this.GameSocket) {
-          this.GameSocket.emit("PaddleUpmodedates", {
+          this.GameSocket.emit("PaddleUpdates", {
             pos: this.pos,
             roomId: this.RoomId,
             Paddle: -0.04,

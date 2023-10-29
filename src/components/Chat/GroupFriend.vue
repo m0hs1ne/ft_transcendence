@@ -191,6 +191,8 @@ export default {
         }
       });
     });
+
+ 
     if (this.userStore.ActiveId) {
       this.$emit("object-sent", this.userStore.ActiveId);
       this.userStore.UpdateChannelId(

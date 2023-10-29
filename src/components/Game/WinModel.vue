@@ -4,7 +4,7 @@
         <div class="flex w-full justify-center items-center  font-semibold text-2xl dark:text-white">
             <span> Congrats!!&nbsp; </span>
             <span class="text-green-600">
-                You Win, in {{ limit }}
+                You Win
             </span>
         </div>
         <div class="flex items-center justify-center w-full gap-5  font-bold text-xl">
