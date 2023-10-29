@@ -116,6 +116,26 @@ export class UsersController {
     }
   }
 
+  @Patch("profile/loggedFirstTime")
+  async updateloggedFirstTime(@MessageBody() body, @Req() req, @Res() res) {
+    const { loggedFirstTime } = body;
+    try
+    {
+      if (typeof loggedFirstTime != "boolean") throw new BadRequestException("loggedFirstTime should be a boolean.");
+      const payload = verifyToken(req.headers.cookie);
+      const message = await this.usersService.updatelogged(payload.sub, loggedFirstTime);
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Notification', {type: "updated", message: "loggedFirstTime updated Succesfully"})
+      res.send(message);
+    }
+    catch(e)
+    {
+      // res.statusCode = e.status
+      res.send({message: e.message, result: "error"})
+    }
+  }
+
   //friends
   @Get("friends")
   async getFriends(@Req() req, @Res() res) {
