@@ -30,13 +30,13 @@ export default {
             try {
                 console.log("==> ", props.leftID, props.rightID);
                 const res1 = await axios.get(
-                    `http://10.32.120.112:3000/api/users/profile/${props.leftID}`,
+                    `http://localhost:3000/api/users/profile/${props.leftID}`,
                     {
                         withCredentials: true,
                     }
                 );
                 const res2 = await axios.get(
-                    `http://10.32.120.112:3000/api/users/profile/${props.rightID}`,
+                    `http://localhost:3000/api/users/profile/${props.rightID}`,
                     {
                         withCredentials: true,
                     }

@@ -54,7 +54,7 @@ export default {
       Context: null as CanvasRenderingContext2D | null,
       Canvas: null as HTMLCanvasElement | null,
       GameSocket: null as Socket | null,
-      mode: 1,
+      mode: '1',
     };
   },
 
@@ -151,12 +151,12 @@ export default {
         });
 
         this.GameSocket.on("startGame", (data: any) => {
-          console.log("startGame");
           this.RoomId = data.id;
           this.pos = data.pos;
           this.gameData.phase = 'P';
           this.mode = data.mode;
-          if (this.pos === "Left") {
+          if (this.pos === "Left") 
+          {
             this.leftID = data.CurrentID;
             this.rightID = data.OpponentID;
           }
@@ -216,9 +216,8 @@ export default {
 
     JoinGameEvent() {
       if (this.GameSocket) {
-        this.GameSocket.emit("joinRoom", {
-          mode: this.gameData.modeLimit,
-        });
+        this.GameSocket.emit("joinRoom", this.gameData.modeLimit);
+        // this.mode = this.gameData.modeLimit;
       }
     },
 

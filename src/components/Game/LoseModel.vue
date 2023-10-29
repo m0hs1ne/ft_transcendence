@@ -28,7 +28,7 @@ import { GameData } from "../../stores/state.ts";
 
 export default {
     props:{
-        limit: 1,
+        limit: '',
     },
     setup() {
     const gameData = GameData();
