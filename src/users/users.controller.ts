@@ -123,7 +123,7 @@ export class UsersController {
     {
       if (typeof loggedFirstTime != "boolean") throw new BadRequestException("loggedFirstTime should be a boolean.");
       const payload = verifyToken(req.headers.cookie);
-      const message = await this.usersService.updatesession(payload.sub, loggedFirstTime);
+      const message = await this.usersService.updatelogged(payload.sub, loggedFirstTime);
       const client = clients.get(payload.sub)
       if (client)
         client.emit('Notification', {type: "updated", message: "loggedFirstTime updated Succesfully"})
