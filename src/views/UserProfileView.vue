@@ -195,6 +195,7 @@ export default {
     },
     goToChat() {
       this.chatApi.ActiveId = this.userData;
+      // this.chatApi.viewMode = 'Chat';
       this.$router.push("/chat");
     },
   },

@@ -9,8 +9,8 @@
       class="text-gray-100 dark:text-white shadow w-fit mt-3 py-5 px-7 bg-gray-500 rounded-md text-2xl font-bold">
       Withdraw
     </button>
-    <WinModel v-if="phase === 'N'" />
-    <LoseModel v-if="phase === 'L'" />
+    <WinModel v-if="phase === 'N'" :limit="mode" />
+    <LoseModel v-if="phase === 'L'" :limit="mode" />
   </div>
 </template>
 
@@ -55,7 +55,7 @@ export default {
       Context: null as CanvasRenderingContext2D | null,
       Canvas: null as HTMLCanvasElement | null,
       GameSocket: null as Socket | null,
-      mode: '',
+      mode: 1,
     };
   },
 

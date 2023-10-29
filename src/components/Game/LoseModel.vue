@@ -24,9 +24,20 @@
 
 
 <script>
+import { GameData } from "../../stores/state.ts";
+
 export default {
+    props:{
+        limit: 1,
+    },
+    setup() {
+    const gameData = GameData();
+    return { gameData};
+  },
     methods: {
         async playAgain() {
+            this.gameData.random = true;
+            this.gameData.modeLimit = this.limit;
             await this.$router.replace('/');
             this.$router.push('/play');
         },

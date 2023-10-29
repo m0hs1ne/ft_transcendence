@@ -1,4 +1,4 @@
-<script>
+<script >
 import axios from "axios";
 import { SharedData } from './../../stores/state.ts';
 import { ref } from 'vue';

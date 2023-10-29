@@ -45,6 +45,7 @@ export default {
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
             this.gameData.random = false;
+            this.gameData.mode = this.message.invitation.mode;
             this.$router.push('/play');
         },
 

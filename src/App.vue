@@ -77,6 +77,19 @@ export default {
           this.state.userData = res.data;
           this.state.friends = res.data.friends;
           this.state.blocked = res.data.blocked;
+
+          if (res.data.loggedFirstTime) {
+            await axios.patch(
+              "http://localhost:3000/api/users/profile/update/",
+              {
+                loggedFirstTime: false,
+              },
+              {
+                withCredentials: true,
+              }
+            );
+            this.$router.replace("/setting");
+          }
         }
       } catch (error) {
         console.log("Getting user profile error\n", error);
@@ -88,7 +101,7 @@ export default {
       try {
         console.log("otp code: ", this.otpCode);
         const response = await axios.post(
-          "http://10.32.120.112:3000/api/2fa/authenticate/",
+          "http://localhost:3000/api/2fa/authenticate/",
           { tfaCode: this.otpCode },
           {
             withCredentials: true,
@@ -101,7 +114,7 @@ export default {
         }
 
         await axios.patch(
-          "http://10.32.120.112:3000/api/users/profile/validsession/",
+          "http://localhost:3000/api/users/profile/validsession/",
           {
             validSession: true,
           },
@@ -122,7 +135,7 @@ export default {
       const confirmed = window.confirm("Are you sure you want to log out?");
       if (confirmed) {
         try {
-          await axios.get("http://10.32.120.112:3000/api/auth/logout", {
+          await axios.get("http://localhost:3000/api/auth/logout", {
             withCredentials: true,
           });
           this.twoFA = false;
@@ -135,6 +148,7 @@ export default {
       }
     },
   },
+
   async mounted() {
     console.log("mounted in app.vue");
     await this.fetchData();

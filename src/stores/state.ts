@@ -124,8 +124,8 @@ export const SharedData = defineStore("Shard", {
 
 export const GameData = defineStore("Game", {
   state: () => ({
-    modeLimit: String,
-    modeTitle: String,
+    modeLimit: 1,
+    modeTitle: 1,
     random: true,
   }),
 
