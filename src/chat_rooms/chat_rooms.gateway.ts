@@ -546,8 +546,6 @@ export class ChatRoomsGateway {
     // expected params: toId: id of user to send to | title: title of chatroom
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
-      if(!validateCharacters(mode)) throw new BadRequestException("mode should not contain special characters" );
-      if(!validateCharacters(toId)) throw new BadRequestException("toId should not contain special characters" );
       if (typeof toId === "number" && typeof mode === "string") {
         const to = await this.userService.profile(toId, payload);
         const from = await this.userService.myprofile(payload.sub);
