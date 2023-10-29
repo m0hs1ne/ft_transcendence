@@ -15,17 +15,20 @@ export default {
 	},
 	methods: {
 		async confirmLogout() {
+			this.isError = false;
+
 			const tmp = this.isDark;
 			const confirmed = window.confirm('Are you sure you want to log out?');
 			if (confirmed) {
 				try {
-					await axios.get('http://10.32.120.112:3000/api/auth/logout', { withCredentials: true });
+					await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
 					this.$socket.disconnect();
 					this.$router.push('/signIn');
 
 				}
 				catch (error) {
-					console.log("logdout error: ", error)
+					console.log("logdout error: ", error);
+					this.isError = true;
 				}
 			}
 		}

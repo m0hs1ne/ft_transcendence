@@ -1,6 +1,7 @@
-<script>
+<script >
 import axios from "axios";
-import { ref } from 'vue'
+import { SharedData } from './../../stores/state.ts';
+import { ref } from 'vue';
 
 
 export default {
@@ -13,6 +14,7 @@ export default {
         limit: '',
     },
     setup(props) {
+        const state = SharedData();
         const leftData = ref({});
         const rightData = ref({});
         const modes = {
@@ -23,17 +25,18 @@ export default {
         };
 
         const fetchData = async () => {
+
             // Get user profile data
             try {
                 console.log("==> ", props.leftID, props.rightID);
                 const res1 = await axios.get(
-                    `http://10.32.120.112:3000/api/users/profile/${props.leftID}`,
+                    `http://localhost:3000/api/users/profile/${props.leftID}`,
                     {
                         withCredentials: true,
                     }
                 );
                 const res2 = await axios.get(
-                    `http://10.32.120.112:3000/api/users/profile/${props.rightID}`,
+                    `http://localhost:3000/api/users/profile/${props.rightID}`,
                     {
                         withCredentials: true,
                     }
@@ -46,7 +49,7 @@ export default {
             }
         };
 
-        return { leftData, rightData, fetchData, modes }
+        return { leftData, rightData, fetchData, modes, state }
     },
     async mounted() {
         await this.fetchData();
@@ -56,6 +59,7 @@ export default {
 
 
 <template>
+
     <div class="p-2.5 md:p-5 flex items-center justify-between rounded-full  custom-box-shadow dark:bg-slate-900">
         <div class="flex items-center justify-start w-50 md:w-80 ">
             <div class="w-20 h-20 md:w-28 md:h-28 bg-gray-300 rounded-full shadow">

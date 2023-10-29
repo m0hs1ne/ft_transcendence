@@ -19,15 +19,18 @@ export default {
 		};
 	},
 	setup(props) {
+		const isError = ref(false);
 		const isDark = useDark();
 		const toggleDark = useToggle(isDark);
 		const state = SharedData();
-		return { state, isDark, toggleDark };
+		return { state, isDark, toggleDark, isError };
 	},
 	methods: {
 
 		// For Info Card
 		async updateAvatar(event) {
+			this.isError = false;
+
 			this.state.isLoading = true;
 			this.selectedFile = event.target.files[0];
 			console.log("selectedFile: ", this.selectedFile);
@@ -42,9 +45,9 @@ export default {
 				const formData = new FormData();
 				formData.append("file", this.selectedFile, this.selectedFile.name);
 
-				// Replace 'http://10.32.120.112:3000/api/users/upload_avatar/' with your server-side endpoint
+				// Replace 'http://localhost:3000/api/users/upload_avatar/' with your server-side endpoint
 				const response = await axios.post(
-					"http://10.32.120.112:3000/api/users/upload_avatar/",
+					"http://localhost:3000/api/users/upload_avatar/",
 					formData,
 					{
 						withCredentials: true,
@@ -53,6 +56,7 @@ export default {
 
 			} catch (error) {
 				console.error("Error updating avatar:", error);
+				this.isError = true;
 			}
 			this.state.isLoading = false;
 		},
@@ -63,7 +67,7 @@ export default {
 			try {
 				// Make a PATCH request to update the username
 				const response = await axios.patch(
-					"http://10.32.120.112:3000/api/users/profile/update/",
+					"http://localhost:3000/api/users/profile/update/",
 					{
 						username: this.newName,
 					},
@@ -96,9 +100,11 @@ export default {
 		},
 
 		async enable2FA() {
+			this.isError = false;
+
 			try {
 				const response = await axios.post(
-					"http://10.32.120.112:3000/api/2fa/turn-on/",
+					"http://localhost:3000/api/2fa/turn-on/",
 					{ tfaCode: this.otpCode },
 					{
 						withCredentials: true,
@@ -111,17 +117,20 @@ export default {
 				}
 
 				// Update the local state with the new avatar URL
-				await axios.get('http://10.32.120.112:3000/api/auth/logout', { withCredentials: true });
+				await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
 				this.$socket.disconnect();
 				this.$router.push('/signIn');
 			} catch (error) {
 				console.error("Error enable2FA:", error);
+				this.isError = true;
 			}
 		},
 		async disable2FA() {
+			this.isError = false;
+
 			try {
 				const response = await axios.post(
-					"http://10.32.120.112:3000/api/2fa/turn-off/",
+					"http://localhost:3000/api/2fa/turn-off/",
 					{ tfaCode: this.otpCode },
 					{
 						withCredentials: true,
@@ -136,6 +145,7 @@ export default {
 				this.changeCard(0);
 			} catch (error) {
 				console.error("Error disable2FA:", error);
+				this.isError = true;
 			}
 		},
 
@@ -157,7 +167,20 @@ export default {
 </script>
 
 <template>
-	<div class="m-auto flex items-center justify-center h-screen ml-20 lg:ml-24 dark:bg-slate-800">
+	    <div v-if="this.isError" class="flex ml-20 lg:ml-24 items-center justify-center h-screen dark:bg-slate-800 p-10">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-200">Opps!!</h1>
+        <p class="text-lg text-gray-600 mt-4 mx-20 lg:mx-40 dark:text-gray-400">
+          Something went wrong. feel free to contact us if the problem presists.
+        </p>
+        <div class="flex gap-5 items-center justify-center w-full">
+          <button @click="this.$router.push('/')" class="mt-8 text-blue-500 hover:underline text-lg">Go to Home</button>
+<button @click="this.$router.go(-1)" class="mt-8 text-blue-500 hover:underline text-lg">Go Back</button>
+          <button @click="this.isError = false" class="mt-8 text-blue-500 hover:underline text-lg">Refresh</button>
+        </div>
+      </div>
+    </div>
+	<div v-else class="m-auto flex items-center justify-center h-screen ml-20 lg:ml-24 dark:bg-slate-800">
 		<!-- Info Card -->
 		<div v-if="this.currentCard == 0"
 			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] py-20 rounded-2xl custom-box-shadow dark:bg-slate-900">
@@ -243,7 +266,7 @@ export default {
 		<!-- Enabling 2fa Card -->
 		<div v-else-if="this.currentCard == 2"
 			class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-			<img src="http://10.32.120.112:3000/api/2fa/generate" alt="" class="w-64 h-64" />
+			<img src="http://localhost:3000/api/2fa/generate" alt="" class="w-64 h-64" />
 			<p class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500">
 				Install Google Authenticator app, and scan the above qrcode and enter the given
 				number to turn on 2FA.

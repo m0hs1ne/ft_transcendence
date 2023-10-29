@@ -39,7 +39,7 @@ export const useUserStore = defineStore("user", {
       if (this.ActiveChannelId == null || this.ActiveChannelId == -1) return;
       try {
         this.ActiveChannelData = await axios.get(
-          `http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}/`,
+          `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`,
           { withCredentials: true },
         );
         console.log(this.ActiveChannelData)
@@ -67,7 +67,7 @@ export const useUserStore = defineStore("user", {
     async FetchFriend() {
       try {
         this.UserFriends = await axios.get(
-          `http://10.32.120.112:3000/api/users/friends/`,
+          `http://localhost:3000/api/users/friends/`,
           { withCredentials: true },
         );
       } catch (error) {
@@ -85,7 +85,7 @@ export const useUserStore = defineStore("user", {
     async fetchDataForDmChatRooms() {
       try {
         this.DmChatroomsList = await axios.get(
-          `http://10.32.120.112:3000/api/chat-rooms/DM_chatrooms`,
+          `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
           { withCredentials: true },
         );
 
@@ -106,7 +106,7 @@ export const useUserStore = defineStore("user", {
 
     async RemoveChatRome() {
       const t = await axios.delete(
-        `http://10.32.120.112:3000/api/chat-rooms/${this.ActiveChannelId}`,
+        `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}`,
         { withCredentials: true },
       );
       //await this.fetchDataForDmChatRooms();
@@ -116,68 +116,16 @@ export const useUserStore = defineStore("user", {
 
 export const SharedData = defineStore("Shard", {
   state: () => ({
-    isLoggedIn: false,
-    isError: false,
-    isLoading: false,
     userData: {},
     friends: [],
     blocked: [],
   }),
-  getters: {},
-  actions: {
-    async authState() {
-      try {
-        const res = await axios.get(
-          "http://10.32.120.112:3000/api/auth/success/",
-          {
-            withCredentials: true,
-          },
-        );
-        this.isLoggedIn = true;
-      } catch (error) {
-        this.isLoggedIn = false;
-      }
-      console.log("authState isLoggedIN", this.isLoggedIn);
-    },
-
-    async fetchData() {
-      this.isError = false;
-      this.isLoading = true;
-      try {
-        await this.authState();
-        console.log("0");
-
-        if (this.isLoggedIn) {
-          console.log("1");
-          const res = await axios.get(
-            "http://10.32.120.112:3000/api/users/profile/",
-            {
-              withCredentials: true,
-            },
-          );
-          console.log("2");
-
-          console.log("fetchData res: ", res);
-          this.userData = res.data;
-          this.friends = res.data.friends;
-          this.blocked = res.data.blocked;
-          console.log("userData: \n", this.userData);
-          console.log("friends: \n", this.friends);
-          // console.log("blocked: \n", this.blocked);
-        }
-      } catch (error) {
-        console.log("Getting user profile error\n", error);
-        this.isError = true;
-      }
-      this.isLoading = false;
-    },
-  },
 });
 
 export const GameData = defineStore("Game", {
   state: () => ({
-    modeLimit: String,
-    modeTitle: String,
+    modeLimit: 1,
+    modeTitle: 1,
     random: true,
   }),
 

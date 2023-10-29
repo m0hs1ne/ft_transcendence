@@ -1,5 +1,5 @@
 <template>
-	<div class="flex h-screen ml-20 dark:bg-slate-800 p-5 text-gray-700">
+	<div class="flex h-screen ml-20 lg:ml-24 dark:bg-slate-800 p-5 text-gray-700">
 	
 		<ChatGroupFriend v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
 			@object-sent="handleObject" />
