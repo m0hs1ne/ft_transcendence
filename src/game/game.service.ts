@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { clients } from 'src/chat_rooms/chat_rooms.gateway';
 // import { CreateGameDto } from './dto/create-game.dto';
 // import { UpdateGameDto } from './dto/update-game.dto';
 

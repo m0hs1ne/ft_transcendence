@@ -8,10 +8,11 @@ import { Server, Namespace } from "socket.io";
 import { Room } from "./room";
 import { v4 as uuidv4 } from "uuid";
 import { GameService } from "./game.service";
-import { sentNotifInGame, verifyToken } from "src/utils/guard";
+import {  verifyToken } from "src/utils/guard";
 import { LessThanOrEqual } from "typeorm";
 import { StringifyOptions } from "querystring";
 import { clients } from "src/chat_rooms/chat_rooms.gateway";
+import { UsersService } from "src/users/users.service";
 
 @WebSocketGateway({
   namespace: "/game",
@@ -21,7 +22,8 @@ import { clients } from "src/chat_rooms/chat_rooms.gateway";
   },
 })
 export class GameGateway {
-  constructor(private readonly gameService: GameService) { }
+  constructor(private readonly gameService: GameService,
+    private readonly userService: UsersService) { }
 
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
@@ -59,7 +61,7 @@ export class GameGateway {
           false,
         );
 
-        sentNotifInGame(
+        this.sentNotifInGame(
           this.rooms.get(this.clients.get(Payload.sub)).LeftPlayer.id,
           this.rooms.get(this.clients.get(Payload.sub)).RightPlayer.id,
           false,
@@ -137,7 +139,7 @@ export class GameGateway {
         room.RightPlayer.id = payload1.sub;
         room.LeftPlayer.id = payload2.sub;
         this.gameService.setInGame(payload1.sub, payload2.sub, true);
-        sentNotifInGame(payload1.sub, payload2.sub, true)
+        this.sentNotifInGame(payload1.sub, payload2.sub, true)
         this.clients.set(payload1.sub, room.roomId);
         this.clients.set(payload2.sub, room.roomId);
         this.rooms.set(room.roomId, room);
@@ -207,7 +209,7 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
-      sentNotifInGame(
+      this.sentNotifInGame(
         this.rooms.get(payload.roomId).LeftPlayer.id,
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
@@ -255,7 +257,7 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
-      sentNotifInGame(
+      this.sentNotifInGame(
         this.rooms.get(payload.roomId).LeftPlayer.id,
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
@@ -301,12 +303,35 @@ export class GameGateway {
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
         this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
-        sentNotifInGame(room.RightPlayer.id, room.LeftPlayer.id, true)
+        this.sentNotifInGame(room.RightPlayer.id, room.LeftPlayer.id, true)
         this.clients.set(room.LeftPlayer.id, room.roomId);
         this.clients.set(room.RightPlayer.id, room.roomId);
         this.rooms.set(room.roomId, room);
         room.RightPlayer.socket.emit("start");
         room.Play();
+      }
+    }
+  }
+
+  async sentNotifInGame(leftId, rightId, inGame)
+  {
+    const leftFriends = await this.userService.getfriends(leftId);
+    if (leftFriends) {
+      for (const friend of leftFriends) {
+        const client = clients.get(friend.id);
+        if (client) {
+          client.emit("inGame", { id: leftId, inGame });
+        }
+      }
+    }
+
+    const rightFriends = await this.userService.getfriends(rightId);
+    if (rightFriends) {
+      for (const friend of rightFriends) {
+        const client = clients.get(friend.id);
+        if (client) {
+          client.emit("inGame", { id: rightId, inGame });
+        }
       }
     }
   }
