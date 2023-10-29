@@ -82,11 +82,10 @@ export class GameGateway {
       console.log(err);
     }
   }
+  
   @SubscribeMessage("joinRoom")
-
   handleJoinRoom(client: Socket, payload: any): void 
   {
-    console.log("JoinRoom mode : ", payload);
     if (!this.ValidateClient(client)) { }
     else
       this.CheckQueus(payload, client);
@@ -108,7 +107,6 @@ export class GameGateway {
   }
 
   CheckQueus(mode: string, client: Socket) {
-    console.log("------------> ", mode);
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
       this.Queus.set(mode, Queu);
@@ -128,7 +126,6 @@ export class GameGateway {
           this.Queus.get(mode).at(1),
         );
         room.roomId = uuidv4();
-        console.log(`Room Id ${room.roomId}`);
         room.GameMode = parseInt(mode);
         room.mode = mode;
         room.RightPlayer.id = payload1.sub;
@@ -138,15 +135,15 @@ export class GameGateway {
         this.clients.set(payload2.sub, room.roomId);
         this.rooms.set(room.roomId, room);
         room.Play();
-        room.LeftPlayer.Socket("gameStatus",
+        room.LeftPlayer.socket.emit("gameStatus",
         {
           id: room.LeftPlayer.id,
           status: true,
         })
-        room.RightPlayer.Socket("gameStatus",
+        room.RightPlayer.socket.emit("gameStatus",
         {
           id: room.RightPlayer.id,
-          status: true,
+          status: true
         })
         this.Queus.get(mode).pop();
         this.Queus.get(mode).pop();
@@ -184,14 +181,14 @@ export class GameGateway {
   {
     if (this.rooms.has(payload.roomId)) 
     {
-        this.rooms.get(payload.roomId).LeftPlayer.Socket("gameStatus",
+        this.rooms.get(payload.roomId).LeftPlayer.socket.emit("gameStatus",
         {
-          id: room.LeftPlayer.id,
+          id: this.rooms.get(payload.roomId).LeftPlayer.id,
           status: false,
         })
-        this.rooms.get(payload.roomId).RightPlayer.Socket("gameStatus",
+        this.rooms.get(payload.roomId).RightPlayer.socket.emit("gameStatus",
         {
-          id: room.RightPlayer.id,
+          id: this.rooms.get(payload.roomId).RightPlayer.id,
           status: false,
         })
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
@@ -224,14 +221,14 @@ export class GameGateway {
   DeleteRoom(client: any, payload: any): void {
     if (this.rooms.has(payload.roomId)) 
     {
-      this.rooms.get(payload.roomId).LeftPlayer.Socket("gameStatus",
+      this.rooms.get(payload.roomId).LeftPlayer.socket.emit("gameStatus",
       {
-        id: room.LeftPlayer.id,
+        id: this.rooms.get(payload.roomId).LeftPlayer.id,
         status: false,
       })
-      this.rooms.get(payload.roomId).RightPlayer.Socket("gameStatus",
+      this.rooms.get(payload.roomId).RightPlayer.socket.emit("gameStatus",
       {
-        id: room.RightPlayer.id,
+        id: this.rooms.get(payload.roomId).RightPlayer.id,
         status: false,
       })
       this.UpdateDbScore(payload.roomId);
@@ -279,7 +276,6 @@ export class GameGateway {
       this.Challenge.set(payload.oponentId, client);
     }
     else if (payload.type == "opp") {
-      console.log(payload);
       if (this.Challenge.has(payload.oponentId)) {
         let room: Room = new Room(this.Challenge.get(payload.oponentId), client);
         room.roomId = uuidv4();
