@@ -1,13 +1,13 @@
 <template>
 	<ConfirmPopup v-if="this.userStore.action" />
-	<div class="flex h-screen ml-20 lg:ml-24 dark:bg-slate-800 p-5 text-gray-700">
+	<div class="flex h-screen ml-20 lg:ml-24 dark:bg-slate-800 p-3 md:p-5 text-gray-700">
 		<ChatGroupFriend v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
 			@object-sent="handleObject" />
 
 		<div v-if="this.userStore.screenWidth >= 768 ||
 			this.userStore.viewMode === 'Chat' ||
 			this.userStore.viewMode === 'Channel'
-			" class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl">
+			" class="w-full h-full flex flex-col dark:bg-slate-900 custom-box-shadow dark:text-white rounded-xl">
 			<ErrorPopup v-if="this.userStore.error" />
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" />
 			<ChatBoxChannel v-if="displayChatboxChannel && this.userStore.viewMode === 'Chat'" :channel="ChannelObject" />

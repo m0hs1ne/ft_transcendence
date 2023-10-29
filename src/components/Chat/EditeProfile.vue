@@ -1,7 +1,7 @@
 <template>
   <div>
     <Icon
-      class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer"
+      class="text-black dark:text-white h-8 w-8 md:h-10 md:w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer"
       @click="openPopup"
       title="Channel Setting"
       icon="basil:edit-solid"

@@ -30,11 +30,12 @@ export default {
       return path != "/signin" && path != '/play';
     },
 
-    routerGard() {
+    async routerGard() {
       const path = this.$route.path.toLowerCase();
       if (this.isLoggedIn && path == "/signin") this.$router.replace("/");
       else if (!this.isLoggedIn && path != "/signin")
-        this.$router.replace("/signIn");
+        await this.$router.replace("/signIn");
+      this.isLoading = false;
     },
 
     handleInput() {
@@ -75,7 +76,7 @@ export default {
 
           console.log("fetchData res: ", res);
           this.state.setUserData(res.data);
-
+          this.twoFA = this.state.userData.is2faEnabled && !this.state.userData.validSession;
           if (res.data.loggedFirstTime) {
             await axios.patch(
               "http://10.32.125.38:3000/api/users/profile/loggedFirstTime/",
@@ -92,7 +93,6 @@ export default {
       } catch (error) {
         console.log("Getting user profile error\n", error);
       }
-      this.isLoading = false;
     },
 
     async validate2FA() {
@@ -150,8 +150,7 @@ export default {
   async created() {
     console.log("mounted in app.vue");
     await this.fetchData();
-    this.twoFA = this.state.userData.is2faEnabled && !this.state.userData.validSession;
-    this.routerGard();
+    await this.routerGard();
   },
   components: {
     Loading,
@@ -182,7 +181,7 @@ export default {
     <div v-else-if="this.twoFA" class="m-auto flex items-center justify-center h-screen dark:bg-slate-800">
       <div
         class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
-        <h2 class="flex w-full justify-start items-center py-5 px-10 font-light text-xl text-gray-500">
+        <h2 class="flex w-full justify-start items-center py-5 md:px-10 font-light text-xl text-gray-500">
           Enter virifcation code from Google Authenticator app.
         </h2>
         <div class="flex flex-col justify-center items-center text-center">

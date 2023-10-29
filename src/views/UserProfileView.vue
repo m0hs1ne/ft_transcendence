@@ -243,12 +243,12 @@ export default {
     </div>
   </div>
   <div v-else-if="this.friendTab"
-    class="flex flex-col justify-start items-center ml-20 lg:ml-24 min-h-screen dark:bg-slate-800 p-10">
-    <div class="flex w-full justify-center items-center pb-10">
+    class="flex flex-col justify-start items-center ml-20 lg:ml-24 min-h-screen dark:bg-slate-800 p-5 md:p-10">
+    <div class="flex w-full justify-center items-center pb-10 pt-5">
       <Icon @click="this.friendTab = false" icon="ion:arrow-back"
-        class="text-gray-100 h-16 w-16 dark:text-white p-3 cursor-pointer" />
-      <h1 class="font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis">
-        {{ this.username }} Friends:
+        class="text-gray-100 h-12 w-12 md:h-16 md:w-16 dark:text-white p-3 cursor-pointer" />
+      <h1 class="md:font-semibold p-0 m-0 text-2xl md:text-4xl line-clamp-1 dark:text-white text-center items-center overflow-ellipsis">
+      {{ this.username }} Friends:
       </h1>
     </div>
     <div v-if="!this.friends.length" class="h-full flex flex-col items-center">
@@ -263,11 +263,11 @@ export default {
         class="flex items-center justify-between min-w-full">
         <div class="flex items-center">
           <p class="font-semibold text-xl">{{ index + 1 }}.</p>
-          <div class="w-20 h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
+          <div class="w-16 h-16 md:w-20 md:h-20 bg-gray-300 rounded-full shadow ml-2 mr-2 md:mr-4">
             <img referrerpolicy="no-referrer" :src="element.avatar" alt="Avatar"
-              class="aspect-square object-cover rounded-full w-20 h-20" />
+              class="aspect-square object-cover rounded-full w-16 h-16 md:w-20 md:h-20" />
           </div>
-          <p class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-semibold md:text-xl tracking-wide dark:text-white">
+          <p class="w-32 md:w-56 overflow-ellipsis line-clamp-1 font-semibold md:text-xl tracking-wide dark:text-white">
             {{ element.username }}
           </p>
         </div>
@@ -278,7 +278,7 @@ export default {
     </div>
   </div>
 
-  <div v-else class="grid grid-cols-1 ml-20 lg:ml-24 md:grid-cols-2 gap-10 p-10 min-h-screen dark:bg-slate-800">
+  <div v-else class="grid grid-cols-1 ml-20 lg:ml-24 md:grid-cols-2 gap-10 p-5 md:p-10 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
       class="flex flex-col max-h-[600px] gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
@@ -299,24 +299,24 @@ export default {
       <div class="flex w-full items-center justify-center gap-5">
         <div v-if="this.isNotMe && !this.isBlocked && !this.isBlockedBy"
           class="flex items-center justify-center font-bold text-xl cursor-pointer">
-          <Icon @click="this.friendLogic()" :icon="!this.isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'" height="50"
-            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300  rounded-lg" />
+          <Icon @click="this.friendLogic()" :icon="!this.isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'"
+            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300  h-[40px] md:h-[50px] rounded-lg" />
         </div>
         <div v-if="this.isNotMe && this.isFriend && !this.isBlocked && !this.isBlockedBy"
           class="flex items-center justify-center font-bold text-xl cursor-pointer">
-          <Icon @click="this.goToChat()" icon="fluent:chat-12-filled" height="50"
-            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300 rounded-lg" />
+          <Icon @click="this.goToChat()" icon="fluent:chat-12-filled"
+            class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300 h-[40px] md:h-[50px] rounded-lg" />
         </div>
         <div v-if="this.isBlocked && !this.isBlockedBy" @click="this.unBlock"
-          class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
+          class="flex items-center h-[40px] md:h-[50px] px-3 justify-center text-gray-700 font-bold md:text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
           UnBlock
         </div>
         <div v-if="this.isBlockedBy"
-          class="flex items-center h-[50px] px-3 justify-center font-bold text-xl bg-gray-200 rounded-lg shadow-lg">
+          class="flex items-center h-[40px] md:h-[50px] px-3 justify-center font-bold md:text-xl bg-gray-200 rounded-lg shadow-lg">
           You're Blocked
         </div>
         <div v-else @click="this.friendTab = true"
-          class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
+          class="flex items-center h-[40px] md:h-[50px] px-3 justify-center text-gray-700 font-bold md:text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
           View Friends
         </div>
       </div>
@@ -330,29 +330,31 @@ export default {
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
         <div v-if="!this.games.length" class="h-full flex flex-col items-center">
-          <img src="../assets/imgs/empty2.png" alt="" class=" aspect-square object-cover">
+          <img src="../assets/imgs/empty2.png" alt="" class="aspect-square object-cover" />
           <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
             No Battles yet!!
           </p>
         </div>
         <div v-else v-for="(game, index) in this.games" :key="index"
-          class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
+          class="flex m-4 p-4 justify-between items-center relative rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
           <div :class="[
-            'mb-2',
-            'font-bold',
-            parseInt(game.score.split(' ')[0]) > parseInt(game.score.split(' ')[2])
+            'line-clamp-1 overflow-ellipsis',
+            game.score.split(' ')[0] > game.score.split(' ')[2]
               ? 'text-green-500'
               : ' text-red-500',
           ]">
-            {{ game.user1.username }} ({{ game.score.split(" ")[0] }})
+            {{ game.user1.username }}
+          </div>
+          <div class=" absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-center font-bold">
+            {{ game.score }}
           </div>
           <div :class="[
-            'font-bold',
-            parseInt(game.score.split(' ')[0]) < parseInt(game.score.split(' ')[2])
+            'line-clamp-1 overflow-ellipsis',
+            game.score.split(' ')[0] < game.score.split(' ')[2]
               ? 'text-green-500'
               : ' text-red-500',
           ]">
-            {{ game.user2.username }} ({{ game.score.split(" ")[2] }})
+            {{ game.user2.username }}
           </div>
         </div>
       </div>
@@ -360,7 +362,7 @@ export default {
 
     <!-- <AchievementsCard /> -->
     <div class="md:col-span-2 flex flex-col">
-      <h1 class="p-7 font-semibold text-4xl dark:text-white">Achievements:</h1>
+      <h1 class="p-3 md:p-7 font-semibold text-3xl md:text-4xl dark:text-white">Achievements:</h1>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
         <div v-for="(val, index) in achievements" :key="index"
           class="flex flex-col w-full items-center justify-center rounded-2xl mx-auto py-5 gap-2 custom-box-shadow dark:bg-slate-900 dark:text-white">

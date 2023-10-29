@@ -144,9 +144,15 @@ export default {
         Something went wrong. feel free to contact us if the problem presists.
       </p>
       <div class="flex gap-5 items-center justify-center w-full">
-        <button @click="this.$router.push('/')" class="mt-8 text-blue-500 hover:underline text-lg">Go to Home</button>
-        <button @click="this.$router.go(-1)" class="mt-8 text-blue-500 hover:underline text-lg">Go Back</button>
-        <button @click="this.isError = false" class="mt-8 text-blue-500 hover:underline text-lg">Refresh</button>
+        <button @click="this.$router.push('/')" class="mt-8 text-blue-500 hover:underline text-lg">
+          Go to Home
+        </button>
+        <button @click="this.$router.go(-1)" class="mt-8 text-blue-500 hover:underline text-lg">
+          Go Back
+        </button>
+        <button @click="this.isError = false" class="mt-8 text-blue-500 hover:underline text-lg">
+          Refresh
+        </button>
       </div>
     </div>
   </div>
@@ -184,7 +190,7 @@ export default {
     </div>
   </div>
   <!-- Profile -->
-  <div v-else class="grid grid-cols-1 h-full md:grid-cols-2 gap-10 p-10 ml-20 lg:ml-24 min-h-screen dark:bg-slate-800">
+  <div v-else class="grid grid-cols-1 h-full md:grid-cols-2 gap-10 p-2 md:p-10 ml-20 lg:ml-24 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
       class="flex flex-col max-h-[600px] gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
@@ -222,23 +228,25 @@ export default {
           </p>
         </div>
         <div v-else v-for="(game, index) in this.games" :key="index"
-          class="m-4 p-4 rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
+          class="flex m-4 p-4 justify-between items-center relative rounded-lg custom-box-shadow dark:bg-slate-800 dark:text-white">
           <div :class="[
-            'mb-2',
-            'font-bold',
+            'line-clamp-1 overflow-ellipsis',
             game.score.split(' ')[0] > game.score.split(' ')[2]
               ? 'text-green-500'
               : ' text-red-500',
           ]">
-            {{ game.user1.username }} ({{ game.score.split(" ")[0] }})
+            {{ game.user1.username }}
+          </div>
+          <div class=" absolute top-0 right-0 left-0 bottom-0 flex flex-col items-center justify-center font-bold">
+            {{ game.score }}
           </div>
           <div :class="[
-            'font-bold',
+            'line-clamp-1 overflow-ellipsis',
             game.score.split(' ')[0] < game.score.split(' ')[2]
               ? 'text-green-500'
               : ' text-red-500',
           ]">
-            {{ game.user2.username }} ({{ game.score.split(" ")[2] }})
+            {{ game.user2.username }}
           </div>
         </div>
       </div>

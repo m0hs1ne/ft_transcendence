@@ -10,10 +10,10 @@
           <img :src="this.person.avatar" alt="Avatar" class="w-12 rounded-full aspect-square object-cover" />
         </div>
         <div class="flex flex-col items-start justify-center">
-          <h1 class="font-bold text-lg">
+          <h1 class="font-bold md:text-lg line-clamp-1">
             {{ this.person.username }}
           </h1>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">
             {{
               this.person.inGame
               ? "Playing ..."
@@ -28,10 +28,10 @@
 
     <div class="flex items-center justify-center h-full gap-3">
       <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
-        class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
+        class="text-blue-600  h-8 w-8 md:h-10 md:w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
       <Icon v-if="this.NAtoBlock" @click="block()" title="Block"
-        class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
+        class="text-red-600  h-8 w-8 md:h-10 md:w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
     </div>
   </div>
   <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />

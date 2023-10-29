@@ -187,12 +187,12 @@ export default {
         class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
         <router-link :to="'/users/' + player.id" class="flex items-center justify-between min-w-full">
           <div class="flex items-center">
-            <div class="w-14 h-14 md:w-20 md:h-20 bg-gray-300 rounded-full shadow mr-4">
+            <div class="w-12 h-12 md:w-20 md:h-20 bg-gray-300 rounded-full shadow mr-2 md:mr-4">
               <img referrerpolicy="no-referrer" :src="player.avatar" alt="Avatar"
-                class="aspect-square object-cover rounded-full w-14 h-14 md:w-20 md:h-20" />
+                class="aspect-square object-cover rounded-full w-12 h-12 md:w-20 md:h-20" />
             </div>
             <p
-              class="w-36 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
+              class="w-32 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
               {{ player.username }}
             </p>
           </div>
@@ -212,11 +212,11 @@ export default {
         class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
         <div class="flex items-center justify-between min-w-full">
           <div class="flex items-center">
-            <div class="w-14 h-14 md:w-20 md:h-20 bg-gray-200 rounded-full shadow mr-4">
+            <div class="w-12 h-12 md:w-20 md:h-20 bg-gray-200 rounded-full shadow mr-2 md:mr-4">
               <Icon class="text-blue-600 w-full h-full" icon="clarity:group-solid" />
             </div>
             <p
-              class="w-36 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
+              class="w-32 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
               {{ channel.title }}
             </p>
           </div>

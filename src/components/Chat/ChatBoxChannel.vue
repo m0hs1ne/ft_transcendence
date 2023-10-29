@@ -6,7 +6,7 @@
     <div class="flex w-fit items-center">
       <Icon
         v-if="this.userStore.screenWidth < 768"
-        class="w-8 h-8 cursor-pointer mr-5"
+        class=" w-8 h-8 cursor-pointer mr-5"
         icon="ion:arrow-back"
         @click="this.userStore.viewMode = 'List'"
       />
@@ -14,7 +14,7 @@
         <Icon class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
       </div>
       <div class="flex flex-col items-start justify-center">
-        <h1 class="font-bold text-lg">
+        <h1 class="font-bold text-lg line-clamp-1">
           {{ this.channel.title }}
         </h1>
         <p class="text-sm text-gray-600 dark:text-gray-400">

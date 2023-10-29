@@ -348,11 +348,11 @@ export default {
     <!-- Enabling 2fa Card -->
     <div
       v-else-if="this.currentCard == 2"
-      class="flex flex-col gap-5 p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
+      class="flex flex-col gap-5 p-5 md:p-10 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900"
     >
-      <img src="http://10.32.125.38:3000/api/2fa/generate" alt="" class="w-64 h-64" />
+      <img src="http://10.32.125.38:3000/api/2fa/generate" alt="" class="w-52 h-52 md:w-64 md:h-64" />
       <p
-        class="flex w-full justify-start items-center py-5 px-10 font-Poppins font-light text-xl text-gray-500"
+        class="flex w-full justify-start items-center md:py-5 md:px-10 font-Poppins font-light text-xl text-gray-500"
       >
         Install Google Authenticator app, and scan the above qrcode and enter the given
         number to turn on 2FA.
@@ -373,18 +373,18 @@ export default {
         <p v-else class="text-red-500 pb-5">
           {{ this.otpCode.length < 6 ? "Code must be 6 digits" : "" }}
         </p>
-        <div class="flex w-full justify-end items-center font-bold pr-10 pb-5 gap-5">
+        <div class="flex w-full justify-center items-center font-bold gap-3 md:gap-5">
           <button
             @click="this.enable2FA()"
             :disabled="this.otpCode.length < 6"
-            class="text-gray-100 dark:text-white shadow w-fit py-2 px-5 bg-blue-500 rounded-lg"
+            class="text-gray-100 text-center dark:text-white shadow w-fit py-1 px-3 md:py-2 md:px-5 bg-blue-500 line-clamp-1 overflow-ellipsis rounded-lg"
           >
             Enable 2FA
           </button>
           <button
             type="button"
             @click="this.changeCard(0)"
-            class="dark:text-white shadow py-2 px-5 bg-gray-400 dark:bg-slate-700 rounded-lg"
+            class="dark:text-white shadow py-1 px-3 md:py-2 md:px-5 bg-gray-400 dark:bg-slate-700 rounded-lg"
           >
             Cancel
           </button>
