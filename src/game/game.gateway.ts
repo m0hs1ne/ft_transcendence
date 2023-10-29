@@ -12,6 +12,8 @@ import { verifyToken } from "src/utils/guard";
 import { LessThanOrEqual } from "typeorm";
 import { StringifyOptions } from "querystring";
 import { clients } from "src/chat_rooms/chat_rooms.gateway";
+import { Req } from "@nestjs/common";
+import { UsersService } from "src/users/users.service";
 
 @WebSocketGateway({
   namespace: "/game",
@@ -21,7 +23,9 @@ import { clients } from "src/chat_rooms/chat_rooms.gateway";
   },
 })
 export class GameGateway {
-  constructor(private readonly gameService: GameService) { }
+  constructor(private readonly gameService: GameService,
+    private readonly userService: UsersService
+    ) { }
 
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
@@ -44,7 +48,7 @@ export class GameGateway {
     }
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket, @Req() req) {
     try {
       const Payload = verifyToken(client.handshake.headers.cookie);
       if (this.rooms.has(this.clients.get(Payload.sub))) {
@@ -58,6 +62,17 @@ export class GameGateway {
           this.rooms.get(this.clients.get(Payload.sub)).RightPlayer.id,
           false,
         );
+        const cookie = verifyToken(req.handshake.cookie)
+        const myfriends = await this.userService.getfriends(cookie.sub);
+        if (myfriends) {
+          for (const friend of myfriends) {
+            const client = clients.get(friend.id);
+            if (client) {
+              client.emit("userStatus", { id: cookie.sub, inGame: false });
+            }
+          }
+        }
+
         this.clients.delete(this.rooms.get(this.clients.get(Payload.sub)).LeftPlayer.id);
         this.clients.delete(this.rooms.get(this.clients.get(Payload.sub)).RightPlayer.id);
         this.rooms.delete(this.clients.get(Payload.sub));
@@ -83,11 +98,11 @@ export class GameGateway {
     }
   }
   @SubscribeMessage("joinRoom")
-  handleJoinRoom(client: Socket, payload: any): void 
+  handleJoinRoom(client: Socket, payload: any, @Req() req) 
   {
     if (!this.ValidateClient(client)) { }
     else
-      this.CheckQueus(payload, client);
+      this.CheckQueus(payload, client, req);
   }
 
   ValidateClient(client: Socket): number {
@@ -105,7 +120,7 @@ export class GameGateway {
     }
   }
 
-  CheckQueus(mode: string, client: Socket) 
+  async CheckQueus(mode: string, client: Socket, @Req() req) 
   {
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
@@ -134,6 +149,17 @@ export class GameGateway {
         room.RightPlayer.id = payload1.sub;
         room.LeftPlayer.id = payload2.sub;
         this.gameService.setInGame(payload1.sub, payload2.sub, true);
+        const cookie = verifyToken(req.handshake.cookie)
+        const myfriends = await this.userService.getfriends(cookie.sub);
+        if (myfriends) {
+          for (const friend of myfriends) {
+            const client = clients.get(friend.id);
+            if (client) {
+              client.emit("userStatus", { id: cookie.sub, inGame: true });
+            }
+          }
+        }
+
         this.clients.set(payload1.sub, room.roomId);
         this.clients.set(payload2.sub, room.roomId);
         this.rooms.set(room.roomId, room);
@@ -170,7 +196,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage("PlayerLeave")
-  HandlePlayerLeave(client: any, payload: any): void {
+  async HandlePlayerLeave(client: any, payload: any, @Req() req) {
     if (this.rooms.has(payload.roomId)) {
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
       this.UpdateDbScore(payload.roomId);
@@ -181,7 +207,16 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
-
+      const cookie = verifyToken(req.handshake.cookie)
+      const myfriends = await this.userService.getfriends(cookie.sub);
+      if (myfriends) {
+        for (const friend of myfriends) {
+          const client = clients.get(friend.id);
+          if (client) {
+            client.emit("userStatus", { id: cookie.sub, inGame: false });
+          }
+        }
+      }
       this.rooms.delete(payload.roomId);
     }
     if (this.rooms.get(payload.roomId)) {
@@ -200,7 +235,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage("DeleteRoom")
-  DeleteRoom(client: any, payload: any): void {
+  async DeleteRoom(client: any, payload: any, @Req() req) {
     if (this.rooms.has(payload.roomId)) {
       this.UpdateDbScore(payload.roomId);
       if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
@@ -214,6 +249,16 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
+      const cookie = verifyToken(req.handshake.cookie)
+      const myfriends = await this.userService.getfriends(cookie.sub);
+      if (myfriends) {
+        for (const friend of myfriends) {
+          const client = clients.get(friend.id);
+          if (client) {
+            client.emit("userStatus", { id: payload.sub, inGame: false });
+          }
+        }
+      }
       this.rooms.delete(payload.roomId);
     }
   }
@@ -237,7 +282,7 @@ export class GameGateway {
       rightSocket.emit("Notification", {type: "updated", message: "A game was added"})
   }
   @SubscribeMessage("Chall")
-  HandlleChallenges(client: any, payload: any): void {
+  async HandlleChallenges(client: any, payload: any, @Req() req) {
     if (payload.type == "refuse") {
       if (this.Challenge.has(payload.oponentId))
         this.Challenge.delete(payload.oponentId);
@@ -252,7 +297,18 @@ export class GameGateway {
         room.GameMode = parseInt(payload.mode);
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
+
         this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
+        const cookie = verifyToken(req.handshake.cookie)
+        const myfriends = await this.userService.getfriends(cookie.sub);
+        if (myfriends) {
+          for (const friend of myfriends) {
+            const client = clients.get(friend.id);
+            if (client) {
+              client.emit("userStatus", { id: cookie.sub, inGame: true });
+            }
+          }
+        }
         this.clients.set(room.LeftPlayer.id, room.roomId);
         this.clients.set(room.RightPlayer.id, room.roomId);
         this.rooms.set(room.roomId, room);
