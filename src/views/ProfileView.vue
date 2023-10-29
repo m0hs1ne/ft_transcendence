@@ -95,6 +95,7 @@ export default {
       winrat,
       friendTab,
       friends,
+      state,
     };
   },
   components: {

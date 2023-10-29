@@ -19,7 +19,7 @@ export default
 </script>
 
 <template>
-	<router-link @click="this.gameData.setMode(this.limit, this.title)" to="/play"
+	<router-link @click="this.gameData.setData(this.limit, this.title, true)" to="/play"
 		class="relative rounded-2xl shadow-xl cursor-pointer">
 		<img referrerpolicy="no-referrer" :src="src" class="w-full h-full rounded-2xl shadow-xl object-cover">
 		<div class="absolute bottom-10 left-10  text-white">

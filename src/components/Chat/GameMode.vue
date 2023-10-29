@@ -68,9 +68,7 @@ export default {
                     mode: this.selectedOption,
                 })
             this.$GameSocket.on("start", (data) => {
-               
-                this.gameData.random = false;
-                this.gameData.mode = this.selectedOption;
+                this.gameData.setData(this.selectedOption, '', false);
                 this.$router.push('/play');
             })
             this.isOpend = false;

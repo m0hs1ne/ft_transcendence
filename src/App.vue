@@ -78,18 +78,18 @@ export default {
           this.state.friends = res.data.friends;
           this.state.blocked = res.data.blocked;
 
-          if (res.data.loggedFirstTime) {
-            await axios.patch(
-              "http://localhost:3000/api/users/profile/update/",
-              {
-                loggedFirstTime: false,
-              },
-              {
-                withCredentials: true,
-              }
-            );
-            this.$router.replace("/setting");
-          }
+          // if (res.data.loggedFirstTime) {
+          //   await axios.patch(
+          //     "http://localhost:3000/api/users/profile/update/",
+          //     {
+          //       loggedFirstTime: false,
+          //     },
+          //     {
+          //       withCredentials: true,
+          //     }
+          //   );
+          //   this.$router.replace("/setting");
+          // }
         }
       } catch (error) {
         console.log("Getting user profile error\n", error);

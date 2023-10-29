@@ -24,6 +24,7 @@ export default {
     const isNotMe = ref(false);
     const isFriend = ref(false);
     const isBlocked = ref(false);
+    const isBlockedBy = ref(false);
     const friendTab = ref(false);
     const userData = ref({});
     const achievements = ref([]);
@@ -45,6 +46,7 @@ export default {
       friendTab,
       userData,
       isBlocked,
+      isBlockedBy,
     };
   },
   components: {
@@ -136,6 +138,7 @@ export default {
         this.games = res.data.games;
         this.isFriend = this.state.friends.some((user) => user.id === res.data.id);
         this.isBlocked = this.state.blocked.some((user) => user.id === res.data.id);
+        this.isBlockedBy = this.state.userData.blockedBy.some((user) => user.id === res.data.id);
         this.is2FA = res.data.is2faEnabled;
         this.setAchievments();
         console.log("user from id: \n", res.data);
@@ -177,7 +180,6 @@ export default {
     },
     async unBlock() {
       this.isError = false;
-
       this.isLoading = true;
 
       try {
@@ -280,21 +282,25 @@ export default {
         <ProfileStat :title="this.winrat" description="Win-rat" />
       </div>
       <div class="flex w-full items-center justify-center gap-5">
-        <div v-if="this.isNotMe && !this.isBlocked"
+        <div v-if="this.isNotMe && !this.isBlocked && !this.isBlockedBy"
           class="flex items-center justify-center font-bold text-xl cursor-pointer">
           <Icon @click="this.friendLogic()" :icon="!this.isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'" height="50"
             class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300  rounded-lg" />
         </div>
-        <div v-if="this.isNotMe && this.isFriend && !this.isBlocked"
+        <div v-if="this.isNotMe && this.isFriend && !this.isBlocked  && !this.isBlockedBy"
           class="flex items-center justify-center font-bold text-xl cursor-pointer">
           <Icon @click="this.goToChat()" icon="fluent:chat-12-filled" height="50"
             class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300 rounded-lg" />
         </div>
-        <div v-if="this.isBlocked" @click="this.unBlock"
+        <div v-if="this.isBlocked  && !this.isBlockedBy" @click="this.unBlock"
           class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
           UnBlock
         </div>
-        <div @click="this.friendTab = true"
+        <div v-if="this.isBlockedBy"
+          class="flex items-center h-[50px] px-3 justify-center font-bold text-xl bg-gray-200 rounded-lg shadow-lg">
+          You're Blocked
+        </div>
+        <div v-else @click="this.friendTab = true"
           class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
           View Friends
         </div>

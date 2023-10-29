@@ -124,16 +124,18 @@ export const SharedData = defineStore("Shard", {
 
 export const GameData = defineStore("Game", {
   state: () => ({
+    phase: 'W',
     modeLimit: 1,
     modeTitle: 1,
     random: true,
   }),
 
   actions: {
-    setMode(limit, title) {
+    setData(limit, title, isRandom) {
       this.modeLimit = limit;
       this.modeTitle = title;
-      this.random = true;
+      this.random = isRandom;
+      this.phase = 'W';
     },
   },
 });

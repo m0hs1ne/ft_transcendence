@@ -1,16 +1,16 @@
 <!-- CanvasComponent.vue -->
 <template>
   <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
-    <WaitingModel v-if="phase === 'W'" />
-    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"
+    <WaitingModel v-if="gameData.phase === 'W'" />
+    <ScoreBar v-if="gameData.phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"
       :limit="mode" />
-    <canvas v-if="phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
-    <button v-if="phase === 'P'" @click="$router.go(-1)"
+    <canvas v-if="gameData.phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
+    <button v-if="gameData.phase === 'P'" @click="$router.go(-1)"
       class="text-gray-100 dark:text-white shadow w-fit mt-3 py-5 px-7 bg-gray-500 rounded-md text-2xl font-bold">
       Withdraw
     </button>
-    <WinModel v-if="phase === 'N'" :limit="mode" />
-    <LoseModel v-if="phase === 'L'" :limit="mode" />
+    <WinModel v-if="gameData.phase === 'N'" :limit="mode" />
+    <LoseModel v-if="gameData.phase === 'L'" :limit="mode" />
   </div>
 </template>
 
@@ -27,9 +27,8 @@ import type { Socket } from "socket.io-client";
 
 export default {
   setup() {
-    const phase = ref('W');
     const gameData = GameData();
-    return { gameData, phase };
+    return { gameData };
   },
   components: {
     WaitingModel,
@@ -155,7 +154,7 @@ export default {
           console.log("startGame");
           this.RoomId = data.id;
           this.pos = data.pos;
-          this.phase = 'P';
+          this.gameData.phase = 'P';
           this.mode = data.mode;
           if (this.pos === "Left") {
             this.leftID = data.CurrentID;
@@ -185,11 +184,11 @@ export default {
         });
 
         this.GameSocket.on("Lose", (data: any) => {
-          this.phase = 'L';
+          this.gameData.phase = 'L';
         });
 
         this.GameSocket.on("Win", (data: any) => {
-          this.phase = 'N';
+          this.gameData.phase = 'N';
           clearInterval(this.intervalId);
         });
 
@@ -247,8 +246,8 @@ export default {
     },
   },
   updated() {
-    console.log("New pahse is: ", this.phase);
-    if (this.phase === 'P' && !this.Canvas) {
+    console.log("New pahse is: ", this.gameData.phase);
+    if (this.gameData.phase === 'P' && !this.Canvas) {
       this.Canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
       if (this.Canvas) {
         this.Context = this.Canvas.getContext("2d");
@@ -267,10 +266,13 @@ export default {
   },
   mounted() {
     console.log("mounted ");
-    this.GameSocket = app.config.globalProperties.$GameSocket;
-    this.EventsHandler();
-    if (this.gameData.random)
-      this.JoinGameEvent();
+    if (this.gameData.phase === 'W')
+    {
+      this.GameSocket = app.config.globalProperties.$GameSocket;
+      this.EventsHandler();
+      if (this.gameData.random)
+        this.JoinGameEvent();
+    }
   },
   unmounted() {
     this.EventsKiller();

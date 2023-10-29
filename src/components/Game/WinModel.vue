@@ -34,8 +34,7 @@ export default {
   },
     methods: {
         async playAgain() {
-            this.gameData.random = true;
-            this.gameData.modeLimit = this.limit;
+            this.gameData.setData(this.limit, '', true);
             await this.$router.replace('/');
             this.$router.push('/play');
         },
