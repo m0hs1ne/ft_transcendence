@@ -101,3 +101,21 @@ export function validateCharacters(input) {
   var pattern = /[^a-zA-Z0-9\s'".,?!:;\\]/;
   return !pattern.test(input);
 }
+
+export function isValidFileType(file: Express.Multer.File): boolean {
+  const allowedFileTypes = ['.png', '.jpeg', '.jpg', '.gif'];
+  const fileExtension = getFileExtension(file.originalname);
+  
+  return allowedFileTypes.includes(fileExtension.toLowerCase());
+}
+
+export function isValidFileSize(file: Express.Multer.File): boolean {
+  const maxSizeInBytes = 1024 * 1024 * 4; // 4MB
+  
+  return file.size <= maxSizeInBytes;
+}
+
+function getFileExtension(filename: string): string {
+  const extension = filename.split('.').pop();
+  return extension ? `.${extension}` : '';
+}
