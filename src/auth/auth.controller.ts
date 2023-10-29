@@ -55,30 +55,6 @@ export class AuthController {
     res.end();
   }
 
-  @Get("check")
-  @UseGuards(userAuthGuard)
-  async check(@Req() req: Request, @Res() res: Response) {
-    const payload = verifyToken(req.headers.cookie);
-    const user = await this.userService.findOne(payload.sub);
-    if(user.loggedFirstTime === false){
-      res.send({firstTime: true});
-    }
-    else {
-      res.send({firstTime: false});
-    }
-    res.end();
-  }
-
-  @Get("change")
-  @UseGuards(userAuthGuard)
-  async change(@Req() req: Request, @Res() res: Response) {
-    const payload = verifyToken(req.headers.cookie);
-    const user = await this.userService.findOne(payload.sub);
-    if(user.loggedFirstTime === false){
-      this.userService.updateLoggedFirstTime(payload.sub);
-    }
-  }
-
   /**
    * Logout the user by clearing the jwt cookie and session cookie
    */
