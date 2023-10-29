@@ -22,7 +22,7 @@
       class="flex w-fit custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-10 flex-row items-center justify-center gap-5">
       <div class="flex">
         <EditeProfile v-if="this.EditChannel" />
-        <ConfirmPopup v-if="this.userStore.action" />
+        <!-- <ConfirmPopup v-if="this.userStore.action" /> -->
         <UpdateMember v-if="this.userStore.MemberRoleStatus" />
       </div>
 
@@ -95,7 +95,7 @@ export default {
   methods: {
     async fetchData() {
       this.role = await axios.get(
-        `http://localhost:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
+        `http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true }
       );
 
@@ -130,7 +130,7 @@ export default {
       if (data.type == "updated") {
         this.fetchData();
       }
-      
+
     });
     await this.$socket.on("receiveMessage", (data) => {
       console.log("receiveMessage form channel profile--------- ", data);
@@ -140,7 +140,7 @@ export default {
         (data.type == "notification" && data.action == "role") ||
         (data.type == "notification" && data.action == "kick")
       ) {
-        if(data.action == "kick" && data.from.id == this.userStore.MyId)
+        if (data.action == "kick" && data.from.id == this.userStore.MyId)
           return;
         this.fetchData();
       }

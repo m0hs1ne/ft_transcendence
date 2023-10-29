@@ -65,9 +65,9 @@ export default {
 
       console.log("This Friends : ", this.userStore.UserFriends.data)
       console.log("This Members : ", this.members);
-      if (this.friends.length === 0) {
-        this.message = "you don't have any friends to invite them";
-      }
+      // if (this.friends.length === 0) {
+      //   this.message = "you don't have any friends to invite them";
+      // }
 
       this.userStore.UserFriends.data.forEach(element => {
         // to get friends not found in the channel

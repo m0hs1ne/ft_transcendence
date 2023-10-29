@@ -1,5 +1,5 @@
 FriendListComponent.vue
- <template>
+<template>
   <!-- <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
     <GameMode v-if="this.userStore.creatchallenge" />
     <div class="flex-shrink-0">
@@ -61,7 +61,7 @@ export default {
     Block() {
       console.log(" block user ", this.person)
 
-      axios.post("http://localhost:3000/api/users/blocked/", {
+      axios.post("http://10.32.120.112:3000/api/users/blocked/", {
 
         id: parseInt(this.person.id)
       }, {

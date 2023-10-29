@@ -1,6 +1,6 @@
 <template>
+	<ConfirmPopup v-if="this.userStore.action" />
 	<div class="flex h-screen ml-20 lg:ml-24 dark:bg-slate-800 p-5 text-gray-700">
-	
 		<ChatGroupFriend v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
 			@object-sent="handleObject" />
 
@@ -26,6 +26,7 @@ import ChatChannelProfil from "../components/Chat/ChannelProfil.vue";
 import ChatUserProfile from "../components/Chat/UserProfile.vue";
 import ErrorPopup from "../components/Chat/ErrorPopup.vue";
 import ConfirmPlay from "../components/Chat/ConfirmPlay.vue";
+import ConfirmPopup from "../components/Chat/ConfirmPopup.vue";
 
 import { useUserStore } from "./../stores/state.ts";
 export default {
@@ -44,6 +45,7 @@ export default {
 		ChatChannelProfil,
 		ErrorPopup,
 		ConfirmPlay,
+		ConfirmPopup,
 	},
 	data() {
 		return {
@@ -126,7 +128,7 @@ export default {
 			else this.IsChannel(object);
 		},
 	},
-
+    
 	async mounted() {
 		// Attach an event listener to the window resize event
 		window.addEventListener("resize", this.updateScreenWidth);
