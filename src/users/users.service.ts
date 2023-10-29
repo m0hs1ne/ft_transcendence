@@ -61,6 +61,7 @@ export class UsersService {
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.friends", "friends")
       .leftJoinAndSelect("users.blocked", "blocked")
+      .leftJoinAndSelect("users.blockedBy", "blockedBy")
       .leftJoinAndSelect("users.achievements", "achievement")
       .where("users.id = :id", { id })
       .select([
@@ -78,8 +79,7 @@ export class UsersService {
         "friends.losses",
         "friends.avatar",
         "blocked.id",
-        "blocked.username",
-        "blocked.avatar",
+        "blockedBy.id",
         "achievement.title",
         "achievement.image",
       ])
@@ -112,6 +112,8 @@ export class UsersService {
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.friends", "friends")
       .leftJoinAndSelect("users.games", "games")
+      .leftJoinAndSelect("users.blocked", "blocked")
+      .leftJoinAndSelect("users.blockedBy", "blockedBy")
       .leftJoinAndSelect("users.achievements", "achievement")
       .where("users.id = :id", { id })
       .select([
@@ -126,6 +128,8 @@ export class UsersService {
         "friends.wins",
         "friends.losses",
         "friends.avatar",
+        "blocked.id",
+        "blockedBy.id",
         "achievement.title",
         "achievement.image",
       ])
