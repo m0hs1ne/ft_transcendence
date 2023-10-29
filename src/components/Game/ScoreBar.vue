@@ -30,13 +30,13 @@ export default {
             try {
                 console.log("==> ", props.leftID, props.rightID);
                 const res1 = await axios.get(
-                    `http://localhost:3000/api/users/profile/${props.leftID}`,
+                    `http://10.32.120.112:3000/api/users/profile/${props.leftID}`,
                     {
                         withCredentials: true,
                     }
                 );
                 const res2 = await axios.get(
-                    `http://localhost:3000/api/users/profile/${props.rightID}`,
+                    `http://10.32.120.112:3000/api/users/profile/${props.rightID}`,
                     {
                         withCredentials: true,
                     }
@@ -59,7 +59,6 @@ export default {
 
 
 <template>
-
     <div class="p-2.5 md:p-5 flex items-center justify-between rounded-full  custom-box-shadow dark:bg-slate-900">
         <div class="flex items-center justify-start w-50 md:w-80 ">
             <div class="w-20 h-20 md:w-28 md:h-28 bg-gray-300 rounded-full shadow">

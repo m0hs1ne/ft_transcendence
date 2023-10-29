@@ -30,7 +30,7 @@
       <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
         class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
-      <Icon v-if=" this.NAtoBlock" @click="block()" title="Block"
+      <Icon v-if="this.NAtoBlock" @click="block()" title="Block"
         class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
     </div>
   </div>
@@ -105,7 +105,7 @@ export default {
       newMessage: "",
       UserProfile: {},
       length: 0,
-      NAtoBlock :true
+      NAtoBlock: true
     };
   },
   methods: {
@@ -120,26 +120,29 @@ export default {
       //console.log(this.person, this.ActiveChannelId);
       //console.log(this.$GameSocket);
     },
-     block() {
+    block() {
       console.log(" block user ", this.person);
-
-      axios
-        .post(
-          "http://localhost:3000/api/users/blocked/",
-          {
-            id: parseInt(this.person.id),
-          },
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          //console.log(response);
-        })
-        .catch((error) => {
-          //console.error("Error fetching data:", error);
-        });
-   //   await this.userStore.fetchDataForDmChatRooms();
+      this.userStore.action = {
+        block:"block",
+        id: this.person.id
+      };
+      // axios
+      //   .post(
+      //     "http://10.32.120.112:3000/api/users/blocked/",
+      //     {
+      //       id: parseInt(this.person.id),
+      //     },
+      //     {
+      //       withCredentials: true,
+      //     }
+      //   )
+      //   .then((response) => {
+      //     //console.log(response);
+      //   })
+      //   .catch((error) => {
+      //     //console.error("Error fetching data:", error);
+      //   });
+      //   await this.userStore.fetchDataForDmChatRooms();
       // console.log("The ,, ", this.userStore.DmChatroomsList)
     },
     sendMessage() {
@@ -160,50 +163,50 @@ export default {
   },
 
   mounted() {
-   
-      this.UserProfile = this.person;
 
-      console.log(" I am in Mounted in chatbox ", this.UserProfile);
-      this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
-      this.$socket.on("receiveMessage", (data) => {
-        //this.messages.img = data.message.from.avatar
-        console.log(" I am receve some messages ")
-        if (data.type == "DM") {
+    this.UserProfile = this.person;
+
+    console.log(" I am in Mounted in chatbox ", this.UserProfile);
+    this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
+    this.$socket.on("receiveMessage", (data) => {
+      //this.messages.img = data.message.from.avatar
+      console.log(" I am receve some messages ")
+      if (data.type == "DM") {
+        var type = "";
+        if (data.message.from.id != this.person.id) type = "sent";
+        else type = "received";
+
+        this.messages.push({
+          img: data.message.from.avatar,
+          type: type,
+          text: data.message.message,
+        });
+      }
+      if (data.type == "DMMessages") {
+        data.messages.forEach((element) => {
           var type = "";
-          if (data.message.from.id != this.person.id) type = "sent";
+          if (element.from.id != this.person.id) type = "sent";
           else type = "received";
 
           this.messages.push({
-            img: data.message.from.avatar,
+            // id: Date.now(),
+            img: element.from.avatar,
             type: type,
-            text: data.message.message,
+            text: element.message,
+            desc: element.from.username,
           });
-        }
-        if (data.type == "DMMessages") {
-          data.messages.forEach((element) => {
-            var type = "";
-            if (element.from.id != this.person.id) type = "sent";
-            else type = "received";
-
-            this.messages.push({
-              // id: Date.now(),
-              img: element.from.avatar,
-              type: type,
-              text: element.message,
-              desc: element.from.username,
-            });
-          });
-        }
-
-
-
-
-
-        this.$nextTick(() => {
-          const scrollContainer = this.$refs.scrollContainer;
-          if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
         });
+      }
+
+
+
+
+
+      this.$nextTick(() => {
+        const scrollContainer = this.$refs.scrollContainer;
+        if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
       });
-    },
+    });
+  },
 };
 </script>

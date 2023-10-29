@@ -16,6 +16,7 @@
   
 <script>
 import { useUserStore } from '../../stores/state.ts';
+import axios from "axios";
 export default {
   setup() {
     const userStore = useUserStore();
@@ -27,7 +28,8 @@ export default {
       selectedOption: '',
       password: '',
       isOpend: false,
-      message: false
+      message: false,
+      id:'',
     };
   },
   methods: {
@@ -41,6 +43,31 @@ export default {
             memberId: this.userStore.MyId,
             chatId: this.userStore.ActiveChannelId
           })
+      }
+      else if(this.userStore.action == 'Are you sure you want to Block this User?')
+      {
+          console.log(this.id)
+          axios
+        .post(
+          "http://10.32.120.112:3000/api/users/blocked/",
+          {
+            id: parseInt(this.id),
+          },
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          //console.log(response);
+        })
+        .catch((error) => {
+          //console.error("Error fetching data:", error);
+        });
+        this.userStore.ActiveChannelId = -1
+        this.userStore.ItemClicked = ''
+        this.userStore.fetchChannelById();
+        this.activeChatId = '';
+        console.log("===================>",this.userStore.ItemClicked)
       }
       else{
         
@@ -64,6 +91,12 @@ export default {
     },
   },
   mounted() {
+    console.log(this.userStore.action)
+    if((typeof this.userStore.action) == "object")
+    {
+      this.id = this.userStore.action.id
+      this.userStore.action = "Are you sure you want to Block this User?"
+    }
     this.isOpend = true;
   },
 };

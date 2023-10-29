@@ -21,7 +21,7 @@ export default {
 			const confirmed = window.confirm('Are you sure you want to log out?');
 			if (confirmed) {
 				try {
-					await axios.get('http://localhost:3000/api/auth/logout', { withCredentials: true });
+					await axios.get('http://10.32.120.112:3000/api/auth/logout', { withCredentials: true });
 					this.$socket.disconnect();
 					this.$router.push('/signIn');
 
@@ -47,7 +47,8 @@ export default {
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">
-			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem] md:w-[10rem] lg:w-[15rem]">
+			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo"
+				class="w-[5rem] md:w-[10rem] lg:w-[15rem]">
 		</div>
 
 		<!-- Tabs -->
