@@ -315,6 +315,8 @@ export class GameGateway {
 
   async sentNotifInGame(leftId, rightId, inGame)
   {
+
+    console.log("printin")
     const leftFriends = await this.userService.getfriends(leftId);
     if (leftFriends) {
       for (const friend of leftFriends) {

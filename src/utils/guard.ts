@@ -65,6 +65,8 @@ export function verifyToken(cookie: string): any {
     throw new Error('Cookie is undefined');
   }
   try {
+    if (!cookie)
+      throw new Error('Invalid token');
     const jwtToken = cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1];
     const payload = jwt.verify(jwtToken, process.env.SESSION_SECRET);
     return payload;
