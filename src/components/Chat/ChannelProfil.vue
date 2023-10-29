@@ -95,7 +95,7 @@ export default {
   methods: {
     async fetchData() {
       this.role = await axios.get(
-        `http://10.32.120.112:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
+        `http://10.32.125.38:3000/api/chat-rooms/myrole/${this.userStore.ActiveChannelId}`,
         { withCredentials: true }
       );
 
