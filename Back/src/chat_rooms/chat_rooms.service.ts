@@ -101,16 +101,20 @@ export class ChatRoomsService {
       .createQueryBuilder("user_chat")
       .leftJoinAndSelect("user_chat.chatRoom", "chatRoom")
       .where("user_chat.userId = :id ", { id })
-      // .where('user_chat.userStatus != :status', { status: 'banned' })
+      .andWhere('user_chat.userStatus != :status', { status: 'banned' })
       .select([
         "user_chat.id",
+        "user_chat.userStatus",
         "chatRoom.id",
         "chatRoom.owner",
         "chatRoom.title",
         "chatRoom.privacy",
       ])
       .getMany();
-    for (const userChat of userChats) mychatRooms.push(userChat.chatRoom);
+    for (const userChat of userChats)
+    {
+        mychatRooms.push(userChat.chatRoom)
+    }
     if (!mychatRooms)
       throw new NotFoundException({ message: `You didn't join any chat.` });
     return mychatRooms;
@@ -297,7 +301,7 @@ export class ChatRoomsService {
         "kick",
       );
       this.userChatRepository.remove(userChat);
-      return;
+      return false;
     } else if (userChat.role == "owner") {
       const members = await this.userChatRepository.find({
         where: { chatRoomId: chatId, userStatus: In(["normal", "muted"]) },

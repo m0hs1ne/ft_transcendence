@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div class="z-9999">
         <div v-if="isOpend" class="fixed top-4 right-4 bg-blue-300 text-white px-4 py-2 rounded-lg shadow-lg">
 
-            <h2 class="text-xl font-bold mb-4 from-neutral-600 "> {{ this.strings }}</h2>
+            <h2 class="text-xl font-bold mb-4 from-neutral-600 dark:text-white "> {{ this.strings }}</h2>
             <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 La
             </button>
@@ -40,39 +40,45 @@ export default {
                 type: 'opp',
                 mode: this.message.invitation.mode,
             })
-            
+
             this.isOpend = false;
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
-            this.gameData.random = false;
+            this.gameData.setData(this.message.invitation.mode, '', false);
             this.$router.push('/play');
         },
 
         closePopup() {
             this.isOpend = false;
             this.userStore.Opponent = '';
-            this.$GameSocket.emit('Chall', {
-                oponentId: this.message.invitation.to.id,
-                challId: this.message.invitation.from.id,
-                type: 'refuse',
-                mode: this.message.invitation.mode,
-            })
+            if (this.message.invitation.to) {
+                this.$GameSocket.emit('Chall', {
+                    oponentId: this.message.invitation.to.id,
+                    challId: this.message.invitation.from.id,
+                    type: 'refuse',
+                    mode: this.message.invitation.mode,
+                })
+            }
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
         },
         showToast() {
             setTimeout(() => {
                 this.hideToast();
-            }, 10000);
+            }, 5000);
         },
         hideToast() {
             this.isOpend = false;
-            this.$GameSocket.emit('Chall', {
-                oponentId: this.message.invitation.to.id,
-                challId: this.message.invitation.from.id,
-                type: 'refuse',
-                mode: this.message.invitation.mode,
-            })
+            console.log(this.message)
+            if (this.message.invitation.to) {
+                this.$GameSocket.emit('Chall', {
+
+                    oponentId: this.message.invitation.to.id,
+                    challId: this.message.invitation.from.id,
+                    type: 'refuse',
+                    mode: this.message.invitation.mode,
+                })
+            }
             this.userStore.Opponent = {};
             this.userStore.creatchallenge = false;
         },
@@ -92,4 +98,3 @@ export default {
     },
 };
 </script>
-    

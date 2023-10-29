@@ -61,6 +61,7 @@ export class UsersService {
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.friends", "friends")
       .leftJoinAndSelect("users.blocked", "blocked")
+      .leftJoinAndSelect("users.blockedBy", "blockedBy")
       .leftJoinAndSelect("users.achievements", "achievement")
       .where("users.id = :id", { id })
       .select([
@@ -70,6 +71,7 @@ export class UsersService {
         "users.losses",
         "users.avatar",
         "users.validSession",
+        "users.loggedFirstTime",
         "users.is2faEnabled",
         "friends.id",
         "friends.username",
@@ -77,8 +79,7 @@ export class UsersService {
         "friends.losses",
         "friends.avatar",
         "blocked.id",
-        "blocked.username",
-        "blocked.avatar",
+        "blockedBy.id",
         "achievement.title",
         "achievement.image",
       ])
@@ -107,12 +108,12 @@ export class UsersService {
   }
 
   async profile(id: number, payload) {
-    if (await this.checkUserisBlockedByUser(id, payload.sub))
-      throw new NotAcceptableException();
     const user = await this.userRepository
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.friends", "friends")
       .leftJoinAndSelect("users.games", "games")
+      .leftJoinAndSelect("users.blocked", "blocked")
+      .leftJoinAndSelect("users.blockedBy", "blockedBy")
       .leftJoinAndSelect("users.achievements", "achievement")
       .where("users.id = :id", { id })
       .select([
@@ -127,6 +128,8 @@ export class UsersService {
         "friends.wins",
         "friends.losses",
         "friends.avatar",
+        "blocked.id",
+        "blockedBy.id",
         "achievement.title",
         "achievement.image",
       ])
@@ -188,6 +191,19 @@ export class UsersService {
       { id },
       {
         validSession,
+      },
+    );
+    return updatedUser;
+  }
+
+  async updatelogged(id: number, loggedFirstTime) {
+    const options: FindOneOptions<User> = {
+      where: { id },
+    };
+    const updatedUser = await this.userRepository.update(
+      { id },
+      {
+        loggedFirstTime,
       },
     );
     return updatedUser;
@@ -272,9 +288,10 @@ export class UsersService {
       .createQueryBuilder("users")
       .leftJoinAndSelect("users.blocked", "blocked")
       .where("users.id = :id", { id })
-      .select(["blocked.id", "blocked.username", "blocked.avatar"])
+      .select(["users.id","blocked.id", "blocked.username", "blocked.avatar"])
       .getOne();
-    return blocked;
+
+    return blocked.blocked;
   }
 
   async addAchievement(title, id) {
@@ -291,7 +308,7 @@ export class UsersService {
     };
     const friend =await this.userRepository
     .createQueryBuilder("user")
-    .leftJoinAndSelect("user.blockedBy", "friend")
+    .leftJoinAndSelect("user.blockedBy", "blockedBy")
     .where("user.id = :id", { id })
     .getOne();
     if (!friend) {
@@ -300,24 +317,28 @@ export class UsersService {
     const payload = verifyToken(req.headers.cookie);
     const me = await this.userRepository
       .createQueryBuilder("user")
-      .leftJoinAndSelect("user.blocked", "friend")
+      .leftJoinAndSelect("user.blocked", "blocked")
       .where("user.id = :id", { id: payload.sub })
       .getOne();
     me.blocked.push(friend);
     friend.blockedBy.push(me);
     this.removefriends(id, req);
     this.userRepository.save(me);
+    this.userRepository.save(friend);
     return { message: `${friend.username} was added to your blocked list.` };
   }
 
+
   async removeblocked(id: number, @Req() req) {
+
     const payload = verifyToken(req.headers.cookie);
     await this.userRepository.query(
       `DELETE FROM blocked WHERE ("userId" = $2 AND "blockedId" = $1)`,
       [id, payload.sub],
     );
+
     await this.userRepository.query(
-      `DELETE FROM blockedBy WHERE ("userId" = $1 AND "blockedById" = $2)`,
+      `DELETE FROM "blockedBy" WHERE ("userId" = $1 AND "blockedById" = $2)`,
       [id, payload.sub],
     );
     return { message: `${id} was removed from your friends` };
@@ -329,6 +350,15 @@ export class UsersService {
     });
     if (!user) return;
     user.disconnectAt = new Date();
+    await this.userRepository.save(user);
+  }
+
+  async updateLoggedFirstTime(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) return;
+    user.loggedFirstTime = true;
     await this.userRepository.save(user);
   }
 

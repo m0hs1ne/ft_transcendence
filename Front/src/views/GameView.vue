@@ -1,17 +1,21 @@
 <!-- CanvasComponent.vue -->
 <template>
-  <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
-    <WaitingModel v-if="phase === 'W'" />
-    <ScoreBar v-if="phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"/>
-    <canvas v-if="phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
-    <WinModel v-if="phase === 'N'" />
-    <LoseModel v-if="phase === 'L'" />
+  <div class="flex flex-col gap-5 bg-white dark:bg-slate-800 h-full min-h-screen items-center justify-center">
+    <WaitingModel v-if="gameData.phase === 'W'" />
+    <ScoreBar v-if="gameData.phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"
+      :limit="mode" />
+    <canvas v-if="gameData.phase === 'P'" id="gameCanvas" @keydown="handleKeyDown" tabindex="1" class="shadow-lg"></canvas>
+    <button v-if="gameData.phase === 'P'" @click="$router.go(-1)"
+      class="text-gray-100 dark:text-white shadow w-fit mt-3 py-5 px-7 bg-gray-500 rounded-md text-2xl font-bold">
+      Withdraw
+    </button>
+    <WinModel v-if="gameData.phase === 'N'" :limit="gameData.modeLimit" />
+    <LoseModel v-if="gameData.phase === 'L'" :limit="gameData.modeLimit" />
   </div>
 </template>
 
 
 <script lang="ts">
-import { ref } from 'vue'
 import { app } from "../main";
 import { GameData } from "../stores/state";
 import WaitingModel from "./../components/Game/WaitingModel.vue";
@@ -22,9 +26,8 @@ import type { Socket } from "socket.io-client";
 
 export default {
   setup() {
-    const phase = ref('W');
     const gameData = GameData();
-    return { gameData, phase };
+    return { gameData };
   },
   components: {
     WaitingModel,
@@ -50,10 +53,11 @@ export default {
       Context: null as CanvasRenderingContext2D | null,
       Canvas: null as HTMLCanvasElement | null,
       GameSocket: null as Socket | null,
+      mode: '1',
     };
   },
 
-  mounted() {
+  created() {
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("resize", this.CanvasResize);
   },
@@ -111,7 +115,7 @@ export default {
 
     CanvasResize() {
       if (this.Canvas) {
-        this.Canvas.width = window.innerWidth * 0.8;
+        this.Canvas.width = window.innerWidth * 0.7;
         this.Canvas.height = this.Canvas.width * 0.5;
         this.PaddleHeight = this.Canvas.height * 0.25;
         this.PaddleWidth = this.Canvas.width * 0.02;
@@ -146,17 +150,16 @@ export default {
         });
 
         this.GameSocket.on("startGame", (data: any) => {
-          console.log("startGame");
           this.RoomId = data.id;
           this.pos = data.pos;
-          this.phase = 'P';
-          if (this.pos === "Left")
+          this.gameData.phase = 'P';
+          this.mode = data.mode;
+          if (this.pos === "Left") 
           {
             this.leftID = data.CurrentID;
             this.rightID = data.OpponentID;
           }
-          else
-          {
+          else {
             this.rightID = data.CurrentID;
             this.leftID = data.OpponentID;
           }
@@ -166,15 +169,13 @@ export default {
         });
 
         this.GameSocket.on("Score", (data: any) => {
-          if (this.pos === "Left")
-          {
-            console.log("LEFT SCORE" ,data);
+          if (this.pos === "Left") {
+            console.log("LEFT SCORE", data);
             this.leftScore = data.Current;
             this.rightScore = data.Oponent;
           }
-          else
-          {
-            console.log("RIGHT SCORE" ,data);
+          else {
+            console.log("RIGHT SCORE", data);
 
             this.rightScore = data.Current;
             this.leftScore = data.Oponent;
@@ -182,11 +183,11 @@ export default {
         });
 
         this.GameSocket.on("Lose", (data: any) => {
-          this.phase = 'L';
+          this.gameData.phase = 'L';
         });
 
         this.GameSocket.on("Win", (data: any) => {
-          this.phase = 'N';
+          this.gameData.phase = 'N';
           clearInterval(this.intervalId);
         });
 
@@ -214,9 +215,9 @@ export default {
 
     JoinGameEvent() {
       if (this.GameSocket) {
-        this.GameSocket.emit("joinRoom", {
-          mode: this.gameData.modeLimit,
-        });
+        console.log("this.gameData.modeLimit: ", this.gameData.modeLimit)
+        this.GameSocket.emit("joinRoom", this.gameData.modeLimit);
+        // this.mode = this.gameData.modeLimit;
       }
     },
 
@@ -244,8 +245,8 @@ export default {
     },
   },
   updated() {
-    console.log("New pahse is: ", this.phase);
-    if (this.phase === 'P' && !this.Canvas) {
+    console.log("New pahse is: ", this.gameData.phase);
+    if (this.gameData.phase === 'P' && !this.Canvas) {
       this.Canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
       if (this.Canvas) {
         this.Context = this.Canvas.getContext("2d");
@@ -264,20 +265,22 @@ export default {
   },
   mounted() {
     console.log("mounted ");
-    this.GameSocket = app.config.globalProperties.$GameSocket;
-    this.EventsHandler();
-    if(this.gameData.random)
+    if (this.gameData.phase === 'W')
+    {
+      this.GameSocket = app.config.globalProperties.$GameSocket;
+      this.EventsHandler();
+      if (this.gameData.random)
         this.JoinGameEvent();
+    }
   },
   unmounted() {
     this.EventsKiller();
-    if(this.GameSocket)
-    {    
+    if (this.GameSocket) {
       this.GameSocket.emit("PlayerLeave", {
-      roomId: this.RoomId,
-      pos: this.pos,
-      mode: this.gameData.modeLimit,
-    });
+        roomId: this.RoomId,
+        pos: this.pos,
+        mode: this.gameData.modeLimit,
+      });
     }
     clearInterval(this.intervalId);
     console.log("Unmounted");

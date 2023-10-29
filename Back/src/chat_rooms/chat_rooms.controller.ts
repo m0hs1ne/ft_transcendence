@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { generateRandomString, userAuthGuard, verifyToken } from 'src/utils/guard';
 import { ChatRoomsService } from './chat_rooms.service';
 import { UsersService } from 'src/users/users.service';
@@ -16,35 +16,55 @@ export class ChatRoomsController {
         ,private readonly userchatservice: UserChatService) {}
 
     @Get()
-    async myChatRoom(@Req() req){
+    async myChatRoom(@Req() req, @Res() res){
+      try
+      {
         const payload = verifyToken(req.headers.cookie)
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
-        return chatrooms
+        res.send(chatrooms)
+      }
+      catch(e){
+        res.send({message: e.message, result: "error"})
+      }
     }
     
     @Get('/DM_chatrooms')
-    async all(@Req() req){
+    async all(@Req() req, @Res() res){
+      try
+      {
         const payload = verifyToken(req.headers.cookie)
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
         const friends = await this.userservice.getfriends(payload.sub)
         let result = [];
         result = result.concat(friends)
         result = result.concat(chatrooms)
-        return result;
+        res.send(result);
+      }
+      catch(e){
+        res.send({message: e.message, result: "error"})
+      }
     }
 
     @Get('myrole/:id')
-    async myrole(@Param('id') id, @Req() req)
+    async myrole(@Param('id') id, @Req() req, @Res() res)
     {
+      try
+      {
         if (isNaN(id))
           throw new BadRequestException()
         const payload = verifyToken(req.headers.cookie)
         const role = await this.userchatservice.myrole(id, payload.sub)
-        return role
+        res.send(role)
+      }
+      catch(e){
+        res.send({message: e.message, result: "error"})
+      }
     }
     
     @Get(':id')
-    async chatroomDetails(@Param('id') id, @Req() req){
+    async chatroomDetails(@Param('id') id, @Req() req, @Res() res){
+      try
+      {
         if (isNaN(id))
           throw new BadRequestException()
         const payload = verifyToken(req.headers.cookie)
@@ -52,7 +72,11 @@ export class ChatRoomsController {
         const messages = await this.chatroomservice.getMessages('chat', id, payload)
         const props = await this.chatroomservice.findOneById(id)
         let details = {id:payload.sub, chatId: props.id, title:props.title, members, messages}
-        return details
+        res.send( details)
+      } 
+        catch(e){
+          res.send({message: e.message, result: "error"})
+        }
     }
 
     // @Delete(':id')
@@ -77,14 +101,19 @@ export class ChatRoomsController {
           new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
           new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
         ],
-      }),) file: Express.Multer.File, @Param('id') id: number,@Req() req) {
+      }),) file: Express.Multer.File, @Param('id') id: number,@Req() req, @Res() res) {
+        try
+        {
         if (isNaN(id))
           throw new BadRequestException()
         const payload = verifyToken(req.headers.cookie);
         this.chatroomservice.uploadAvatar(file, id, payload)
-        return {
+        res.send( {
           statusCode: 200,
           data: file.path,
-        };
+        })
+      }catch(e){
+        res.send({message: e.message, result: "error"})
+      }
       }
 }

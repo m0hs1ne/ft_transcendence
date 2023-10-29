@@ -21,6 +21,7 @@ export class Room {
   closeroom: boolean;
   IntervalId: any;
   GameMode: number;
+  mode: string;
   angle: number;
   Winner: number;
   BallSpeed: number;
@@ -43,6 +44,8 @@ export class Room {
       Score: 0,
       id: null,
     };
+
+    this.mode = '';
     this.closeroom = false;
     this.angle = Math.random() * (Math.PI / 4 - -Math.PI / 4) + -Math.PI / 4;
     this.ballDirection.x = 2 * Math.cos(this.angle);
@@ -56,13 +59,16 @@ export class Room {
       pos: "Right",
       CurrentID: this.RightPlayer.id,
       OpponentID: this.LeftPlayer.id,
+      mode: this.mode,
     });
     this.LeftPlayer.socket.emit("startGame", {
       id: this.roomId,
       pos: "Left",
       CurrentID: this.LeftPlayer.id,
       OpponentID: this.RightPlayer.id,
+      mode: this.mode,
     });
+    console.log(this.GameMode, " : ",this.GameMode.toString);
     this.startGameLoop();
   }
 

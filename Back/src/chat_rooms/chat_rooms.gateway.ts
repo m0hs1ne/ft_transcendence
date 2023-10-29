@@ -8,7 +8,6 @@ import { ChatRoomsService } from "./chat_rooms.service";
 import { UpdateChatRoomDto } from "./dto/update-chat_room.dto";
 import {
   BadRequestException,
-  ForbiddenException,
   NotFoundException,
   Req,
   UnauthorizedException,
@@ -18,7 +17,6 @@ import { checkPassword, validateCharacters, verifyToken } from "src/utils/guard"
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { UsersService } from "src/users/users.service";
 import { User } from "src/users/entities/user.entity";
-import { title } from "process";
 
 export var clients: Map<
   number,
@@ -114,8 +112,9 @@ export class ChatRoomsGateway {
     const { title, privacy, password, owner } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
-      if (typeof title === "string" && typeof privacy === "string") {
-        if (!validateCharacters(title)) throw new ForbiddenException()
+      if ((typeof title === "string" && typeof privacy === "string") ) {
+        if(!validateCharacters(title)) throw new BadRequestException("title should not contain special characters");
+        if(!validateCharacters(privacy)) throw new BadRequestException("privacy should not contain special characters");
         const chatroom = await this.chatRoomsService.create(
           { title, privacy, owner, ifProtectedPass: password },
           payload,
@@ -129,8 +128,15 @@ export class ChatRoomsGateway {
     }
   }
 
+  @SubscribeMessage("findAllChatRooms")
+  async findAll(@Req() req) {
+    const payload = verifyToken(req.handshake.headers.cookie);
+    const chatroom = await this.chatRoomsService.findAll(payload);
+    this.server.emit("ChatRoomList", { type: "all", chatrooms: chatroom });
+  }
+
   @SubscribeMessage("myChatRooms")
-  async findOne(@Req() req) {
+  async findOne(@MessageBody() body, @Req() req) {
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
       const mychatRooms = await this.chatRoomsService.findMyChatRooms(
@@ -154,8 +160,8 @@ export class ChatRoomsGateway {
     password: string; */
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
-      if (!validateCharacters(updateChatRoomDto.title)) throw new ForbiddenException()
-      if (!validateCharacters(updateChatRoomDto.privacy)) throw new ForbiddenException()
+      if(!validateCharacters(updateChatRoomDto.title)) throw new BadRequestException("title should not contain special characters");
+      if(!validateCharacters(updateChatRoomDto.privacy)) throw new BadRequestException("privacy should not contain special characters");
       const chatroom = await this.chatRoomsService.update(
         updateChatRoomDto.chatId,
         updateChatRoomDto,
@@ -202,12 +208,12 @@ export class ChatRoomsGateway {
     const { memberId, chatId, role } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(role)) throw new BadRequestException("role should not contain special characters");
       if (
         typeof memberId === "number" &&
         typeof chatId === "number" &&
         typeof role === "string"
       ) {
-        if (!validateCharacters(role)) throw new ForbiddenException()
         const updatedMember = await this.chatRoomsService.updateMemberRole(
           memberId,
           chatId,
@@ -245,12 +251,12 @@ export class ChatRoomsGateway {
     const { memberId, chatId, status, mutedFor } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(status)) throw new BadRequestException("status should not contain special characters");
       if (
         typeof memberId === "number" &&
         typeof chatId === "number" &&
         typeof status === "string"
       ) {
-        if (!validateCharacters(status)) throw new ForbiddenException()
         const updatedMember = await this.chatRoomsService.updateMemberStatus(
           memberId,
           chatId,
@@ -451,7 +457,6 @@ export class ChatRoomsGateway {
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
       if (typeof id === "string") {
-        if (!validateCharacters(id)) throw new ForbiddenException()
         await this.chatRoomsService.acceptInviteToChat(body, payload);
         const invitation = await this.chatRoomsService.getInvitationById(id);
         await this.chatRoomsService.removeInvitation(id, payload.sub);
@@ -479,7 +484,6 @@ export class ChatRoomsGateway {
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
       if (typeof id === "string") {
-        if (!validateCharacters(id)) throw new ForbiddenException()
         await this.chatRoomsService.removeInvitation(id, payload.sub);
       } else throw new BadRequestException("id should be a string.");
     } catch (e) {
@@ -496,9 +500,8 @@ export class ChatRoomsGateway {
     const { chatId, message } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
-      if (typeof chatId === "number" && typeof message === "string")
-      {
-      if (!validateCharacters(message)) throw new ForbiddenException()
+      if(!validateCharacters(message)) throw new BadRequestException("message should not contain special characters");
+      if (chatId && message)
         await this.chatRoomsService.newChatMessage(
           payload.sub,
           chatId,
@@ -507,7 +510,6 @@ export class ChatRoomsGateway {
           clients,
           "message",
         );
-      }
       else throw new BadRequestException();
     } catch (e) {
       const client = clients.get(payload.sub);
@@ -521,8 +523,8 @@ export class ChatRoomsGateway {
     const { toId, message } = body;
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
+      if(!validateCharacters(message)) throw new BadRequestException("message should not contain special characters");
       if (typeof toId === "number" && typeof message === "string") {
-        if (!validateCharacters(message)) throw new ForbiddenException()
         const msg = await this.chatRoomsService.newDMMessage(
           payload.sub,
           toId,
@@ -545,7 +547,6 @@ export class ChatRoomsGateway {
     const payload = verifyToken(req.handshake.headers.cookie);
     try {
       if (typeof toId === "number" && typeof mode === "string") {
-        if (!validateCharacters(mode)) throw new ForbiddenException()
         const to = await this.userService.profile(toId, payload);
         const from = await this.userService.myprofile(payload.sub);
         const client = clients.get(toId);

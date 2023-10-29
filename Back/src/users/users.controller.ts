@@ -18,7 +18,6 @@ import {
   Query,
   BadRequestException,
   Res,
-  ForbiddenException,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import {
@@ -26,6 +25,8 @@ import {
   userAuthGuard,
   validateCharacters,
   verifyToken,
+  isValidFileType,
+  isValidFileSize,
 } from "../utils/guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Express } from "express";
@@ -80,13 +81,12 @@ export class UsersController {
     const { username } = body;
     try
     {
-      if (typeof username != "string") throw new BadRequestException("Username should be a string.");
-      if (!validateCharacters(username)) throw new ForbiddenException()
+      if (typeof username != "string"|| !validateCharacters(username)) throw new BadRequestException("Username should be a string.");
       const payload = verifyToken(req.headers.cookie);
       const message =await this.usersService.update(payload.sub, username);
       const client = clients.get(payload.sub)
       if (client)
-        client.emit('Notification', {type: "updated", message: "Username was updated Succesfully"})
+        client.emit('Notification', {type: "updated", message: "Username updated Succesfully"})
       res.send(message);
     }
     catch(e)
@@ -107,6 +107,26 @@ export class UsersController {
       const client = clients.get(payload.sub)
       if (client)
         client.emit('Notification', {type: "updated", message: "validSession updated Succesfully"})
+      res.send(message);
+    }
+    catch(e)
+    {
+      // res.statusCode = e.status
+      res.send({message: e.message, result: "error"})
+    }
+  }
+
+  @Patch("profile/loggedFirstTime")
+  async updateloggedFirstTime(@MessageBody() body, @Req() req, @Res() res) {
+    const { loggedFirstTime } = body;
+    try
+    {
+      if (typeof loggedFirstTime != "boolean") throw new BadRequestException("loggedFirstTime should be a boolean.");
+      const payload = verifyToken(req.headers.cookie);
+      const message = await this.usersService.updatelogged(payload.sub, loggedFirstTime);
+      const client = clients.get(payload.sub)
+      if (client)
+        client.emit('Notification', {type: "updated", message: "loggedFirstTime updated Succesfully"})
       res.send(message);
     }
     catch(e)
@@ -186,21 +206,22 @@ export class UsersController {
     if (isNaN(id))
       throw new BadRequestException("Id should be an integer number.")
     const payload = verifyToken(req.headers.cookie);
-    const client = clients.get(payload.sub)
     const message = this.usersService.removefriends(+id, req)
-      const friend = clients.get(id)
-      if (friend)
-      {
-        const me = await this.usersService.findOne(payload.sub)
-        if (me)
-          friend.emit('Notification', {type: "updated", message: `${me.username} removed you from his friends`})
-      }
-      if (client)
-      {
-        const other = await this.usersService.findOne(id)
-        if (other)
-          client.emit('Notification', {type: "updated", message: `${other.username} removed from your friends`})
-      }
+
+    const client = clients.get(payload.sub)
+    const friend = clients.get(+id)
+    if (friend)
+    {
+      const me = await this.usersService.findOne(payload.sub)
+      if (me)
+        friend.emit('Notification', {type: "updated", message: `${me.username} removed you from his friends`})
+    }
+    if (client)
+    {
+      const other = await this.usersService.findOne(id)
+      if (other)
+        client.emit('Notification', {type: "updated", message: `${other.username} removed from your friends`})
+    }
     res.send(message);
     }
     catch(e)
@@ -232,8 +253,24 @@ export class UsersController {
     const { id } = body;
     try
     {
+      const payload = verifyToken(req.headers.cookie);
       if (!isNaN(id)) res.send( await this.usersService.addblocked(id, req));
       else  throw new BadRequestException("Id should be an integer number.")
+      const client = clients.get(payload.sub)
+
+      const friend = clients.get(id)
+      if (friend)
+      {
+        const me = await this.usersService.findOne(payload.sub)
+        if (me)
+          friend.emit('Notification', {type: "updated", message: `${me.username} blocked you`})
+      }
+      if (client)
+      {
+        const other = await this.usersService.findOne(id)
+        if (other)
+          client.emit('Notification', {type: "updated", message: `${other.username} added to your block list`})
+      }
     }
     catch(e)
     {
@@ -246,8 +283,30 @@ export class UsersController {
   async removeBlocked(@Param("id") id, @Req() req,@Res() res) {
     try
     {
+
       if (!isNaN(id)) res.send(await this.usersService.removeblocked(id, req));
       else throw new BadRequestException("Id should be an integer number.")
+      const payload = verifyToken(req.headers.cookie);
+      // const client = clients.get(payload.sub)
+      // const other = await this.usersService.findOne(id)
+      // if (client)
+      //   client.emit('Notification', {type: "updated", message: `${other.username} was deleted from your block list`})
+
+      const client = clients.get(payload.sub)
+
+      const friend = clients.get(+id)
+      if (friend)
+      {
+        const me = await this.usersService.findOne(payload.sub)
+        if (me)
+          friend.emit('Notification', {type: "updated", message: `${me.username} deleted you from his blocked list`})
+      }
+      if (client)
+      {
+        const other = await this.usersService.findOne(id)
+        if (other)
+          client.emit('Notification', {type: "updated", message: `${other.username} removed from your block list`})
+      }
     }
     catch(e)
     {
@@ -269,37 +328,36 @@ export class UsersController {
       }),
     }),
   )
-  async uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new FileTypeValidator({ fileType: ".(png|jpeg|jpg)" }),
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
-    @Req() req,@Res() res,
-  ) {
-    try
-    {
-      const payload = verifyToken(req.headers.cookie);
-      this.usersService.uploadAvatar(file, payload);
-      const client = clients.get(payload.sub)
-      if (client)
-      { 
-          client.emit('Notification', {type: "updated", message: `Avatar was updated successfully`})
-      }
-      res.send( {
-        data: "http://localhost:3000/" + file.filename,
-      })
+async uploadFile(
+  @UploadedFile() file: Express.Multer.File,
+  @Req() req,
+  @Res() res,
+) {
+  try {
+    const payload = verifyToken(req.headers.cookie);
+    
+    if (!isValidFileType(file)) {
+      throw new Error('Invalid file type. Only PNG, JPEG, and JPG files are allowed.');
     }
-    catch(e)
-    {
-      // res.statusCode = e.status
-      res.send({message: e.message, result: "error"})
+    
+    if (!isValidFileSize(file)) {
+      throw new Error('File size exceeds the maximum limit of 4MB.');
     }
+
+    this.usersService.uploadAvatar(file, payload);
+    
+    const client = clients.get(payload.sub);
+    if (client) {
+      client.emit('Notification', { type: 'updated', message: 'Avatar was updated successfully' });
+    }
+    
+    res.send({
+      data: `http://localhost:3000/${file.filename}`,
+    });
+  } catch (e) {
+    res.send({ message: e.message, result: 'error' });
   }
+}
   //Leaderboard
   @Get("leaderboard")
   getleaderboard() {
@@ -311,7 +369,7 @@ export class UsersController {
     const { query } = body;
     try
     {
-      if (!validateCharacters(query)) throw new ForbiddenException()
+      if(!validateCharacters(query)) throw new BadRequestException("Query should be a string.");
       const payload = verifyToken(req.headers.cookie);
       const users = await this.usersService.search(query);
       const chatrooms = await this.chatroomservice.search(query, payload.sub);

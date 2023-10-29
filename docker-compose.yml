@@ -8,8 +8,6 @@ services:
     - "5432:5432"
     env_file:
     - ./Back/.env
-    networks:
-    - postgres
     volumes:
     - postgresdb:/var/lib/postgresql/data
  
@@ -36,8 +34,6 @@ services:
     - "3000:3000"
     env_file:
     - ./Back/.env
-    networks:
-      - postgres
     depends_on:
       - postgres
 
@@ -47,14 +43,8 @@ services:
     restart: unless-stopped
     ports:
     - "5173:5173"
-    networks:
-      - postgres
     depends_on:
       - backend
- 
-networks:
-  postgres:
-    driver: bridge
 
 volumes:
   postgresdb:

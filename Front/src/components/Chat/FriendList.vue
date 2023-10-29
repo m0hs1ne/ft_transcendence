@@ -1,6 +1,6 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <Icon class="text-black dark:text-white  h-10 w-10 hover:bg-blue-400 p-1 rounded-md  cursor-pointer" @click="openPopup"
+  <Icon class="text-black dark:text-white  h-8 w-8 md:h-10 md:w-10 hover:bg-blue-400 p-1 rounded-md  cursor-pointer" @click="openPopup"
     title="Add Friend " icon="basil:add-solid" />
 
   <div v-if="isOpend" class="fixed inset-0 flex items-center justify-center dark:bg-slate-800">
@@ -65,9 +65,9 @@ export default {
 
       console.log("This Friends : ", this.userStore.UserFriends.data)
       console.log("This Members : ", this.members);
-      if (this.friends.length === 0) {
-        this.message = "you don't have any friends to invite them";
-      }
+      // if (this.friends.length === 0) {
+      //   this.message = "you don't have any friends to invite them";
+      // }
 
       this.userStore.UserFriends.data.forEach(element => {
         // to get friends not found in the channel

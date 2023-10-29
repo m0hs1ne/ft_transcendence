@@ -4,7 +4,7 @@
         <div class="flex w-full justify-center items-center  font-semibold text-2xl dark:text-white">
             <span> Congrats!!&nbsp; </span>
             <span class="text-green-600">
-                You win.
+                You Win
             </span>
         </div>
         <div class="flex items-center justify-center w-full gap-5  font-bold text-xl">
@@ -22,9 +22,19 @@
 
 
 <script>
+import { GameData } from "../../stores/state.ts";
+
 export default {
+    props:{
+        limit: '',
+    },
+    setup() {
+    const gameData = GameData();
+    return { gameData};
+  },
     methods: {
         async playAgain() {
+            this.gameData.setData(this.gameData.modeLimit, '', true);
             await this.$router.replace('/');
             this.$router.push('/play');
         },

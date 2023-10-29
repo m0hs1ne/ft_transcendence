@@ -1,6 +1,6 @@
 <!-- FriendListComponent.vue -->
 <template>
-  <div class="flex items-center justify-start w-full rounded-2xl bg-transparent gap-2 px-5 py-5">
+  <div class="flex items-center justify-start w-full rounded-2xl bg-transparent gap-0.5 md:gap-2 p-5">
     <Icon class="w-8 h-8 cursor-pointer" icon="ion:arrow-back" @click="this.userStore.viewMode = 'Chat'" />
     <h1 class="font-bold text-xl">Channel Profile:</h1>
   </div>
@@ -19,27 +19,27 @@
     </div>
 
     <div
-      class="flex w-fit custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-10 flex-row items-center justify-center gap-5">
+      class="flex w-fit custom-box-shadow p-3 dark:bg-slate-800 rounded-lg my-10 flex-row items-center justify-center gap-3 md:gap-5">
       <div class="flex">
         <EditeProfile v-if="this.EditChannel" />
-        <ConfirmPopup v-if="this.userStore.action" />
+        <!-- <ConfirmPopup v-if="this.userStore.action" /> -->
         <UpdateMember v-if="this.userStore.MemberRoleStatus" />
       </div>
 
       <FriendList v-if="AddFriend" />
 
       <Icon @click="LeaveChannel" title="Leave Channel" icon="ion:exit"
-        class="text-black dark:text-white h-10 w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer" />
+        class="text-black dark:text-white h-8 w-8 md:h-10 md:w-10 hover:bg-blue-400 p-1 rounded-md cursor-pointer" />
 
       <Icon v-if="DeletePermission" icon="ic:round-delete" @click="RemoveChatRome" title="Delete Channel"
-        class="text-black dark:text-white h-10 w-10 hover:bg-blue-300 p-1 rounded-md cursor-pointer" />
+        class="text-black dark:text-white h-8 w-8 md:h-10 md:w-10 hover:bg-blue-300 p-1 rounded-md cursor-pointer" />
     </div>
 
     <div v-for="member in this.userStore.ActiveMembersChannelId"
       class="flex w-full h-fit gap-2 mb-3 custom-box-shadow p-3 dark:bg-slate-800 rounded-lg flex-row items-center">
       <div class="w-14 bg-gray-300 rounded-full">
         <img referrerpolicy="no-referrer" :src="member.user.avatar" alt="Avatar" title="View Profil"
-          class="w-14 rounded-full" />
+          class="w-14 aspect-square object-cover rounded-full" />
       </div>
       <div class="flex flex-col container overflow-ellipsis line-clamp-1">
         <span v-if="member.user.id == this.userStore.MyId" class="text-lg font-semibold">
@@ -130,9 +130,9 @@ export default {
       if (data.type == "updated") {
         this.fetchData();
       }
-      
+
     });
-    this.$socket.on("receiveMessage", (data) => {
+    await this.$socket.on("receiveMessage", (data) => {
       console.log("receiveMessage form channel profile--------- ", data);
       if (
         (data.type == "notification" && data.action == "joined") ||
@@ -140,6 +140,8 @@ export default {
         (data.type == "notification" && data.action == "role") ||
         (data.type == "notification" && data.action == "kick")
       ) {
+        if (data.action == "kick" && data.from.id == this.userStore.MyId)
+          return;
         this.fetchData();
       }
     });

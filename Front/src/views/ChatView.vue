@@ -1,12 +1,13 @@
 <template>
-	<div class="flex h-screen ml-20 dark:bg-slate-800 p-5 text-gray-700">
+	<ConfirmPopup v-if="this.userStore.action" />
+	<div class="flex h-screen ml-20 lg:ml-24 dark:bg-slate-800 gap-4 p-3 md:p-5 text-gray-700">
 		<ChatGroupFriend v-if="this.userStore.screenWidth >= 768 || this.userStore.viewMode === 'List'"
 			@object-sent="handleObject" />
 
 		<div v-if="this.userStore.screenWidth >= 768 ||
 			this.userStore.viewMode === 'Chat' ||
 			this.userStore.viewMode === 'Channel'
-			" class="w-full h-full flex flex-col dark:bg-slate-900 mx-5 custom-box-shadow dark:text-white rounded-xl">
+			" class="w-full h-full flex flex-col dark:bg-slate-900 custom-box-shadow dark:text-white rounded-xl">
 			<ErrorPopup v-if="this.userStore.error" />
 			<ChatChatbox v-if="displayTargetComponent" :person="personObject" />
 			<ChatBoxChannel v-if="displayChatboxChannel && this.userStore.viewMode === 'Chat'" :channel="ChannelObject" />
@@ -25,6 +26,7 @@ import ChatChannelProfil from "../components/Chat/ChannelProfil.vue";
 import ChatUserProfile from "../components/Chat/UserProfile.vue";
 import ErrorPopup from "../components/Chat/ErrorPopup.vue";
 import ConfirmPlay from "../components/Chat/ConfirmPlay.vue";
+import ConfirmPopup from "../components/Chat/ConfirmPopup.vue";
 
 import { useUserStore } from "./../stores/state.ts";
 export default {
@@ -43,6 +45,7 @@ export default {
 		ChatChannelProfil,
 		ErrorPopup,
 		ConfirmPlay,
+		ConfirmPopup,
 	},
 	data() {
 		return {
@@ -73,8 +76,7 @@ export default {
 
 		IsPerson(object) {
 			console.log(object);
-			if (this.userStore.DmChatroomsList.length == 0)
-			{
+			if (this.userStore.DmChatroomsList.length == 0) {
 				this.userStore.ItemClicked = {}
 				this.displayTargetComponent = false;
 				return;
@@ -96,15 +98,14 @@ export default {
 		IsChannel(object) {
 			//console.log("This is an channel ", this.userStore.ActiveChannelId );
 			//console.log(" I am -----------------------------------222-----------------------------------", this.userStore.DmChatroomsList.length)
-			
+
 			this.displayTargetComponent = false;
-			if ( this.userStore.ActiveChannelId == -1)
-			{
-				
+			if (this.userStore.ActiveChannelId == -1) {
+
 				this.userStore.ItemClicked = {}
 				this.displayTargetComponent = false;
 				this.displayChatboxChannel = false;
-				return 
+				return
 			}
 			if (this.displayChatboxChannel) {
 				this.displayTargetComponent = false;
@@ -127,7 +128,7 @@ export default {
 			else this.IsChannel(object);
 		},
 	},
-
+    
 	async mounted() {
 		// Attach an event listener to the window resize event
 		window.addEventListener("resize", this.updateScreenWidth);
@@ -135,6 +136,14 @@ export default {
 		// Ensure that the screen width is updated initially
 		this.updateScreenWidth();
 
+
+		this.$socket.on("Notification", async (data) => {
+			if (data.type === "updated") {
+				{
+					console.log("I am her in" , this.userStore.DmChatroomsList)
+				}
+			}
+		});
 		this.$socket.on("receiveMessage", (data) => {
 
 
@@ -165,7 +174,7 @@ export default {
 
 		await this.$socket.on("ChatRoomList", (data) => {
 			if (data.type == "remove") {
-//				console.log(this.userStore.DmChatroomsList)
+				//				console.log(this.userStore.DmChatroomsList)
 				this.userStore.fetchDataForDmChatRooms();
 				console.log(this.userStore.DmChatroomsList)
 			}
@@ -183,4 +192,3 @@ export default {
 	},
 };
 </script>
-<style></style>

@@ -1,9 +1,9 @@
-<!-- FriendListComponent.vue -->
+FriendListComponent.vue
 <template>
-  <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
+  <!-- <div class="flex flex-col m-2 p-5 h-full rounded-lg  items-center bg-slate-300">
     <GameMode v-if="this.userStore.creatchallenge" />
     <div class="flex-shrink-0">
-      <img referrerpolicy="no-referrer" :src="this.person.avatar" alt="Avatar" class="h-40 rounded-full" />
+      <img referrerpolicy="no-referrer" :src="this.person.avatar" alt="Avatar" class="h-40 rounded-full" />kalsdjaskldjl;aksjdlkasjdkajsdlkj
     </div>
     <div class="flex">
       <span class="text-lg font-semibold">{{ this.person.username }}</span>
@@ -26,11 +26,11 @@
 
 
 
-    </div>
-  </div>
+    </div>  -->
+  <!-- </div> -->
 </template>
 
-<script>
+<!-- <script>
 import { useUserStore } from './../../stores/state.ts';
 import GameMode from './GameMode.vue';
 import axios from "axios";
@@ -94,7 +94,7 @@ export default {
 
   },
 };
-</script>
+</script> -->
 
 <style>
 /* Add your CSS styling here */

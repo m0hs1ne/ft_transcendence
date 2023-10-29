@@ -1,24 +1,25 @@
 <!-- ChatComponent.vue -->
 <template>
+  <GameMode v-if="this.userStore.creatchallenge" />
   <div class="flex items-center justify-between w-full rounded-2xl bg-transparent px-5 py-3">
     <div class="flex w-fit items-center">
       <Icon v-if="this.userStore.screenWidth < 768" class="w-8 h-8 cursor-pointer mr-5" icon="ion:arrow-back"
-        @click="this.userStore.viewMode = 'Lis//consolet'" />
+        @click="this.userStore.viewMode = 'List'" />
       <router-link :to="'/users/' + this.person.id" class="flex w-fit">
         <div class="w-12 bg-gray-200 rounded-full shadow mr-5">
-          <img :src="this.person.avatar" alt="Avatar" class="w-12 rounded-full object-cover" />
+          <img :src="this.person.avatar" alt="Avatar" class="w-12 rounded-full aspect-square object-cover" />
         </div>
         <div class="flex flex-col items-start justify-center">
-          <h1 class="font-bold text-lg">
+          <h1 class="font-bold md:text-lg line-clamp-1">
             {{ this.person.username }}
           </h1>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+          <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">
             {{
               this.person.inGame
               ? "Playing ..."
               : this.person.statusOnline
                 ? "Online"
-                : "Ofline"
+                : "offline"
             }}
           </p>
         </div>
@@ -27,10 +28,10 @@
 
     <div class="flex items-center justify-center h-full gap-3">
       <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
-        class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
+        class="text-blue-600  h-8 w-8 md:h-10 md:w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
-      <Icon @click="block()" title="Block"
-        class="text-red-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
+      <Icon v-if="this.NAtoBlock" @click="block()" title="Block"
+        class="text-red-600  h-8 w-8 md:h-10 md:w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md" icon="mdi:user-block" />
     </div>
   </div>
   <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
@@ -79,12 +80,14 @@
 import axios from "axios";
 import { Icon } from "@iconify/vue";
 import GroupFriend from "./GroupFriend.vue";
-import { useUserStore } from "./../../stores/state.ts";
+import { useUserStore, SharedData } from "./../../stores/state.ts";
+import GameMode from './GameMode.vue';
 
 export default {
   setup() {
     const userStore = useUserStore();
-    return { userStore };
+    const user = SharedData();
+    return { userStore, user };
   },
   props: {
     person: {
@@ -95,6 +98,7 @@ export default {
   components: {
     Icon,
     GroupFriend,
+    GameMode
   },
   data() {
     return {
@@ -102,6 +106,7 @@ export default {
       newMessage: "",
       UserProfile: {},
       length: 0,
+      NAtoBlock: true
     };
   },
   methods: {
@@ -109,30 +114,19 @@ export default {
       //console.log("This is the member of", this.person);
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
+      setTimeout(() => {
+        this.NAtoBlock = true;
+      }, 7000); // 10 seconds
+      this.NAtoBlock = false;
       //console.log(this.person, this.ActiveChannelId);
       //console.log(this.$GameSocket);
     },
     block() {
       console.log(" block user ", this.person);
-
-      axios
-        .post(
-          "http://localhost:3000/api/users/blocked/",
-          {
-            id: parseInt(this.person.id),
-          },
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          //console.log(response);
-        })
-        .catch((error) => {
-          //console.error("Error fetching data:", error);
-        });
-     // this.userStore.fetchDataForDmChatRooms();
-     // console.log("The ,, ", this.userStore.DmChatroomsList)
+      this.userStore.action = {
+        block: "block",
+        id: this.person.id
+      };
     },
     sendMessage() {
       //console.log("I AM SENDmessage function ", this.person);
@@ -154,24 +148,41 @@ export default {
   mounted() {
 
     this.UserProfile = this.person;
-    
+    this.$socket.on("inGame", (data) => {
+        console.log("--------ZZZZZZZ-chat box----------------------------------------", data, this.person);
+        if (data.id == this.person.id) {
+          this.person.inGame = data.inGame;
+        }
+      });
     console.log(" I am in Mounted in chatbox ", this.UserProfile);
     this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
-      console.log(" I am receve some messages ")
+      // console.log(this.user.userData.id)
+      // console.log(this.person)
+      console.log(" I am receve some messages ", data)
+        var Myid = this.user.userData.id;
       if (data.type == "DM") {
-        var type = "";
-        if (data.message.from.id != this.person.id) type = "sent";
-        else type = "received";
+        if (
+         (this.person.id == data.message.to.id || this.person.id == data.message.from.id) &&
+         (Myid == data.message.to.id || Myid == data.message.from.id))
+          {
 
-        this.messages.push({
-          img: data.message.from.avatar,
-          type: type,
-          text: data.message.message,
-        });
+          var type = "";
+          if (data.message.from.id != this.person.id) type = "sent";
+          else type = "received";
+
+          this.messages.push({
+            img: data.message.from.avatar,
+            type: type,
+            text: data.message.message,
+          });
+        }
       }
       if (data.type == "DMMessages") {
+        // if(data)
+        //   if((this.person.id != data.message.from.id) && (this.user.userData.id != data.message.to.id))
+        //      return
         data.messages.forEach((element) => {
           var type = "";
           if (element.from.id != this.person.id) type = "sent";
@@ -186,6 +197,8 @@ export default {
           });
         });
       }
+
+      console.log("++=+++++++++++++++++++++++++++++++++++++++++++++++++++++")
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer;
         if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;

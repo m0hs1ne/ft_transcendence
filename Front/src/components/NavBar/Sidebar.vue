@@ -15,6 +15,8 @@ export default {
 	},
 	methods: {
 		async confirmLogout() {
+			this.isError = false;
+
 			const tmp = this.isDark;
 			const confirmed = window.confirm('Are you sure you want to log out?');
 			if (confirmed) {
@@ -25,7 +27,8 @@ export default {
 
 				}
 				catch (error) {
-					console.log("logdout error: ", error)
+					console.log("logdout error: ", error);
+					this.isError = true;
 				}
 			}
 		}
@@ -40,11 +43,12 @@ export default {
 			
 <!-- Sidebar.vue -->
 <template>
-	<aside class="fixed min-h-screen w-20 shadow-2xl text-black flex flex-col items-center
+	<aside class="fixed min-h-screen w-20 lg:w-24 shadow-2xl text-black flex flex-col items-center
 				 dark:bg-slate-900">
 		<!-- Logo -->
 		<div class="pt-6 pb-4">
-			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo" class="w-[5rem]">
+			<img referrerpolicy="no-referrer" src="../../assets/imgs/Logo.png" alt="Logo"
+				class="w-[5rem] md:w-[10rem] lg:w-[15rem]">
 		</div>
 
 		<!-- Tabs -->
@@ -72,14 +76,11 @@ export default {
 				<div class="w-[28px] h-[28px] bg-gray-300 rounded-full shadow">
 					<img referrerpolicy="no-referrer" v-if="this.$route.path == '/profile'"
 						:src="this.state.userData.avatar" alt="Avatar"
-						class="object-cover rounded-full w-[28px] h-[28px] ring ring-cyan-500">
+						class="aspect-square object-cover rounded-full w-[28px] h-[28px] ring ring-cyan-500">
 					<img referrerpolicy="no-referrer" v-else :src="this.state.userData.avatar" alt="Avatar"
-						class="object-cover w-[28px] h-[28px] rounded-full">
+						class="aspect-square object-cover w-[28px] h-[28px] rounded-full">
 				</div>
 			</router-link>
-			<div title="Theme" @click="" class="flex items-center p-3 m-3 cursor-pointer">
-				<Icon class="text-gray-600 dark:text-gray-400" icon="mingcute:notification-fill" height="28" />
-			</div>
 			<div title="LogOut" @click="confirmLogout" class="flex items-center p-3 m-3 cursor-pointer">
 				<Icon class="text-gray-600 dark:text-gray-400" icon="ion:log-out" height="28" />
 			</div>
