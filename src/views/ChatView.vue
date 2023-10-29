@@ -126,7 +126,7 @@ export default {
 			else this.IsChannel(object);
 		},
 	},
-
+    
 	async mounted() {
 		// Attach an event listener to the window resize event
 		window.addEventListener("resize", this.updateScreenWidth);
