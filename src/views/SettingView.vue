@@ -232,7 +232,7 @@ export default {
 		</div>
 
 		<!-- Update Name Card -->
-		<form v-else-if="this.currentCard == 1"
+		<div v-else-if="this.currentCard == 1"
 			class="flex flex-col gap-5 items-center justify-center w-4/5 md:w-[500px] rounded-2xl custom-box-shadow dark:bg-slate-900">
 			<div class="flex w-full justify-start items-center pl-10 pt-7  font-bold text-2xl dark:text-white">
 				Change your Name:
@@ -261,7 +261,7 @@ export default {
 					Cancel
 				</button>
 			</div>
-		</form>
+		</div>
 
 		<!-- Enabling 2fa Card -->
 		<div v-else-if="this.currentCard == 2"

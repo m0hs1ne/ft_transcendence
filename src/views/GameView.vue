@@ -1,6 +1,6 @@
 <!-- CanvasComponent.vue -->
 <template>
-  <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
+  <div class="flex flex-col gap-5 bg-white dark:bg-slate-800 h-full min-h-screen items-center justify-center">
     <WaitingModel v-if="gameData.phase === 'W'" />
     <ScoreBar v-if="gameData.phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"
       :limit="mode" />
@@ -54,7 +54,7 @@ export default {
       Context: null as CanvasRenderingContext2D | null,
       Canvas: null as HTMLCanvasElement | null,
       GameSocket: null as Socket | null,
-      mode: 1,
+      mode: '',
     };
   },
 

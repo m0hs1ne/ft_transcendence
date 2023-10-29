@@ -196,7 +196,7 @@ export default {
       this.isLoading = false;
     },
     goToChat() {
-      this.chatApi.ActiveId = this.userData;
+      // this.chatApi.ActiveId = this.userData;
       // this.chatApi.viewMode = 'Chat';
       this.$router.push("/chat");
     },
@@ -325,7 +325,7 @@ export default {
           <div :class="[
             'mb-2',
             'font-bold',
-            game.score.split(' ')[0] > game.score.split(' ')[2]
+            parseInt(game.score.split(' ')[0]) > parseInt(game.score.split(' ')[2])
               ? 'text-green-500'
               : ' text-red-500',
           ]">
@@ -333,7 +333,7 @@ export default {
           </div>
           <div :class="[
             'font-bold',
-            game.score.split(' ')[0] < game.score.split(' ')[2]
+            parseInt(game.score.split(' ')[0]) < parseInt(game.score.split(' ')[2])
               ? 'text-green-500'
               : ' text-red-500',
           ]">
