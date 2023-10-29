@@ -86,10 +86,10 @@ export class GameGateway {
 
   handleJoinRoom(client: Socket, payload: any): void 
   {
-    console.log("JoinRoom");
+    console.log("JoinRoom mode : ", payload);
     if (!this.ValidateClient(client)) { }
     else
-      this.CheckQueus(payload.mode, client);
+      this.CheckQueus(payload, client);
   }
 
   ValidateClient(client: Socket): number {
@@ -108,7 +108,7 @@ export class GameGateway {
   }
 
   CheckQueus(mode: string, client: Socket) {
-    console.log(mode);
+    console.log("------------> ", mode);
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
       this.Queus.set(mode, Queu);
@@ -130,6 +130,7 @@ export class GameGateway {
         room.roomId = uuidv4();
         console.log(`Room Id ${room.roomId}`);
         room.GameMode = parseInt(mode);
+        room.mode = mode;
         room.RightPlayer.id = payload1.sub;
         room.LeftPlayer.id = payload2.sub;
         this.gameService.setInGame(payload1.sub, payload2.sub, true);
@@ -137,6 +138,16 @@ export class GameGateway {
         this.clients.set(payload2.sub, room.roomId);
         this.rooms.set(room.roomId, room);
         room.Play();
+        room.LeftPlayer.Socket("gameStatus",
+        {
+          id: room.LeftPlayer.id,
+          status: true,
+        })
+        room.RightPlayer.Socket("gameStatus",
+        {
+          id: room.RightPlayer.id,
+          status: true,
+        })
         this.Queus.get(mode).pop();
         this.Queus.get(mode).pop();
       } catch (err) {
@@ -169,8 +180,20 @@ export class GameGateway {
   }
 
   @SubscribeMessage("PlayerLeave")
-  HandlePlayerLeave(client: any, payload: any): void {
-    if (this.rooms.has(payload.roomId)) {
+  HandlePlayerLeave(client: any, payload: any): void 
+  {
+    if (this.rooms.has(payload.roomId)) 
+    {
+        this.rooms.get(payload.roomId).LeftPlayer.Socket("gameStatus",
+        {
+          id: room.LeftPlayer.id,
+          status: false,
+        })
+        this.rooms.get(payload.roomId).RightPlayer.Socket("gameStatus",
+        {
+          id: room.RightPlayer.id,
+          status: false,
+        })
       this.rooms.get(payload.roomId).PlayerLeaves(payload.pos);
       this.UpdateDbScore(payload.roomId);
       this.clients.delete(this.rooms.get(payload.roomId).LeftPlayer.id);
@@ -180,7 +203,6 @@ export class GameGateway {
         this.rooms.get(payload.roomId).RightPlayer.id,
         false,
       );
-
       this.rooms.delete(payload.roomId);
     }
     if (this.rooms.get(payload.roomId)) {
@@ -200,7 +222,18 @@ export class GameGateway {
 
   @SubscribeMessage("DeleteRoom")
   DeleteRoom(client: any, payload: any): void {
-    if (this.rooms.has(payload.roomId)) {
+    if (this.rooms.has(payload.roomId)) 
+    {
+      this.rooms.get(payload.roomId).LeftPlayer.Socket("gameStatus",
+      {
+        id: room.LeftPlayer.id,
+        status: false,
+      })
+      this.rooms.get(payload.roomId).RightPlayer.Socket("gameStatus",
+      {
+        id: room.RightPlayer.id,
+        status: false,
+      })
       this.UpdateDbScore(payload.roomId);
       if (this.clients.has(this.rooms.get(payload.roomId).LeftPlayer.id))
       {
@@ -217,7 +250,8 @@ export class GameGateway {
     }
   }
 
-  UpdateDbScore(roomId: any) {
+  UpdateDbScore(roomId: any) 
+  {
     let left: number = this.rooms.get(roomId).LeftPlayer.id;
     let right: number = this.rooms.get(roomId).RightPlayer.id;
     let Winner: number = this.rooms.get(roomId).Winner;
@@ -225,7 +259,6 @@ export class GameGateway {
     let leftSCore = this.rooms.get(roomId).LeftPlayer.Score;
     let RightSCore = this.rooms.get(roomId).RightPlayer.Score;
     let Score: string = `${leftSCore} : ${RightSCore}`;
-    console.log(Winner);
 
     this.gameService.create(left, right, Winner, Score, GameMode);
     const leftSocket = clients.get(left)
@@ -234,6 +267,7 @@ export class GameGateway {
       leftSocket.emit("Notification", {type: "updated", message: "A game was added"})
     if (rightSocket)
       rightSocket.emit("Notification", {type: "updated", message: "A game was added"})
+
   }
   @SubscribeMessage("Chall")
   HandlleChallenges(client: any, payload: any): void {
@@ -249,7 +283,8 @@ export class GameGateway {
       if (this.Challenge.has(payload.oponentId)) {
         let room: Room = new Room(this.Challenge.get(payload.oponentId), client);
         room.roomId = uuidv4();
-        room.GameMode = payload.mode;
+        room.GameMode = parseInt(payload.mode);
+        room.mode = payload.mode;
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
         this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
