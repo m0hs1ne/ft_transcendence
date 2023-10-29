@@ -301,7 +301,7 @@ export class ChatRoomsService {
         "kick",
       );
       this.userChatRepository.remove(userChat);
-      return;
+      return false;
     } else if (userChat.role == "owner") {
       const members = await this.userChatRepository.find({
         where: { chatRoomId: chatId, userStatus: In(["normal", "muted"]) },
