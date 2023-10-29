@@ -11,6 +11,7 @@ import { GameService } from "./game.service";
 import { verifyToken } from "src/utils/guard";
 import { LessThanOrEqual } from "typeorm";
 import { StringifyOptions } from "querystring";
+import { clients } from "src/chat_rooms/chat_rooms.gateway";
 
 @WebSocketGateway({
   namespace: "/game",
@@ -230,6 +231,12 @@ export class GameGateway {
     console.log(Winner);
 
     this.gameService.create(left, right, Winner, Score, GameMode);
+    const leftSocket = clients.get(left)
+    const rightSocket = clients.get(right)
+    if (leftSocket)
+      leftSocket.emit("Notification", {type: "updated", message: "A game was added"})
+    if (rightSocket)
+      rightSocket.emit("Notification", {type: "updated", message: "A game was added"})
   }
   @SubscribeMessage("Chall")
   HandlleChallenges(client: any, payload: any): void {
