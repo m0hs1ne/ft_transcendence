@@ -26,7 +26,7 @@ export class GameGateway {
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
   private clients: Map<number, string> = new Map();
-  private Queus: Map<number, Socket[]> = new Map();
+  private Queus: Map<string, Socket[]> = new Map();
   private Challenge: Map<number, Socket> = new Map();
   private modes: any = {
     Classic: "20",
@@ -85,13 +85,9 @@ export class GameGateway {
   @SubscribeMessage("joinRoom")
   handleJoinRoom(client: Socket, payload: any): void 
   {
-    console.log("-->  ", payload);
-    // payload.mode.
-    // var mode = payload.mode;
-
     if (!this.ValidateClient(client)) { }
     else
-      this.CheckQueus(payload.mode, client);
+      this.CheckQueus(payload, client);
   }
 
   ValidateClient(client: Socket): number {
@@ -109,9 +105,8 @@ export class GameGateway {
     }
   }
 
-  CheckQueus(mode: any, client: Socket) 
+  CheckQueus(mode: string, client: Socket) 
   {
-    console.log("--> ", mode);
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
       this.Queus.set(mode, Queu);
@@ -132,6 +127,9 @@ export class GameGateway {
         );
         room.roomId = uuidv4();
         console.log(`Room Id ${room.roomId}`);
+        console.log("parse mode : ", parseInt(mode), "mode : ", mode);
+        
+        room.mode = mode;
         room.GameMode = parseInt(mode);
         room.RightPlayer.id = payload1.sub;
         room.LeftPlayer.id = payload2.sub;
@@ -248,11 +246,10 @@ export class GameGateway {
       this.Challenge.set(payload.oponentId, client);
     }
     else if (payload.type == "opp") {
-      console.log(payload);
       if (this.Challenge.has(payload.oponentId)) {
         let room: Room = new Room(this.Challenge.get(payload.oponentId), client);
         room.roomId = uuidv4();
-        room.GameMode = payload.mode;
+        room.GameMode = parseInt(payload.mode);
         room.RightPlayer.id = payload.challId;
         room.LeftPlayer.id = payload.oponentId;
         this.gameService.setInGame(room.RightPlayer.id, room.LeftPlayer.id, true);
