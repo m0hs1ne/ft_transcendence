@@ -36,7 +36,7 @@
               v-if="conversation.avatar"
               :src="conversation.avatar"
               alt="Avatar"
-              class="w-12 h-12 rounded-full object-cover"
+              class="w-12 h-12 rounded-full aspect-square object-cover"
             />
             <Icon v-else class="text-blue-600 w-12 h-12" icon="clarity:group-solid" />
           </div>

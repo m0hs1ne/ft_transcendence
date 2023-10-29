@@ -39,7 +39,7 @@
       class="flex w-full h-fit gap-2 mb-3 custom-box-shadow p-3 dark:bg-slate-800 rounded-lg flex-row items-center">
       <div class="w-14 bg-gray-300 rounded-full">
         <img referrerpolicy="no-referrer" :src="member.user.avatar" alt="Avatar" title="View Profil"
-          class="w-14 rounded-full" />
+          class="w-14 aspect-square object-cover rounded-full" />
       </div>
       <div class="flex flex-col container overflow-ellipsis line-clamp-1">
         <span v-if="member.user.id == this.userStore.MyId" class="text-lg font-semibold">

@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import ProfileStat from "./../components/Profile/ProfileStat.vue";
 import { SharedData } from "./../stores/state.ts";
+import Loading from "../components/Loading/Loading.vue";
 
 export default {
   setup(props) {
@@ -17,73 +18,9 @@ export default {
     const games = ref([]);
     const is2FA = ref(false);
     const friendTab = ref(false);
-
-    username.value = state.userData.username;
-    avatar.value = state.userData.avatar;
-    wins.value = state.userData.wins - 1;
-    losses.value = state.userData.losses - 1;
-    battles.value = state.userData.wins + state.userData.losses - 2;
-    winrat.value =
-      parseInt(
-        (state.userData.wins / (state.userData.wins + state.userData.losses)) * 100
-      ) + "%";
-    friends.value = state.userData.friends;
-    games.value = state.userData.games;
-    is2FA.value = state.userData.is2faEnabled;
-
-    const achievements = [
-      {
-        icon: "ph:rocket-fill",
-        title: "Unstoppable",
-        desc: "Play 10 games",
-        status: battles.value >= 10,
-      },
-      {
-        icon: "ph:baby-fill",
-        title: "Newbie",
-        desc: "Win 3 games",
-        status: wins.value >= 3,
-      },
-      {
-        icon: "ph:medal-fill",
-        title: "Winner",
-        desc: "Win 10 games",
-        status: wins.value >= 10,
-      },
-      {
-        icon: "ph:hand-fill",
-        title: "Master",
-        desc: "Win 100 games",
-        status: wins.value >= 100,
-      },
-      {
-        icon: "ph:fire-fill",
-        title: "Grand Master",
-        desc: "Win 1000 games",
-        status: wins.value >= 1000,
-      },
-      {
-        icon: "solar:danger-bold",
-        title: "Loser",
-        desc: "Lose 10 games",
-        status: losses.value >= 10,
-      },
-      {
-        icon: "ph:users-three-fill",
-        title: "Squad",
-        desc: "Add 3 friends",
-        status: friends.value.length >= 3,
-      },
-      {
-        icon: "icon-park-solid:protect",
-        title: "Safety first",
-        desc: "Enable 2FA",
-        status: is2FA.value,
-      },
-    ];
-
-    // Sort achievements based on the status property
-    achievements.sort((a, b) => b.status - a.status);
+    const achievements = ref(false);
+    const isError = ref(false);
+    const isLoading = ref(false);
 
     return {
       username,
@@ -96,29 +33,136 @@ export default {
       friendTab,
       friends,
       state,
+      isError,
+      isLoading,
     };
   },
   components: {
     ProfileStat,
     Icon,
+    Loading,
+  },
+  methods: {
+    setData() {
+      this.username = this.state.userData.username;
+      this.avatar = this.state.userData.avatar;
+      this.wins = this.state.userData.wins - 1;
+      this.losses = this.state.userData.losses - 1;
+      this.battles = this.state.userData.wins + this.state.userData.losses - 2;
+      this.winrat =
+        parseInt(
+          (this.state.userData.wins /
+            (this.state.userData.wins + this.state.userData.losses)) *
+          100
+        ) + "%";
+      this.friends = this.state.userData.friends;
+      this.games = this.state.userData.games;
+      this.is2FA = this.state.userData.is2faEnabled;
+
+      this.achievements = [
+        {
+          icon: "ph:rocket-fill",
+          title: "Unstoppable",
+          desc: "Play 10 games",
+          status: this.battles >= 10,
+        },
+        {
+          icon: "ph:baby-fill",
+          title: "Newbie",
+          desc: "Win 3 games",
+          status: this.wins >= 3,
+        },
+        {
+          icon: "ph:medal-fill",
+          title: "Winner",
+          desc: "Win 10 games",
+          status: this.wins >= 10,
+        },
+        {
+          icon: "ph:hand-fill",
+          title: "Master",
+          desc: "Win 100 games",
+          status: this.wins >= 100,
+        },
+        {
+          icon: "ph:fire-fill",
+          title: "Grand Master",
+          desc: "Win 1000 games",
+          status: this.wins >= 1000,
+        },
+        {
+          icon: "solar:danger-bold",
+          title: "Loser",
+          desc: "Lose 10 games",
+          status: this.losses >= 10,
+        },
+        {
+          icon: "ph:users-three-fill",
+          title: "Squad",
+          desc: "Add 3 friends",
+          status: this.friends.length >= 3,
+        },
+        {
+          icon: "icon-park-solid:protect",
+          title: "Safety first",
+          desc: "Enable 2FA",
+          status: this.is2FA,
+        },
+      ];
+
+      // Sort achievements based on the status property
+      this.achievements.sort((a, b) => b.status - a.status);
+    },
+  },
+  mounted() {
+    this.setData();
+    this.$socket.on("Notification", async (data) => {
+      if (data.type === "updated") {
+        this.isLoading = true;
+        this.isError = false;
+        try {
+          await this.state.updateData();
+          this.setData();
+        } catch (error) {
+          this.isLoading = false;
+          this.isError = true;
+        }
+        this.isLoading = false;
+      }
+    });
   },
 };
 </script>
 
 <template>
-  <div v-if="this.friendTab"
+  <Loading v-if="this.isLoading" />
+  <!-- Error -->
+  <div v-else-if="this.isError" class="flex ml-20 lg:ml-24 items-center justify-center h-screen dark:bg-slate-800 p-10">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-gray-800 dark:text-gray-200">Opps!!</h1>
+      <p class="text-lg text-gray-600 mt-4 mx-20 lg:mx-40 dark:text-gray-400">
+        Something went wrong. feel free to contact us if the problem presists.
+      </p>
+      <div class="flex gap-5 items-center justify-center w-full">
+        <button @click="this.$router.push('/')" class="mt-8 text-blue-500 hover:underline text-lg">Go to Home</button>
+        <button @click="this.$router.go(-1)" class="mt-8 text-blue-500 hover:underline text-lg">Go Back</button>
+        <button @click="this.isError = false" class="mt-8 text-blue-500 hover:underline text-lg">Refresh</button>
+      </div>
+    </div>
+  </div>
+  <!-- friends -->
+  <div v-else-if="this.friendTab"
     class="flex flex-col justify-start items-center min-h-screen dark:bg-slate-800 p-10 ml-20 lg:ml-24">
     <div class="flex w-full justify-center items-center pb-10">
-      <Icon @click="this.friendTab = false" icon="ion:arrow-back" class="text-gray-100 h-16 w-16 dark:text-white p-3 cursor-pointer" />
+      <Icon @click="this.friendTab = false" icon="ion:arrow-back"
+        class="text-gray-100 h-16 w-16 dark:text-white p-3 cursor-pointer" />
       <h1 class="font-semibold text-3xl md:text-4xl dark:text-white text-center items-center overflow-ellipsis">
         Your Friends:
       </h1>
     </div>
     <div v-if="!this.friends.length" class="h-full flex flex-col items-center">
-      <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
-      <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
-        lonely 😔
-      </p>
+      <img src="../assets/imgs/empty2.png" alt="" class="aspect-square object-cover" />
+      <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">lonely 😔</p>
     </div>
     <div v-for="(element, index) in this.friends" :key="index"
       class="flex items-center justify-start w-full max-w-[500px] my-2 px-5 py-3 rounded-2xl custom-box-shadow dark:bg-slate-700 dark:text-white">
@@ -127,7 +171,7 @@ export default {
           <p class="font-semibold text-xl">{{ index + 1 }}.</p>
           <div class="w-20 h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
             <img referrerpolicy="no-referrer" :src="element.avatar" alt="Avatar"
-              class="object-cover rounded-full w-20 h-20" />
+              class="aspect-square object-cover rounded-full w-20 h-20" />
           </div>
           <p class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-semibold md:text-xl tracking-wide dark:text-white">
             {{ element.username }}
@@ -139,14 +183,14 @@ export default {
       </router-link>
     </div>
   </div>
-
+  <!-- Profile -->
   <div v-else class="grid grid-cols-1 h-full md:grid-cols-2 gap-10 p-10 ml-20 lg:ml-24 min-h-screen dark:bg-slate-800">
     <!-- <ProfileCard /> -->
     <div
       class="flex flex-col max-h-[600px] gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="w-40 md:w-60 bg-gray-300 rounded-full shadow">
         <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar"
-          class=" w-full h-full object-cover rounded-full" />
+          class="w-full aspect-square object-cover rounded-full" />
       </div>
       <p class="font-semibold text-3xl tracking-wide mx-5 mb-5 dark:text-white">
         {{ this.username }}
@@ -172,7 +216,7 @@ export default {
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
         <div v-if="!this.games.length" class="h-full flex flex-col items-center">
-          <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+          <img src="../assets/imgs/empty2.png" alt="" class="aspect-square object-cover" />
           <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
             No Battles yet!!
           </p>

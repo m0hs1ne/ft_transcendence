@@ -40,7 +40,7 @@ export const useUserStore = defineStore("user", {
       try {
         this.ActiveChannelData = await axios.get(
           `http://10.32.125.38:3000/api/chat-rooms/${this.ActiveChannelId}/`,
-          { withCredentials: true },
+          { withCredentials: true }
         );
         console.log(this.ActiveChannelData);
         if (this.ActiveChannelData.data.result == "error") {
@@ -68,7 +68,7 @@ export const useUserStore = defineStore("user", {
       try {
         this.UserFriends = await axios.get(
           `http://10.32.125.38:3000/api/users/friends/`,
-          { withCredentials: true },
+          { withCredentials: true }
         );
       } catch (error) {
         console.log("fetch friends by id error: ", error);
@@ -86,13 +86,13 @@ export const useUserStore = defineStore("user", {
       try {
         this.DmChatroomsList = await axios.get(
           `http://10.32.125.38:3000/api/chat-rooms/DM_chatrooms`,
-          { withCredentials: true },
+          { withCredentials: true }
         );
 
         this.DmChatroomsList = this.DmChatroomsList.data;
         console.log(
           "---------------------------------------------------------->  ",
-          this.DmChatroomsList,
+          this.DmChatroomsList
         );
       } catch (error) {
         console.log("fetch friends by id error: ", error);
@@ -107,7 +107,7 @@ export const useUserStore = defineStore("user", {
     async RemoveChatRome() {
       const t = await axios.delete(
         `http://10.32.125.38:3000/api/chat-rooms/${this.ActiveChannelId}`,
-        { withCredentials: true },
+        { withCredentials: true }
       );
       //await this.fetchDataForDmChatRooms();
     },
@@ -116,17 +116,41 @@ export const useUserStore = defineStore("user", {
 
 export const SharedData = defineStore("Shard", {
   state: () => ({
-    userData: {},
+    userData: null,
     friends: [],
     blocked: [],
+    blockedBy: [],
   }),
+  actions: {
+    setUserData(newData) {
+      this.userData = newData;
+      this.friends = newData.friends;
+      this.blocked = newData.blocked;
+      this.blockedBy = newData.blockedBy;
+    },
+
+    async updateData() {
+      try {
+        const res = await axios.get(
+          "http://10.32.125.38:3000/api/users/profile/",
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("updateData res: ", res);
+        this.setUserData(res.data);
+      } catch (error) {
+        console.log("updateData error\n", error);
+      }
+    },
+  },
 });
 
 export const GameData = defineStore("Game", {
   state: () => ({
-    phase: 'W',
-    modeLimit: 1,
-    modeTitle: 1,
+    phase: "W",
+    modeLimit: '1',
+    modeTitle: '1',
     random: true,
   }),
 
@@ -135,7 +159,7 @@ export const GameData = defineStore("Game", {
       this.modeLimit = limit;
       this.modeTitle = title;
       this.random = isRandom;
-      this.phase = 'W';
+      this.phase = "W";
     },
   },
 });

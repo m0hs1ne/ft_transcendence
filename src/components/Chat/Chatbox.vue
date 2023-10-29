@@ -7,7 +7,7 @@
         @click="this.userStore.viewMode = 'List'" />
       <router-link :to="'/users/' + this.person.id" class="flex w-fit">
         <div class="w-12 bg-gray-200 rounded-full shadow mr-5">
-          <img :src="this.person.avatar" alt="Avatar" class="w-12 rounded-full object-cover" />
+          <img :src="this.person.avatar" alt="Avatar" class="w-12 rounded-full aspect-square object-cover" />
         </div>
         <div class="flex flex-col items-start justify-center">
           <h1 class="font-bold text-lg">

@@ -6,7 +6,7 @@
                 Hardluck!!&nbsp;
             </span>
             <span class="text-red-600">
-                You lose.
+                You lose, in {{ limit }}
             </span>
         </div>
         <div class="flex items-center justify-center w-full gap-5  font-bold text-xl">
@@ -28,7 +28,7 @@ import { GameData } from "../../stores/state.ts";
 
 export default {
     props:{
-        limit: 1,
+        limit: '',
     },
     setup() {
     const gameData = GameData();
@@ -36,7 +36,7 @@ export default {
   },
     methods: {
         async playAgain() {
-            this.gameData.setData(this.limit, '', true);
+            this.gameData.setData(this.gameData.modeLimit, '', true);
             await this.$router.replace('/');
             this.$router.push('/play');
         },

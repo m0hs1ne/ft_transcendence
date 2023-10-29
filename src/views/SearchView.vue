@@ -177,8 +177,8 @@ export default {
       </div>
       <hr class="w-full max-w-[500px] my-2 px-5 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
 
-      <div v-if="this.userTab && !this.users" class="h-full flex flex-col items-center">
-        <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+      <div v-if="this.userTab && !this.users.length" class="h-full flex flex-col items-center">
+        <img src="../assets/imgs/empty2.png" alt="" class=" aspect-square object-cover">
         <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
           {{ this.query ? "There is no results for that" : "Search for users!!" }}
         </p>
@@ -189,7 +189,7 @@ export default {
           <div class="flex items-center">
             <div class="w-14 h-14 md:w-20 md:h-20 bg-gray-300 rounded-full shadow mr-4">
               <img referrerpolicy="no-referrer" :src="player.avatar" alt="Avatar"
-                class="object-cover rounded-full w-14 h-14 md:w-20 md:h-20" />
+                class="aspect-square object-cover rounded-full w-14 h-14 md:w-20 md:h-20" />
             </div>
             <p
               class="w-36 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
@@ -202,8 +202,8 @@ export default {
         </router-link>
       </div>
 
-      <div v-if="!this.userTab && !this.channels" class="h-full flex flex-col items-center">
-        <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+      <div v-if="!this.userTab && !this.channels.length" class="h-full flex flex-col items-center">
+        <img src="../assets/imgs/empty2.png" alt="" class=" aspect-square object-cover">
         <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
           {{ this.query ? "There is no results for that!!" : "Search for channels!!" }}
         </p>

@@ -40,13 +40,13 @@ export default {
 
 <template>
 	<div class="grid md:grid-cols-2 gap-10 py-10 px-10 ml-20 lg:ml-24 min-h-screen dark:bg-slate-800">
-		<PlayModeCard src="./src/assets/imgs/mode1.png" title="Classic" description="First to score 20 wins" limit=20 />
+		<PlayModeCard src="./src/assets/imgs/mode1.png" title="Classic" description="First to score 20 wins" limit="20" />
 
-		<PlayModeCard src="./src/assets/imgs/mode2.png" title="Rapid" description="First to score 14 wins" limit=14 />
+		<PlayModeCard src="./src/assets/imgs/mode2.png" title="Rapid" description="First to score 14 wins" limit="14" />
 
-		<PlayModeCard src="./src/assets/imgs/mode3.png" title="Blitz" description="First to score 3 wins" limit=3 />
+		<PlayModeCard src="./src/assets/imgs/mode3.png" title="Blitz" description="First to score 3 wins" limit="3" />
 
-		<PlayModeCard src="./src/assets/imgs/mode4.png" title="Bullet" description="First to score wins" limit=1 />
+		<PlayModeCard src="./src/assets/imgs/mode4.png" title="Bullet" description="First to score wins" limit="1" />
 	</div>
 </template>
   

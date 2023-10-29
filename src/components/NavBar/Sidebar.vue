@@ -76,9 +76,9 @@ export default {
 				<div class="w-[28px] h-[28px] bg-gray-300 rounded-full shadow">
 					<img referrerpolicy="no-referrer" v-if="this.$route.path == '/profile'"
 						:src="this.state.userData.avatar" alt="Avatar"
-						class="object-cover rounded-full w-[28px] h-[28px] ring ring-cyan-500">
+						class="aspect-square object-cover rounded-full w-[28px] h-[28px] ring ring-cyan-500">
 					<img referrerpolicy="no-referrer" v-else :src="this.state.userData.avatar" alt="Avatar"
-						class="object-cover w-[28px] h-[28px] rounded-full">
+						class="aspect-square object-cover w-[28px] h-[28px] rounded-full">
 				</div>
 			</router-link>
 			<div title="LogOut" @click="confirmLogout" class="flex items-center p-3 m-3 cursor-pointer">
