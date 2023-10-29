@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
 export default (app: any) => {
-  const socket: Socket = io("http://10.32.125.38:3000", {
+  const socket: Socket = io("http://localhost:3000", {
     withCredentials: true,
   });
   app.config.globalProperties.$socket = socket;
@@ -10,7 +10,7 @@ export default (app: any) => {
 };
 
 // export default defineSocketPlugin(nuxtApp =>{
-//     const socket: Socket = io('http://10.32.125.38:3000',
+//     const socket: Socket = io('http://localhost:3000',
 //     {
 //        withCredentials: true
 //     });

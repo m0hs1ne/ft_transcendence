@@ -45,7 +45,7 @@ export default {
 
     async authState() {
       try {
-        const res = await axios.get("http://10.32.125.38:3000/api/auth/success/", {
+        const res = await axios.get("http://localhost:3000/api/auth/success/", {
           withCredentials: true,
         });
         console.log("auth state res: ", res)
@@ -66,7 +66,7 @@ export default {
         if (this.isLoggedIn) {
           console.log("1")
           const res = await axios.get(
-            "http://10.32.125.38:3000/api/users/profile/",
+            "http://localhost:3000/api/users/profile/",
             {
               withCredentials: true,
             },
@@ -78,7 +78,7 @@ export default {
 
           if (res.data.loggedFirstTime) {
             await axios.patch(
-              "http://10.32.125.38:3000/api/users/profile/loggedFirstTime/",
+              "http://localhost:3000/api/users/profile/loggedFirstTime/",
               {
                 loggedFirstTime: false,
               },
@@ -99,7 +99,7 @@ export default {
       try {
         console.log("otp code: ", this.otpCode);
         const response = await axios.post(
-          "http://10.32.125.38:3000/api/2fa/authenticate/",
+          "http://localhost:3000/api/2fa/authenticate/",
           { tfaCode: this.otpCode },
           {
             withCredentials: true,
@@ -112,7 +112,7 @@ export default {
         }
 
         await axios.patch(
-          "http://10.32.125.38:3000/api/users/profile/validsession/",
+          "http://localhost:3000/api/users/profile/validsession/",
           {
             validSession: true,
           },
@@ -133,7 +133,7 @@ export default {
       const confirmed = window.confirm("Are you sure you want to log out?");
       if (confirmed) {
         try {
-          await axios.get("http://10.32.125.38:3000/api/auth/logout", {
+          await axios.get("http://localhost:3000/api/auth/logout", {
             withCredentials: true,
           });
           this.twoFA = false;

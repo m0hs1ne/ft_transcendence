@@ -27,7 +27,7 @@
     </div>
 
     <div class="flex items-center justify-center h-full gap-3">
-      <Icon v-if="!this.person.inGame" @click="play()" title="Play"
+      <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
         class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
       <Icon v-if="this.NAtoBlock" @click="block()" title="Block"
@@ -148,7 +148,12 @@ export default {
   mounted() {
 
     this.UserProfile = this.person;
-
+    this.$socket.on("inGame", (data) => {
+        console.log("--------ZZZZZZZ-chat box----------------------------------------", data, this.person);
+        if (data.id == this.person.id) {
+          this.person.inGame = data.inGame;
+        }
+      });
     console.log(" I am in Mounted in chatbox ", this.UserProfile);
     this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
     this.$socket.on("receiveMessage", (data) => {
@@ -193,16 +198,6 @@ export default {
         });
       }
 
-
-
-
-      this.$GameSocket.on("gameStatus", (data) => {
-        console.log("--------ZZZZZZZ-----------", data);
-        if (data.id == this.person.id) {
-          this.person.inGame = data.inGame;
-        }
-     
-      });
       console.log("++=+++++++++++++++++++++++++++++++++++++++++++++++++++++")
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer;
