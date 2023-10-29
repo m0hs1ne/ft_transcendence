@@ -196,6 +196,19 @@ export class UsersService {
     return updatedUser;
   }
 
+  async updatelogged(id: number, loggedFirstTime) {
+    const options: FindOneOptions<User> = {
+      where: { id },
+    };
+    const updatedUser = await this.userRepository.update(
+      { id },
+      {
+        loggedFirstTime,
+      },
+    );
+    return updatedUser;
+  }
+
   async remove(id: number, @Req() req) {
     const payload = verifyToken(req.headers.cookie);
     if (id != payload.sub) throw new EntityNotFoundError(User, {});
