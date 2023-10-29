@@ -13,7 +13,7 @@ int main() {
           std::cout << command;
         int result = system(command.c_str());
         a++;
-      
+        result = system("git push");
     }
 
     file.close();
