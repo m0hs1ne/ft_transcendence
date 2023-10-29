@@ -30,13 +30,13 @@ export default {
             try {
                 console.log("==> ", props.leftID, props.rightID);
                 const res1 = await axios.get(
-                    `http://10.32.120.112:3000/api/users/profile/${props.leftID}`,
+                    `http://10.32.125.38:3000/api/users/profile/${props.leftID}`,
                     {
                         withCredentials: true,
                     }
                 );
                 const res2 = await axios.get(
-                    `http://10.32.120.112:3000/api/users/profile/${props.rightID}`,
+                    `http://10.32.125.38:3000/api/users/profile/${props.rightID}`,
                     {
                         withCredentials: true,
                     }
@@ -59,13 +59,13 @@ export default {
 
 
 <template>
-    <div class="p-2.5 md:p-5 flex items-center justify-between rounded-full  custom-box-shadow dark:bg-slate-900">
-        <div class="flex items-center justify-start w-50 md:w-80 ">
-            <div class="w-20 h-20 md:w-28 md:h-28 bg-gray-300 rounded-full shadow">
+    <div class="p-2.5 flex items-center justify-between rounded-full custom-box-shadow dark:bg-slate-900">
+        <div class="flex items-center justify-start w-50 md:w-60 ">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-300 rounded-full shadow">
                 <img referrerpolicy="no-referrer" :src="this.leftData.avatar" alt="Avatar"
-                    class=" object-cover rounded-full w-20 h-20 md:w-28 md:h-28">
+                    class=" aspect-square object-cover rounded-full w-20 h-20 md:w-24 md:h-24">
             </div>
-            <p class=" font-semibold md:text-xl tracking-wide mx-2  dark:text-white overflow-ellipsis">
+            <p class=" font-semibold tracking-wide mx-2  dark:text-white overflow-ellipsis">
                 {{ this.leftData.username }}
             </p>
         </div>
@@ -74,19 +74,19 @@ export default {
             <p class="font-bold text-xl dark:text-white text-center line-clamp-1">
                 {{ this.modes[limit] }}
             </p>
-            <hr class="w-full max-w-[100px] my-3 px-1 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
+            <hr class="w-full max-w-[100px] my-1 px-1 h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
             <p class="font-bold text-xl dark:text-white text-center line-clamp-1">
                 {{ leftScore }} : {{ rightScore }}
             </p>
         </div>
 
-        <div class="flex items-center justify-end w-50 md:w-80 ">
-            <p class=" font-semibold md:text-xl tracking-wide mx-2 dark:text-white overflow-ellipsis">
+        <div class="flex items-center justify-end w-50 md:w-60 ">
+            <p class=" font-semibold tracking-wide mx-2 dark:text-white overflow-ellipsis">
                 {{ this.rightData.username }}
             </p>
-            <div class="w-20 h-20 md:w-28 md:h-28 bg-gray-300 rounded-full shadow">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-300 rounded-full shadow">
                 <img referrerpolicy="no-referrer" :src="this.rightData.avatar" alt="Avatar"
-                    class=" object-cover rounded-full w-20 h-20 md:w-28 md:h-28">
+                    class=" aspect-square object-cover rounded-full w-20 h-20 md:w-24 md:h-24">
             </div>
         </div>
     </div>

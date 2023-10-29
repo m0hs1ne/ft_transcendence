@@ -19,7 +19,7 @@ export default {
       this.isError = false;
 
       try {
-        const response = await axios.get("http://10.32.120.112:3000/api/users/leaderboard", {
+        const response = await axios.get("http://10.32.125.38:3000/api/users/leaderboard", {
           withCredentials: true,
         });
         this.leaderboard = response.data;
@@ -62,7 +62,7 @@ export default {
           <p class=" font-semibold text-xl">{{ index + 1 }}.</p>
           <div class="w-14 h-14 md:w-20 md:h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
             <img referrerpolicy="no-referrer" :src="player.avatar" alt="Avatar"
-              class="object-cover rounded-full w-14 h-14 md:w-20 md:h-20" />
+              class="aspect-square object-cover rounded-full w-14 h-14 md:w-20 md:h-20" />
           </div>
           <p class="w-36 md:w-56 overflow-ellipsis line-clamp-1  font-semibold md:text-xl tracking-wide dark:text-white">
             {{ player.username }}

@@ -21,7 +21,7 @@ export default
 <template>
 	<router-link @click="this.gameData.setData(this.limit, this.title, true)" to="/play"
 		class="relative rounded-2xl shadow-xl cursor-pointer">
-		<img referrerpolicy="no-referrer" :src="src" class="w-full h-full rounded-2xl shadow-xl object-cover">
+		<img referrerpolicy="no-referrer" :src="src" class="w-full h-full rounded-2xl shadow-xl aspect-square object-cover">
 		<div class="absolute bottom-10 left-10  text-white">
 
 			<p class="font-bold text-3xl tracking-wider pb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">

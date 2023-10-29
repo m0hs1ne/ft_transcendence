@@ -2,7 +2,7 @@
     <div class="z-9999">
         <div v-if="isOpend" class="fixed top-4 right-4 bg-blue-300 text-white px-4 py-2 rounded-lg shadow-lg">
 
-            <h2 class="text-xl font-bold mb-4 from-neutral-600 "> {{ this.strings }}</h2>
+            <h2 class="text-xl font-bold mb-4 from-neutral-600 dark:text-white "> {{ this.strings }}</h2>
             <button @click="closePopup" class="m-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 La
             </button>

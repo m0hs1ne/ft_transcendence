@@ -1,6 +1,6 @@
 <!-- CanvasComponent.vue -->
 <template>
-  <div class="flex flex-col gap-5 bg-slate-800 h-screen items-center justify-center">
+  <div class="flex flex-col gap-5 bg-white dark:bg-slate-800 h-full min-h-screen items-center justify-center">
     <WaitingModel v-if="gameData.phase === 'W'" />
     <ScoreBar v-if="gameData.phase === 'P'" :leftID="leftID" :rightID="rightID" :leftScore="leftScore" :rightScore="rightScore"
       :limit="mode" />
@@ -9,14 +9,13 @@
       class="text-gray-100 dark:text-white shadow w-fit mt-3 py-5 px-7 bg-gray-500 rounded-md text-2xl font-bold">
       Withdraw
     </button>
-    <WinModel v-if="gameData.phase === 'N'" :limit="mode" />
-    <LoseModel v-if="gameData.phase === 'L'" :limit="mode" />
+    <WinModel v-if="gameData.phase === 'N'" :limit="gameData.modeLimit" />
+    <LoseModel v-if="gameData.phase === 'L'" :limit="gameData.modeLimit" />
   </div>
 </template>
 
 
 <script lang="ts">
-import { ref } from 'vue'
 import { app } from "../main";
 import { GameData } from "../stores/state";
 import WaitingModel from "./../components/Game/WaitingModel.vue";
@@ -54,7 +53,7 @@ export default {
       Context: null as CanvasRenderingContext2D | null,
       Canvas: null as HTMLCanvasElement | null,
       GameSocket: null as Socket | null,
-      mode: 1,
+      mode: '1',
     };
   },
 
@@ -116,7 +115,7 @@ export default {
 
     CanvasResize() {
       if (this.Canvas) {
-        this.Canvas.width = window.innerWidth * 0.8;
+        this.Canvas.width = window.innerWidth * 0.7;
         this.Canvas.height = this.Canvas.width * 0.5;
         this.PaddleHeight = this.Canvas.height * 0.25;
         this.PaddleWidth = this.Canvas.width * 0.02;
@@ -151,12 +150,12 @@ export default {
         });
 
         this.GameSocket.on("startGame", (data: any) => {
-          console.log("startGame");
           this.RoomId = data.id;
           this.pos = data.pos;
           this.gameData.phase = 'P';
           this.mode = data.mode;
-          if (this.pos === "Left") {
+          if (this.pos === "Left") 
+          {
             this.leftID = data.CurrentID;
             this.rightID = data.OpponentID;
           }
@@ -216,9 +215,9 @@ export default {
 
     JoinGameEvent() {
       if (this.GameSocket) {
-        this.GameSocket.emit("joinRoom", {
-          mode: this.gameData.modeLimit,
-        });
+        console.log("this.gameData.modeLimit: ", this.gameData.modeLimit)
+        this.GameSocket.emit("joinRoom", this.gameData.modeLimit);
+        // this.mode = this.gameData.modeLimit;
       }
     },
 
@@ -227,7 +226,7 @@ export default {
       if (keyCode == 38 && this.PaddleY - 0.04 > 0) {
         this.PaddleY -= 0.04;
         if (this.GameSocket) {
-          this.GameSocket.emit("PaddleUpdates", {
+          this.GameSocket.emit("PaddleUpmodedates", {
             pos: this.pos,
             roomId: this.RoomId,
             Paddle: -0.04,

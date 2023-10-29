@@ -113,13 +113,12 @@ export default {
 
     async fetchData() {
       this.isError = false;
-
       this.isNotMe = this.state.userData.id != this.$route.params.id;
       this.isLoading = true;
       // Get user profile data
       try {
         const res = await axios.get(
-          `http://10.32.120.112:3000/api/users/profile/${this.$route.params.id}`,
+          `http://10.32.125.38:3000/api/users/profile/${this.$route.params.id}`,
           {
             withCredentials: true,
           }
@@ -138,7 +137,7 @@ export default {
         this.games = res.data.games;
         this.isFriend = this.state.friends.some((user) => user.id === res.data.id);
         this.isBlocked = this.state.blocked.some((user) => user.id === res.data.id);
-        this.isBlockedBy = this.state.userData.blockedBy.some((user) => user.id === res.data.id);
+        this.isBlockedBy = this.state.blockedBy.some((user) => user.id === res.data.id);
         this.is2FA = res.data.is2faEnabled;
         this.setAchievments();
         console.log("user from id: \n", res.data);
@@ -151,12 +150,11 @@ export default {
 
     async friendLogic() {
       this.isError = false;
-
       this.isLoading = true;
       try {
         if (this.isFriend) {
           const response = await axios.delete(
-            `http://10.32.120.112:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
+            `http://10.32.125.38:3000/api/users/friends/${parseInt(this.$route.params.id)}`,
             {
               withCredentials: true,
             }
@@ -164,7 +162,7 @@ export default {
           console.log("1 friendLogic res", response);
         } else {
           const response = await axios.post(
-            "http://10.32.120.112:3000/api/users/friends/",
+            "http://10.32.125.38:3000/api/users/friends/",
             { id: parseInt(this.$route.params.id) },
             {
               withCredentials: true,
@@ -184,7 +182,7 @@ export default {
 
       try {
         const response = await axios.delete(
-          `http://10.32.120.112:3000/api/users/blocked/${parseInt(this.$route.params.id)}`,
+          `http://10.32.125.38:3000/api/users/blocked/${parseInt(this.$route.params.id)}`,
           {
             withCredentials: true,
           }
@@ -196,13 +194,30 @@ export default {
       this.isLoading = false;
     },
     goToChat() {
-      this.chatApi.ActiveId = this.userData;
+      // this.chatApi.ActiveId = this.userData;
       // this.chatApi.viewMode = 'Chat';
       this.$router.push("/chat");
     },
   },
+
   async mounted() {
     await this.fetchData();
+    this.$socket.on("Notification", async (data) => {
+      if (data.type === "updated") {
+        this.isLoading = true;
+        this.isError = false;
+        try {
+          await this.state.updateData();
+          this.isFriend = this.state.friends.some((user) => user.id === this.userData.id);
+          this.isBlocked = this.state.blocked.some((user) => user.id === this.userData.id);
+          this.isBlockedBy = this.state.blockedBy.some((user) => user.id === this.userData.id);
+        } catch (error) {
+          this.isLoading = false;
+          this.isError = true;
+        }
+        this.isLoading = false;
+      }
+    });
   },
   async updated() {
     if (this.userData.id != this.$route.params.id && !this.isError) {
@@ -237,7 +252,7 @@ export default {
       </h1>
     </div>
     <div v-if="!this.friends.length" class="h-full flex flex-col items-center">
-      <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+      <img src="../assets/imgs/empty2.png" alt="" class=" aspect-square object-cover">
       <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
         lonely 😔
       </p>
@@ -250,7 +265,7 @@ export default {
           <p class="font-semibold text-xl">{{ index + 1 }}.</p>
           <div class="w-20 h-20 bg-gray-300 rounded-full shadow ml-2 mr-4">
             <img referrerpolicy="no-referrer" :src="element.avatar" alt="Avatar"
-              class="object-cover rounded-full w-20 h-20" />
+              class="aspect-square object-cover rounded-full w-20 h-20" />
           </div>
           <p class="w-36 md:w-56 overflow-ellipsis line-clamp-1 font-semibold md:text-xl tracking-wide dark:text-white">
             {{ element.username }}
@@ -269,7 +284,7 @@ export default {
       class="flex flex-col max-h-[600px] gap-5 items-center justify-center py-10 rounded-2xl custom-box-shadow dark:bg-slate-900">
       <div class="w-40 md:w-60 bg-gray-300 rounded-full shadow">
         <img referrerpolicy="no-referrer" :src="this.avatar" alt="Avatar"
-          class=" w-full h-full object-cover rounded-full" />
+          class="w-full aspect-square object-cover rounded-full" />
       </div>
       <p class="font-semibold text-3xl tracking-wide mx-5 mb-5 dark:text-white">
         {{ this.username }}
@@ -287,12 +302,12 @@ export default {
           <Icon @click="this.friendLogic()" :icon="!this.isFriend ? 'bi:person-fill-add' : 'bi:person-fill-x'" height="50"
             class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300  rounded-lg" />
         </div>
-        <div v-if="this.isNotMe && this.isFriend && !this.isBlocked  && !this.isBlockedBy"
+        <div v-if="this.isNotMe && this.isFriend && !this.isBlocked && !this.isBlockedBy"
           class="flex items-center justify-center font-bold text-xl cursor-pointer">
           <Icon @click="this.goToChat()" icon="fluent:chat-12-filled" height="50"
             class="text-gray-100 dark:text-white shadow w-fit p-3 bg-blue-500 hover:bg-blue-300 rounded-lg" />
         </div>
-        <div v-if="this.isBlocked  && !this.isBlockedBy" @click="this.unBlock"
+        <div v-if="this.isBlocked && !this.isBlockedBy" @click="this.unBlock"
           class="flex items-center h-[50px] px-3 justify-center text-gray-700 font-bold text-xl cursor-pointer bg-gray-200 hover:bg-blue-300 rounded-lg shadow-lg">
           UnBlock
         </div>
@@ -315,7 +330,7 @@ export default {
       </div>
       <div class="overflow-y-auto w-full text-lg font-medium">
         <div v-if="!this.games.length" class="h-full flex flex-col items-center">
-          <img src="../assets/imgs/empty2.png" alt="" class=" object-cover">
+          <img src="../assets/imgs/empty2.png" alt="" class=" aspect-square object-cover">
           <p class="font-bold text-gray-400 text-2xl pb-20 md:pb-0 text-center">
             No Battles yet!!
           </p>
@@ -325,7 +340,7 @@ export default {
           <div :class="[
             'mb-2',
             'font-bold',
-            game.score.split(' ')[0] > game.score.split(' ')[2]
+            parseInt(game.score.split(' ')[0]) > parseInt(game.score.split(' ')[2])
               ? 'text-green-500'
               : ' text-red-500',
           ]">
@@ -333,7 +348,7 @@ export default {
           </div>
           <div :class="[
             'font-bold',
-            game.score.split(' ')[0] < game.score.split(' ')[2]
+            parseInt(game.score.split(' ')[0]) < parseInt(game.score.split(' ')[2])
               ? 'text-green-500'
               : ' text-red-500',
           ]">
