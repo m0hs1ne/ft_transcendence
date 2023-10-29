@@ -25,7 +25,7 @@ export class User {
     @Column({ type: 'varchar', unique: true, length: 50 })
     username: string;
 
-    @Column({default: false})
+    @Column({default: true})
     loggedFirstTime: boolean;
 
 
