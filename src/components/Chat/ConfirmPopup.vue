@@ -49,7 +49,7 @@ export default {
           console.log(this.id)
           axios
         .post(
-          "http://10.32.125.38:3000/api/users/blocked/",
+          "http://localhost:3000/api/users/blocked/",
           {
             id: parseInt(this.id),
           },

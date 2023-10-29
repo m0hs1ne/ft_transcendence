@@ -154,6 +154,8 @@ export default {
     await this.fetchData();
     await this.Events();
 
+   
+
     this.$socket.on("receiveMessage", (data) => {
       console.log(data, "this data form reciveMesssage ", data);
       if (data.type == "DM") {
@@ -191,6 +193,15 @@ export default {
         }
       });
     });
+
+    this.$socket.on("inGame", (data) => {
+      this.userStore.DmChatroomsList.forEach((element) => {
+        console.log("--------Groupfrind-chat box----------", element , data);
+        if (data.id == element.id) {
+          element.inGame = data.inGame;
+        }
+      });
+      });
 
  
     if (this.userStore.ActiveId) {

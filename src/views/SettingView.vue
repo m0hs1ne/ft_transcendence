@@ -45,9 +45,9 @@ export default {
         const formData = new FormData();
         formData.append("file", this.selectedFile, this.selectedFile.name);
 
-        // Replace 'http://10.32.125.38:3000/api/users/upload_avatar/' with your server-side endpoint
+        // Replace 'http://localhost:3000/api/users/upload_avatar/' with your server-side endpoint
         const response = await axios.post(
-          "http://10.32.125.38:3000/api/users/upload_avatar/",
+          "http://localhost:3000/api/users/upload_avatar/",
           formData,
           {
             withCredentials: true,
@@ -68,7 +68,7 @@ export default {
       try {
         // Make a PATCH request to update the username
         const response = await axios.patch(
-          "http://10.32.125.38:3000/api/users/profile/update/",
+          "http://localhost:3000/api/users/profile/update/",
           {
             username: this.newName,
           },
@@ -104,7 +104,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://10.32.125.38:3000/api/2fa/turn-on/",
+          "http://localhost:3000/api/2fa/turn-on/",
           { tfaCode: this.otpCode },
           {
             withCredentials: true,
@@ -117,7 +117,7 @@ export default {
         }
 
         // Update the local state with the new avatar URL
-        await axios.get("http://10.32.125.38:3000/api/auth/logout", {
+        await axios.get("http://localhost:3000/api/auth/logout", {
           withCredentials: true,
         });
         this.$socket.disconnect();
@@ -132,7 +132,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://10.32.125.38:3000/api/2fa/turn-off/",
+          "http://localhost:3000/api/2fa/turn-off/",
           { tfaCode: this.otpCode },
           {
             withCredentials: true,
