@@ -27,7 +27,7 @@
     </div>
 
     <div class="flex items-center justify-center h-full gap-3">
-      <Icon v-if="!this.person.inGame && this.person.statusOnline" @click="play()" title="Play"
+      <Icon v-if="!this.person.inGame" @click="play()" title="Play"
         class="text-blue-600 h-10 w-10 ml-3 cursor-pointer hover:bg-blue-200 p-1 rounded-md"
         icon="mingcute:game-2-fill" />
       <Icon v-if="this.NAtoBlock" @click="block()" title="Block"
@@ -80,13 +80,14 @@
 import axios from "axios";
 import { Icon } from "@iconify/vue";
 import GroupFriend from "./GroupFriend.vue";
-import { useUserStore } from "./../../stores/state.ts";
+import { useUserStore, SharedData } from "./../../stores/state.ts";
 import GameMode from './GameMode.vue';
 
 export default {
   setup() {
     const userStore = useUserStore();
-    return { userStore };
+    const user = SharedData();
+    return { userStore, user };
   },
   props: {
     person: {
@@ -123,27 +124,9 @@ export default {
     block() {
       console.log(" block user ", this.person);
       this.userStore.action = {
-        block:"block",
+        block: "block",
         id: this.person.id
       };
-      // axios
-      //   .post(
-      //     "http://10.32.120.112:3000/api/users/blocked/",
-      //     {
-      //       id: parseInt(this.person.id),
-      //     },
-      //     {
-      //       withCredentials: true,
-      //     }
-      //   )
-      //   .then((response) => {
-      //     //console.log(response);
-      //   })
-      //   .catch((error) => {
-      //     //console.error("Error fetching data:", error);
-      //   });
-      //   await this.userStore.fetchDataForDmChatRooms();
-      // console.log("The ,, ", this.userStore.DmChatroomsList)
     },
     sendMessage() {
       //console.log("I AM SENDmessage function ", this.person);
@@ -170,19 +153,31 @@ export default {
     this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
-      console.log(" I am receve some messages ")
+      // console.log(this.user.userData.id)
+      // console.log(this.person)
+      console.log(" I am receve some messages ", data)
+        var Myid = this.user.userData.id;
       if (data.type == "DM") {
-        var type = "";
-        if (data.message.from.id != this.person.id) type = "sent";
-        else type = "received";
+        if (
+         (this.person.id == data.message.to.id || this.person.id == data.message.from.id) &&
+         (Myid == data.message.to.id || Myid == data.message.from.id))
+          {
 
-        this.messages.push({
-          img: data.message.from.avatar,
-          type: type,
-          text: data.message.message,
-        });
+          var type = "";
+          if (data.message.from.id != this.person.id) type = "sent";
+          else type = "received";
+
+          this.messages.push({
+            img: data.message.from.avatar,
+            type: type,
+            text: data.message.message,
+          });
+        }
       }
       if (data.type == "DMMessages") {
+        // if(data)
+        //   if((this.person.id != data.message.from.id) && (this.user.userData.id != data.message.to.id))
+        //      return
         data.messages.forEach((element) => {
           var type = "";
           if (element.from.id != this.person.id) type = "sent";
@@ -201,7 +196,14 @@ export default {
 
 
 
-
+      this.$GameSocket.on("gameStatus", (data) => {
+        console.log("--------ZZZZZZZ-----------", data);
+        if (data.id == this.person.id) {
+          this.person.inGame = data.inGame;
+        }
+     
+      });
+      console.log("++=+++++++++++++++++++++++++++++++++++++++++++++++++++++")
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer;
         if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
