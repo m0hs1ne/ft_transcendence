@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt'
 import { ColdObservable } from "rxjs/internal/testing/ColdObservable";
+import { clients } from "src/chat_rooms/chat_rooms.gateway";
 
 config()
 @Injectable()
@@ -118,4 +119,27 @@ export function isValidFileSize(file: Express.Multer.File): boolean {
 function getFileExtension(filename: string): string {
   const extension = filename.split('.').pop();
   return extension ? `.${extension}` : '';
+}
+
+export async  function sentNotifInGame(leftId, rightId, inGame)
+{
+  const leftFriends = await this.userService.getfriends(leftId);
+  if (leftFriends) {
+    for (const friend of leftFriends) {
+      const client = clients.get(friend.id);
+      if (client) {
+        client.emit("inGame", { id: leftId, inGame });
+      }
+    }
+  }
+
+  const rightFriends = await this.userService.getfriends(rightId);
+  if (rightFriends) {
+    for (const friend of rightFriends) {
+      const client = clients.get(friend.id);
+      if (client) {
+        client.emit("inGame", { id: rightId, inGame });
+      }
+    }
+  }
 }
