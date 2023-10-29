@@ -25,7 +25,7 @@ export class GameGateway {
   @WebSocketServer() server: Server;
   private rooms: Map<string, Room> = new Map();
   private clients: Map<number, string> = new Map();
-  private Queus: Map<string, Socket[]> = new Map();
+  private Queus: Map<number, Socket[]> = new Map();
   private Challenge: Map<number, Socket> = new Map();
   private modes: any = {
     Classic: "20",
@@ -82,10 +82,12 @@ export class GameGateway {
     }
   }
   @SubscribeMessage("joinRoom")
-
   handleJoinRoom(client: Socket, payload: any): void 
   {
-    console.log("JoinRoom");
+    console.log("-->  ", payload);
+    // payload.mode.
+    // var mode = payload.mode;
+
     if (!this.ValidateClient(client)) { }
     else
       this.CheckQueus(payload.mode, client);
@@ -106,8 +108,9 @@ export class GameGateway {
     }
   }
 
-  CheckQueus(mode: string, client: Socket) {
-    console.log(mode);
+  CheckQueus(mode: any, client: Socket) 
+  {
+    console.log("--> ", mode);
     if (!this.Queus.has(mode)) {
       let Queu: Socket[] = [];
       this.Queus.set(mode, Queu);
