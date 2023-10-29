@@ -68,7 +68,6 @@ export class Room {
       OpponentID: this.RightPlayer.id,
       mode: this.mode,
     });
-    console.log(this.GameMode, " : ",this.GameMode.toString);
     this.startGameLoop();
   }
 
