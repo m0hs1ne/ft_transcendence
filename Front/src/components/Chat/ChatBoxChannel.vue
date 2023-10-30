@@ -126,7 +126,7 @@ export default {
   },
   methods: {
     sendMessage() {
-      console.log("I AM SENDmessage channel");
+      //console.log("I AM SENDmessage channel");
       if (this.newMessage != "") {
         this.$socket.emit(
           "sendMessage",
@@ -144,14 +144,14 @@ export default {
   },
 
   async mounted() {
-    console.log("ppppp pp " ,this.userStore.ActiveChannelId);
+    //console.log("ppppp pp " ,this.userStore.ActiveChannelId);
 
     await this.userStore.fetchChannelById();
     this.messages = this.userStore.ActiveMessageChannelId;
     
     this.$socket.on("receiveMessage", (data) => {
-      // console.log( " merwan ",data.chatRoomId)
-      console.log("Helllo this is my ", this.userStore.ActiveChannelId, data.chatRoomId);
+      // //console.log( " merwan ",data.chatRoomId)
+      //console.log("Helllo this is my ", this.userStore.ActiveChannelId, data.chatRoomId);
       if (
         (this.userStore.ActiveChannelId == data.chatRoomId &&
           data.type == "notification" &&
@@ -172,7 +172,7 @@ export default {
     });
     //this.userStore.fetchChannelById();
     // this.$nextTick(() => {
-    //   console.log(" scrol ")
+    //   //console.log(" scrol ")
     //   const scrollContainer = this.$refs.scrollContainer;
     //   scrollContainer.scrollTop = scrollContainer.scrollHeight;
     // });

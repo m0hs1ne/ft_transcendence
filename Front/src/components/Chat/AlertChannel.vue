@@ -84,7 +84,7 @@ export default {
         this.isOpend = true;
       } else {
         this.isOpend = false;
-        console.log(this.selectedOption);
+        //console.log(this.selectedOption);
         this.$socket.emit(
           "createChatRoom",
           {
@@ -96,8 +96,8 @@ export default {
         );
 
         // this.$socket.on("ChatRoomList", (data) => {
-        //   console.log(" this what hello ");
-        //   console.log(data);
+        //   //console.log(" this what hello ");
+        //   //console.log(data);
         // });
 
         this.ChannelName = "";

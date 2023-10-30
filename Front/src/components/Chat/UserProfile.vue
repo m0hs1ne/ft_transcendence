@@ -59,7 +59,7 @@ export default {
 
     },
     Block() {
-      console.log(" block user ", this.person)
+      //console.log(" block user ", this.person)
 
       axios.post("http://localhost:3000/api/users/blocked/", {
 
@@ -68,7 +68,7 @@ export default {
         withCredentials: true,
       })
         .then((response) => {
-          console.log("response axios ", response)
+          //console.log("response axios ", response)
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -79,13 +79,13 @@ export default {
 
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
-      console.log(this.person, this.ActiveChannelId)
+      //console.log(this.person, this.ActiveChannelId)
 
 
     },
 
     ViewProfil() {
-      console.log("Go to profile")
+      //console.log("Go to profile")
     }
   },
   mounted() {

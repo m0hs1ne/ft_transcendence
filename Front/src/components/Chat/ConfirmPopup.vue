@@ -35,9 +35,9 @@ export default {
   methods: {
     async SaveChannel() {
 
-      console.log("ok " ,this.userStore.action,'ed');
+      //console.log("ok " ,this.userStore.action,'ed');
       if ( this.userStore.action == 'Are you sure you want to Leave this Channel?') {
-     //   console.log(" I AM HERE TO ")
+     //   //console.log(" I AM HERE TO ")
         await this.$socket.emit("kickMember",
           {
             memberId: this.userStore.MyId,
@@ -46,7 +46,7 @@ export default {
       }
       else if(this.userStore.action == 'Are you sure you want to Block this User?')
       {
-          console.log(this.id)
+          //console.log(this.id)
           axios
         .post(
           "http://localhost:3000/api/users/blocked/",
@@ -58,7 +58,7 @@ export default {
           }
         )
         .then((response) => {
-          //console.log(response);
+          ////console.log(response);
         })
         .catch((error) => {
           //console.error("Error fetching data:", error);
@@ -67,7 +67,7 @@ export default {
         this.userStore.ItemClicked = ''
         this.userStore.fetchChannelById();
         this.activeChatId = '';
-        console.log("===================>",this.userStore.ItemClicked)
+        //console.log("===================>",this.userStore.ItemClicked)
       }
       else{
         
@@ -78,20 +78,20 @@ export default {
    
         this.userStore.ActiveChannelId = -1
       }
-      // console.log("I am her in error")
-      // console.log(this.userStore.DmChatroomsList)
+      // //console.log("I am her in error")
+      // //console.log(this.userStore.DmChatroomsList)
       this.userStore.action = ''
     },
 
     closePopup() {
        
-      console.log(" Mbitch ")
+      //console.log(" Mbitch ")
       this.isOpend = false;
       this.userStore.action = ''
     },
   },
   mounted() {
-    console.log(this.userStore.action)
+    //console.log(this.userStore.action)
     if((typeof this.userStore.action) == "object")
     {
       this.id = this.userStore.action.id

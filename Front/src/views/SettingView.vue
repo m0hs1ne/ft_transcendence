@@ -33,7 +33,7 @@ export default {
       this.isError = false;
       this.isLoading = true;
       this.selectedFile = event.target.files[0];
-      console.log("selectedFile: ", this.selectedFile);
+      //console.log("selectedFile: ", this.selectedFile);
       try {
         // Check if a file is selected
         if (!this.selectedFile) {
@@ -85,7 +85,7 @@ export default {
         // Update the local state with the new avatar URL
         await this.state.updateData();
         this.changeCard(0);
-        console.log("respone of updatename: ", response);
+        //console.log("respone of updatename: ", response);
       } catch (error) {
         this.error = error;
         console.error("Error updateName:", error);
@@ -110,7 +110,7 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("enable2FA res", response.data.message);
+        //console.log("enable2FA res", response.data.message);
         if (response.data.message !== "2fa is now enabled") {
           this.error = response.data.message;
           return;
@@ -138,7 +138,7 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("disable2FA res", response.data.message);
+        //console.log("disable2FA res", response.data.message);
         if (response.data.message !== "2fa is now disabled") {
           this.error = response.data.message;
           return;

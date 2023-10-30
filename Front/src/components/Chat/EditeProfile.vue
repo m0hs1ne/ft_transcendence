@@ -90,7 +90,7 @@ export default {
         this.isOpend = true;
       } else {
         this.isOpend = false;
-        console.log(this.selectedOption);
+        //console.log(this.selectedOption);
         this.$socket.emit(
           "updateChatRoom",
           {
@@ -103,8 +103,8 @@ export default {
         );
 
         this.$socket.on("ChatRoomList", (data) => {
-          console.log(" this what hello ", data.type);
-          console.log(data);
+          //console.log(" this what hello ", data.type);
+          //console.log(data);
         });
 
         this.ChannelName = "";
@@ -120,7 +120,7 @@ export default {
   },
   mounted() {
     this.ChannelName = this.userStore.ActiveChannelTitle;
-    console.log("------------------", this.userStore.ActiveChannelId);
+    //console.log("------------------", this.userStore.ActiveChannelId);
   },
 };
 </script>

@@ -41,8 +41,8 @@ export class ChatRoomsGateway {
   async handleConnection(socket: Socket) {
     try {
       const payload = verifyToken(socket.handshake.headers.cookie);
-      console.log(payload.sub);
-      console.log("Connected");
+      //console.log(payload.sub);
+      //console.log("Connected");
       clients.set(payload.sub, socket);
       const notifications = [];
       const invitation = await this.chatRoomsService.getInvitationOfUser(
@@ -97,7 +97,7 @@ export class ChatRoomsGateway {
         }
       }
     }
-    console.log(`socket disconnected: ${payload.sub}`);
+    //console.log(`socket disconnected: ${payload.sub}`);
     this.userService.updateDateDisconnect(payload.sub);
     clients.delete(payload.sub);
   }

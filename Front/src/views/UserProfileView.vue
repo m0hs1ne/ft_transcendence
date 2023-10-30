@@ -140,9 +140,9 @@ export default {
         this.isBlockedBy = this.state.blockedBy.some((user) => user.id === res.data.id);
         this.is2FA = res.data.is2faEnabled;
         this.setAchievments();
-        console.log("user from id: \n", res.data);
+        //console.log("user from id: \n", res.data);
       } catch (error) {
-        console.log("Getting user profile error\n", error);
+        //console.log("Getting user profile error\n", error);
         this.isError = true;
       }
       this.isLoading = false;
@@ -159,7 +159,7 @@ export default {
               withCredentials: true,
             }
           );
-          console.log("1 friendLogic res", response);
+          //console.log("1 friendLogic res", response);
         } else {
           const response = await axios.post(
             "http://localhost:3000/api/users/friends/",
@@ -168,7 +168,7 @@ export default {
               withCredentials: true,
             }
           );
-          console.log("2 friendLogic res", response);
+          //console.log("2 friendLogic res", response);
         }
       } catch (error) {
         console.error("Error friendLogic:", error);
@@ -207,6 +207,7 @@ export default {
         this.isLoading = true;
         this.isError = false;
         try {
+          await this.fetchData();
           await this.state.updateData();
           this.isFriend = this.state.friends.some((user) => user.id === this.userData.id);
           this.isBlocked = this.state.blocked.some((user) => user.id === this.userData.id);

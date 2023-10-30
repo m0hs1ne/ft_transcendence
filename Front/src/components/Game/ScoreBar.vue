@@ -28,7 +28,7 @@ export default {
 
             // Get user profile data
             try {
-                console.log("==> ", props.leftID, props.rightID);
+                //console.log("==> ", props.leftID, props.rightID);
                 const res1 = await axios.get(
                     `http://localhost:3000/api/users/profile/${props.leftID}`,
                     {
@@ -45,7 +45,7 @@ export default {
                 leftData.value = res1.data;
                 rightData.value = res2.data;
             } catch (error) {
-                console.log("Getting user profile error\n", error);
+                //console.log("Getting user profile error\n", error);
             }
         };
 

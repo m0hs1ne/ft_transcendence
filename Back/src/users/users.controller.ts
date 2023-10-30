@@ -155,7 +155,7 @@ export class UsersController {
   async addgame(@MessageBody() body, @Req() req, @Res() res) {
     const { user1Id, user2Id, winner, leftSCore, rightSCore, mode } = body;
 
-    console.log(body);
+    //console.log(body);
     this.gameservice.create(
       user1Id,
       user2Id,

@@ -163,19 +163,19 @@ export default {
             this.rightID = data.CurrentID;
             this.leftID = data.OpponentID;
           }
-          console.log(data)
-          console.log("rightID ", this.rightID)
-          console.log("leftID ", this.leftID)
+          //console.log(data)
+          //console.log("rightID ", this.rightID)
+          //console.log("leftID ", this.leftID)
         });
 
         this.GameSocket.on("Score", (data: any) => {
           if (this.pos === "Left") {
-            console.log("LEFT SCORE", data);
+            //console.log("LEFT SCORE", data);
             this.leftScore = data.Current;
             this.rightScore = data.Oponent;
           }
           else {
-            console.log("RIGHT SCORE", data);
+            //console.log("RIGHT SCORE", data);
 
             this.rightScore = data.Current;
             this.leftScore = data.Oponent;
@@ -215,7 +215,7 @@ export default {
 
     JoinGameEvent() {
       if (this.GameSocket) {
-        console.log("this.gameData.modeLimit: ", this.gameData.modeLimit)
+        //console.log("this.gameData.modeLimit: ", this.gameData.modeLimit)
         this.GameSocket.emit("joinRoom", this.gameData.modeLimit);
         // this.mode = this.gameData.modeLimit;
       }
@@ -245,7 +245,7 @@ export default {
     },
   },
   updated() {
-    console.log("New pahse is: ", this.gameData.phase);
+    //console.log("New pahse is: ", this.gameData.phase);
     if (this.gameData.phase === 'P' && !this.Canvas) {
       this.Canvas = document.getElementById("gameCanvas") as HTMLCanvasElement | null;
       if (this.Canvas) {
@@ -264,7 +264,7 @@ export default {
     }
   },
   mounted() {
-    console.log("mounted ");
+    //console.log("mounted ");
     if (this.gameData.phase === 'W')
     {
       this.GameSocket = app.config.globalProperties.$GameSocket;
@@ -283,7 +283,7 @@ export default {
       });
     }
     clearInterval(this.intervalId);
-    console.log("Unmounted");
+    //console.log("Unmounted");
   },
 };
 </script>

@@ -24,7 +24,7 @@ export default {
         });
         this.leaderboard = response.data;
         this.leaderboard.sort((a, b) => ((b.wins / (b.wins + b.losses)) - (a.wins / (a.wins + a.losses))));
-        //console.log("leaderboard is : ", this.leaderboard);
+        ////console.log("leaderboard is : ", this.leaderboard);
       } catch (error) {
         console.error("getLeaderBoard:", error);
         this.isError = true;

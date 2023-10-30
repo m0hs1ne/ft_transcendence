@@ -40,7 +40,7 @@ export class GameGateway {
       verifyToken(client.handshake.headers.cookie);
 
     } catch (err) {
-      console.log(err);
+      console.log("Error in game");
     }
   }
 
@@ -79,7 +79,7 @@ export class GameGateway {
 
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error in game");
     }
   }
   
@@ -101,7 +101,7 @@ export class GameGateway {
         return 1;
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error in game");
       return 0;
     }
   }
@@ -148,7 +148,7 @@ export class GameGateway {
         this.Queus.get(mode).pop();
         this.Queus.get(mode).pop();
       } catch (err) {
-        console.log(err);
+        console.log("Error in game");
       }
     }
   }
@@ -213,7 +213,7 @@ export class GameGateway {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error in game");
     }
   }
 

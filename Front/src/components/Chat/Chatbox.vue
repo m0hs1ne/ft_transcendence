@@ -111,25 +111,25 @@ export default {
   },
   methods: {
     play() {
-      //console.log("This is the member of", this.person);
+      ////console.log("This is the member of", this.person);
       this.userStore.creatchallenge = true;
       this.userStore.Opponent = this.person;
       setTimeout(() => {
         this.NAtoBlock = true;
       }, 7000); // 10 seconds
       this.NAtoBlock = false;
-      //console.log(this.person, this.ActiveChannelId);
-      //console.log(this.$GameSocket);
+      ////console.log(this.person, this.ActiveChannelId);
+      ////console.log(this.$GameSocket);
     },
     block() {
-      console.log(" block user ", this.person);
+      //console.log(" block user ", this.person);
       this.userStore.action = {
         block: "block",
         id: this.person.id
       };
     },
     sendMessage() {
-      //console.log("I AM SENDmessage function ", this.person);
+      ////console.log("I AM SENDmessage function ", this.person);
       if (this.newMessage != "") {
         this.$socket.emit(
           "sendDM",
@@ -149,18 +149,18 @@ export default {
 
     this.UserProfile = this.person;
     this.$socket.on("inGame", (data) => {
-        console.log("--------ZZZZZZZ-chat box----------------------------------------", data, this.person);
+        //console.log("--------ZZZZZZZ-chat box----------------------------------------", data, this.person);
         if (data.id == this.person.id) {
           this.person.inGame = data.inGame;
         }
       });
-    console.log(" I am in Mounted in chatbox ", this.UserProfile);
+    //console.log(" I am in Mounted in chatbox ", this.UserProfile);
     this.$socket.emit("getDMMessages", { userId: this.person.id }, () => { });
     this.$socket.on("receiveMessage", (data) => {
       //this.messages.img = data.message.from.avatar
-      // console.log(this.user.userData.id)
-      // console.log(this.person)
-      console.log(" I am receve some messages ", data)
+      // //console.log(this.user.userData.id)
+      // //console.log(this.person)
+      //console.log(" I am receve some messages ", data)
         var Myid = this.user.userData.id;
       if (data.type == "DM") {
         if (
@@ -198,7 +198,7 @@ export default {
         });
       }
 
-      console.log("++=+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+      //console.log("++=+++++++++++++++++++++++++++++++++++++++++++++++++++++")
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer;
         if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;

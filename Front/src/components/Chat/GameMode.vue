@@ -52,7 +52,7 @@ export default {
         },
 
         async SaveChannel() {
-            console.log(" this.userStore.Opponent ", this.userStore.Opponent)
+            //console.log(" this.userStore.Opponent ", this.userStore.Opponent)
             this.$socket.emit("sendChallenge",
                 {
                     toId: (this.userStore.Opponent.id),

@@ -71,13 +71,13 @@ export default {
       }
     },
     AccepteInvite(frien) {
-      console.log("This is what is you accept ", frien);
+      //console.log("This is what is you accept ", frien);
 
       this.$socket.emit("acceptInvite", {
         id: frien.id,
       });
       
-     // console.log("This is the active: " ,this.userStore.ActiveChannelId);
+     // //console.log("This is the active: " ,this.userStore.ActiveChannelId);
       this.isOpend = false;
       this.DeleteFromArray(frien);
       //this.userStore.UpdateChannelId(frien.chatRoom.id, frien.chatRoom.title)
@@ -94,9 +94,9 @@ export default {
    
     this.fetchData();
     this.$socket.on("Notification", (messages) => {
-      // console.log(" This is friends: befor ", this.friends)
+      // //console.log(" This is friends: befor ", this.friends)
       if (messages.type == "invitation") {
-       // console.log("The problem of the form of json ");
+       // //console.log("The problem of the form of json ");
         this.message = "";
         this.friends.push(messages.invitation);
 
@@ -104,12 +104,12 @@ export default {
  
         messages.notifications.forEach((element) => {
           if (element.type == "invitations") {
-            console.log("I am invt");
+            //console.log("I am invt");
             if (element.invitation.length == 0) {
               this.message = " You don't have any invitation";
             } else {
               element.invitation.forEach((invit) => {
-                console.log("This is invit: ", invit);
+                //console.log("This is invit: ", invit);
                 this.friends.push(invit);
               });
             }

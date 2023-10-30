@@ -99,14 +99,14 @@ export default {
   methods: {
     async fetchData() {
       await this.userStore.fetchDataForDmChatRooms();
-      //console.log(" -------------------------------------------------> OLO ", this.userStore.DmChatroomsList);
+      ////console.log(" -------------------------------------------------> OLO ", this.userStore.DmChatroomsList);
       if (
         this.userStore.DmChatroomsList.length == 0 ||
         this.userStore.DmChatroomsList.data == 0
       )
         this.message = " 5liha 3la allah ";
       else {
-        //console.log(" this.userStore.DmChatroomsList ", this.userStore.DmChatroomsList);
+        ////console.log(" this.userStore.DmChatroomsList ", this.userStore.DmChatroomsList);
         this.friends = this.userStore.DmChatroomsList.data;
       }
     },
@@ -123,10 +123,10 @@ export default {
     },
 
     async Events() {
-      // //console.log(" Noting ")
+      // ////console.log(" Noting ")
       // await this.userStore.fetchDataForDmChatRooms();
       await this.$socket.on("ChatRoomList", (data) => {
-        //console.log("This is data ChatRoomList on : ", data);
+        ////console.log("This is data ChatRoomList on : ", data);
         if (data.type == "new" || data.type == "updated") {
           this.userStore.fetchDataForDmChatRooms();
         }
@@ -157,13 +157,13 @@ export default {
    
 
     this.$socket.on("receiveMessage", (data) => {
-      console.log(data, "this data form reciveMesssage ", data);
+      //console.log(data, "this data form reciveMesssage ", data);
       if (data.type == "DM") {
         const friendIndex = this.userStore.DmChatroomsList.findIndex(
           (friend) => friend.id === data.message.from.id
         );
         if (friendIndex == -1) {
-          ////console.log(" new data ....");
+          //////console.log(" new data ....");
           this.userStore.fetchDataForDmChatRooms();
         }
       }
@@ -187,7 +187,7 @@ export default {
 
     this.$socket.on("userStatus", (data) => {
       this.userStore.DmChatroomsList.forEach((element) => {
-        //console.log(element);
+        ////console.log(element);
         if (data.id == element.id) {
           element.statusOnline = data.online;
         }
@@ -196,7 +196,7 @@ export default {
 
     this.$socket.on("inGame", (data) => {
       this.userStore.DmChatroomsList.forEach((element) => {
-        console.log("--------Groupfrind-chat box----------", element , data);
+        //console.log("--------Groupfrind-chat box----------", element , data);
         if (data.id == element.id) {
           element.inGame = data.inGame;
         }

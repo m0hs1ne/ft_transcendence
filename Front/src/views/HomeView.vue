@@ -32,7 +32,7 @@ export default {
 	},
 	beforeUnmount() {
 		// Remove the event listener when the component is unmounted
-		console.log("this.updateScreenWidth ====> ", this.updateScreenWidth)
+		//console.log("this.updateScreenWidth ====> ", this.updateScreenWidth)
 		window.removeEventListener("resize", this.updateScreenWidth);
 	},
 }

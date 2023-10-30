@@ -42,16 +42,16 @@ export const useUserStore = defineStore("user", {
           `http://localhost:3000/api/chat-rooms/${this.ActiveChannelId}/`,
           { withCredentials: true }
         );
-        console.log(this.ActiveChannelData);
+        //console.log(this.ActiveChannelData);
         if (this.ActiveChannelData.data.result == "error") {
-          console.log("errror");
+          //console.log("errror");
         } else {
           this.MyId = this.ActiveChannelData.data.id;
           this.ActiveMembersChannelId = this.ActiveChannelData.data.members;
           this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
           this.ActiveChannelTitle = this.ActiveChannelData.data.title;
         }
-        //console.log(this.ActiveChannelData.data.messages);
+        ////console.log(this.ActiveChannelData.data.messages);
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }
@@ -77,9 +77,9 @@ export const useUserStore = defineStore("user", {
 
     // async GfetchData() {
     //   this.$socket.emit("myChatRooms", {}, () => {});
-    //   console.log(" Noting ");
+    //   //console.log(" Noting ");
     //   this.ChannelList = await this.$socket.on("ChatRoomList");
-    //   // console.log("This is Channel list ", this.ChannelList);
+    //   // //console.log("This is Channel list ", this.ChannelList);
     // },
 
     async fetchDataForDmChatRooms() {
@@ -90,14 +90,14 @@ export const useUserStore = defineStore("user", {
         );
 
         this.DmChatroomsList = this.DmChatroomsList.data;
-        console.log(
-          "---------------------------------------------------------->  ",
-          this.DmChatroomsList
-        );
+        //console.log(
+        //   "---------------------------------------------------------->  ",
+        //   this.DmChatroomsList
+        // );
       } catch (error) {
         console.log("fetch friends by id error: ", error);
       }
-      console.log(this.DmChatroomsList.length);
+      //console.log(this.DmChatroomsList.length);
       if (this.DmChatroomsList.length == 0) {
         this.ItemClicked = "";
         this.ActiveChannelId = null;
@@ -137,7 +137,7 @@ export const SharedData = defineStore("Shard", {
             withCredentials: true,
           }
         );
-        console.log("updateData res: ", res);
+        //console.log("updateData res: ", res);
         this.setUserData(res.data);
       } catch (error) {
         console.log("updateData error\n", error);

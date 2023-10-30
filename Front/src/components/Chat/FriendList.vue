@@ -63,8 +63,8 @@ export default {
       await this.userStore.FetchFriend();
       // handl friend 
 
-      console.log("This Friends : ", this.userStore.UserFriends.data)
-      console.log("This Members : ", this.members);
+      //console.log("This Friends : ", this.userStore.UserFriends.data)
+      //console.log("This Members : ", this.members);
       // if (this.friends.length === 0) {
       //   this.message = "you don't have any friends to invite them";
       // }
@@ -97,11 +97,11 @@ export default {
       this.isOpend = false;
     },
     sendInvite(friend) {
-      console.log(" ActiveChannelId ", this.userStore.ActiveChannelId)
+      //console.log(" ActiveChannelId ", this.userStore.ActiveChannelId)
       this.$socket.emit(
         "sendInvite",
         { toId: friend.id, chatId: this.userStore.ActiveChannelId }, () => { },);
-      console.log("console ", friend)
+      //console.log("console ", friend)
       this.isOpend = false;
     }
   },

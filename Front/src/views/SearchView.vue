@@ -32,7 +32,7 @@ export default {
     async search(event) {
       this.isError = false;
 
-      console.log("new query: ", this.query);
+      //console.log("new query: ", this.query);
       if (!this.query)
         return;
       try {
@@ -45,7 +45,7 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("Search response", response.data);
+        //console.log("Search response", response.data);
         this.results = response.data;
         this.users = response.data.users;
         this.channels = response.data.chatrooms;
@@ -56,7 +56,7 @@ export default {
     },
 
     async channelLogic(channel) {
-      console.log("channelLogic channel: ", channel);
+      //console.log("channelLogic channel: ", channel);
       if (channel.isMember) {
         this.chatApi.ActiveId = channel;
         this.$router.push('/chat');
@@ -77,7 +77,7 @@ export default {
           () => { }
         );
         this.$socket.on("receiveMessage", (data) => {
-          console.log(data);
+          //console.log(data);
         });
       } catch (error) {
         console.error("channelLogic error", error);

@@ -120,20 +120,20 @@ export default {
     },
 
     UpdateMember(member) {
-      console.log("I am here to update setting ", member);
+      //console.log("I am here to update setting ", member);
       this.userStore.MemberRoleStatus = member;
     },
   },
   async mounted() {
     await this.$socket.on("ChatRoomList", (data) => {
-      console.log("This is data from channel profile : ", data);
+      //console.log("This is data from channel profile : ", data);
       if (data.type == "updated") {
         this.fetchData();
       }
 
     });
     await this.$socket.on("receiveMessage", (data) => {
-      console.log("receiveMessage form channel profile--------- ", data);
+      //console.log("receiveMessage form channel profile--------- ", data);
       if (
         (data.type == "notification" && data.action == "joined") ||
         (data.type == "notification" && data.action == "status") ||

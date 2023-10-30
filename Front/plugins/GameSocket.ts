@@ -5,5 +5,5 @@ export default (app: any) => {
     withCredentials: true,
   });
   app.config.globalProperties.$GameSocket = GameSocket;
-  console.log("Game Socket Connected", GameSocket);
+  //console.log("Game Socket Connected", GameSocket);
 };

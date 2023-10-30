@@ -49,12 +49,12 @@ export default {
         const res = await axios.get("http://localhost:3000/api/auth/success/", {
           withCredentials: true,
         });
-        console.log("auth state res: ", res)
+        //console.log("auth state res: ", res)
         this.isLoggedIn = true;
       } catch (error) {
         this.isLoggedIn = false;
       }
-      console.log("authState isLoggedIN", this.isLoggedIn);
+      //console.log("authState isLoggedIN", this.isLoggedIn);
     },
 
     async fetchData() {
@@ -62,19 +62,19 @@ export default {
       this.isLoading = true;
       try {
         await this.authState();
-        console.log("0")
+        //console.log("0")
 
         if (this.isLoggedIn) {
-          console.log("1")
+          //console.log("1")
           const res = await axios.get(
             "http://localhost:3000/api/users/profile/",
             {
               withCredentials: true,
             },
           );
-          console.log("2")
+          //console.log("2")
 
-          console.log("fetchData res: ", res);
+          //console.log("fetchData res: ", res);
           this.state.setUserData(res.data);
           this.twoFA = this.state.userData.is2faEnabled && !this.state.userData.validSession;
           if (res.data.loggedFirstTime) {
@@ -91,13 +91,13 @@ export default {
           }
         }
       } catch (error) {
-        console.log("Getting user profile error\n", error);
+        //console.log("Getting user profile error\n", error);
       }
     },
 
     async validate2FA() {
       try {
-        console.log("otp code: ", this.otpCode);
+        //console.log("otp code: ", this.otpCode);
         const response = await axios.post(
           "http://localhost:3000/api/2fa/authenticate/",
           { tfaCode: this.otpCode },
@@ -105,7 +105,7 @@ export default {
             withCredentials: true,
           }
         );
-        console.log("validate2FA res", response.data);
+        //console.log("validate2FA res", response.data);
         if (response.data !== "Logged in") {
           this.error = response.data;
           return;
@@ -140,7 +140,7 @@ export default {
           this.$socket.disconnect();
           this.$router.push("/signIn");
         } catch (error) {
-          console.log("logdout error: ", error);
+          //console.log("logdout error: ", error);
           this.isError = true;
         }
       }
@@ -148,7 +148,7 @@ export default {
   },
 
   async created() {
-    console.log("mounted in app.vue");
+    //console.log("mounted in app.vue");
     await this.fetchData();
     await this.routerGard();
   },

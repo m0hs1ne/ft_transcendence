@@ -77,7 +77,7 @@ export default {
       this.isOpend = true;
     },
     kick() {
-      console.log("Kick ");
+      //console.log("Kick ");
       this.$socket.emit("kickMember", {
         memberId: this.userStore.MemberRoleStatus.user.id,
         chatId: this.userStore.ActiveChannelId,
@@ -86,7 +86,7 @@ export default {
     },
 
     MuteThisUser(time) {
-      console.log("Time ", time);
+      //console.log("Time ", time);
       this.$socket.emit("updateMemberStatus", {
         memberId: this.userStore.MemberRoleStatus.user.id,
         chatId: this.userStore.ActiveChannelId,
@@ -94,14 +94,14 @@ export default {
         mutedFor: time,
       });
       if (time) {
-        console.log("I am in time condition ");
+        //console.log("I am in time condition ");
         this.$socket.on("receiveMessage", (data) => {
-          console.log("This is data In Must ", data);
+          //console.log("This is data In Must ", data);
         });
       }
     },
     updateStatus(status) {
-      console.log("this user is banned: ", status);
+      //console.log("this user is banned: ", status);
       if (status == "mute5") {
         this.MuteThisUser(5);
       }
@@ -113,13 +113,13 @@ export default {
           chatId: this.userStore.ActiveChannelId,
           status: status,
         });
-        console.log("I am gonne to {", status, "} this member: ");
+        //console.log("I am gonne to {", status, "} this member: ");
       }
     },
 
     updateRole() {
-      console.log("Update role ");
-      console.log("Hello this is the object ", this.userStore.MemberRoleStatus, "ddd");
+      //console.log("Update role ");
+      //console.log("Hello this is the object ", this.userStore.MemberRoleStatus, "ddd");
       this.$socket.emit("updateMemberRole", {
         memberId: this.userStore.MemberRoleStatus.user.id,
         chatId: this.userStore.ActiveChannelId,
@@ -132,11 +132,11 @@ export default {
     },
     save() {
       this.isOpend = false;
-      console.log("Hello the old status ", this.OldStatus);
-      console.log("Hello the new status ", this.selectedOptionStatus);
+      //console.log("Hello the old status ", this.OldStatus);
+      //console.log("Hello the new status ", this.selectedOptionStatus);
 
-      console.log("Hello the old role ", this.OldRole);
-      console.log("Hello the new role ", this.selectedOptionRole);
+      //console.log("Hello the old role ", this.OldRole);
+      //console.log("Hello the new role ", this.selectedOptionRole);
 
       if (this.selectedOptionStatus != this.OldStatus) {
         //  if (this.selectedOptionStatus == 'banned')
@@ -152,14 +152,14 @@ export default {
   },
 
   mounted() {
-    console.log(
-      "Hello this is the object ",
-      this.userStore.MemberRoleStatus.role,
-      this.userStore.MemberRoleStatus.userStatus
-    );
+    //console.log(
+    //   "Hello this is the object ",
+    //   this.userStore.MemberRoleStatus.role,
+    //   this.userStore.MemberRoleStatus.userStatus
+    // );
     this.selectedOptionRole = this.OldRole = this.userStore.MemberRoleStatus.role;
     if (this.userStore.MemberRoleStatus.userStatus === "muted") {
-      console.log("I am here ");
+      //console.log("I am here ");
       this.selectedOptionStatus = this.OldStatus = "mute5";
     } else
       this.selectedOptionStatus = this.OldStatus = this.userStore.MemberRoleStatus.userStatus;

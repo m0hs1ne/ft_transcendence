@@ -58,7 +58,7 @@ export class AuthMiddleware implements NestMiddleware {
 }
 
 export function verifyToken(cookie: string): any {
-  // console.log(cookie);
+  // //console.log(cookie);
   if (!cookie) {
     throw new Error('Cookie is undefined');
   }

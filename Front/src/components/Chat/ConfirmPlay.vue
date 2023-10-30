@@ -33,7 +33,7 @@ export default {
     },
     methods: {
         async SaveChannel() {
-            console.log("  ", this.message)
+            //console.log("  ", this.message)
             this.$GameSocket.emit('Chall', {
                 oponentId: this.message.invitation.to.id,
                 challId: this.message.invitation.from.id,
@@ -69,7 +69,7 @@ export default {
         },
         hideToast() {
             this.isOpend = false;
-            console.log(this.message)
+            //console.log(this.message)
             if (this.message.invitation.to) {
                 this.$GameSocket.emit('Chall', {
 
@@ -86,14 +86,14 @@ export default {
     mounted() {
         this.$socket.on("Notification", (messages) => {
             this.message = messages
-            console.log('Notification popinv dddddd ', messages.invitation)
+            //console.log('Notification popinv dddddd ', messages.invitation)
             if (messages.type == 'challenge') {
-                console.log(messages)
+                //console.log(messages)
                 this.strings = `${messages.invitation.to.username} Challend you 👊.`;
                 this.isOpend = true;
                 this.showToast();
             }
-            // console.log(" This is friends: befor ", this.friends)
+            // //console.log(" This is friends: befor ", this.friends)
         });
     },
 };
