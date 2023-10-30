@@ -74,7 +74,7 @@ export class ChatRoomsGateway {
         }
       }
     } catch (e) {
-      console.log(e.message);
+      //console.log(e.message);
       socket.disconnect();
     }
   }
@@ -427,7 +427,11 @@ export class ChatRoomsGateway {
           chatId,
           payload,
         );
+          
         const client = clients.get(toId);
+        console.log("=======================================================================--------------")
+        console.log(client)
+        console.log("=======================================================================--------------")
         if (client) {
           client.emit("Notification", { type: "invitation", invitation });
         }

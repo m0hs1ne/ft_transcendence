@@ -46,8 +46,8 @@ export class TwoFactorAuthenticationService {
      * @returns  true if the code is valid, else false
      */
     public async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
-        // //console.log(user);
-        // //console.log(twoFactorAuthenticationCode);
+        //console.log(user);
+        //console.log(twoFactorAuthenticationCode);
         const isCodeValid = authenticator.verify({
             token: twoFactorAuthenticationCode,
             secret: user.tfaSecret,

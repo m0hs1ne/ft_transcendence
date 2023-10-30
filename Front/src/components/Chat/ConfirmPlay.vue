@@ -93,7 +93,7 @@ export default {
                 this.isOpend = true;
                 this.showToast();
             }
-            // //console.log(" This is friends: befor ", this.friends)
+            //console.log(" This is friends: befor ", this.friends)
         });
     },
 };

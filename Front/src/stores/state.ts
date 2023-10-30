@@ -25,6 +25,7 @@ export const useUserStore = defineStore("user", {
     screenWidth: 1000,
     ItemClicked: "",
     IndexItemClicked: "",
+    invitations : []
   }),
 
   actions: {
@@ -51,7 +52,7 @@ export const useUserStore = defineStore("user", {
           this.ActiveMessageChannelId = this.ActiveChannelData.data.messages;
           this.ActiveChannelTitle = this.ActiveChannelData.data.title;
         }
-        ////console.log(this.ActiveChannelData.data.messages);
+        //console.log(this.ActiveChannelData.data.messages);
       } catch (error) {
         console.log("fetch channel by id error: ", error);
       }
@@ -79,23 +80,23 @@ export const useUserStore = defineStore("user", {
     //   this.$socket.emit("myChatRooms", {}, () => {});
     //   //console.log(" Noting ");
     //   this.ChannelList = await this.$socket.on("ChatRoomList");
-    //   // //console.log("This is Channel list ", this.ChannelList);
+    //   //console.log("This is Channel list ", this.ChannelList);
     // },
 
     async fetchDataForDmChatRooms() {
       try {
-        this.DmChatroomsList = await axios.get(
+        let DM_chatrooms = await axios.get(
           `http://localhost:3000/api/chat-rooms/DM_chatrooms`,
           { withCredentials: true }
         );
+        
+        this.DmChatroomsList = DM_chatrooms.data.result;
+        this.invitations = DM_chatrooms.data.invitations;
 
-        this.DmChatroomsList = this.DmChatroomsList.data;
-        //console.log(
-        //   "---------------------------------------------------------->  ",
-        //   this.DmChatroomsList
-        // );
+        //console.log(  this.invitations ," ---------------------------------------------------------->  ", DM_chatrooms);
+        
       } catch (error) {
-        console.log("fetch friends by id error: ", error);
+        //console.log("fetch friends by id error: ", error);
       }
       //console.log(this.DmChatroomsList.length);
       if (this.DmChatroomsList.length == 0) {

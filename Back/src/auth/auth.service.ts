@@ -48,7 +48,7 @@ export class AuthService {
      * @returns the user if it exists, else it creates a new user and returns it
      */
     async validateUser(details: UserDetails) {
-        // //console.log(details);
+        //console.log(details);
         const user = await this.userRepository.findOneBy({ email: details.email })
         if (user) return user;
         const user_name = await this.userRepository.findOneBy({ username: details.username })

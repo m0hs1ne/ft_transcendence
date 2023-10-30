@@ -517,7 +517,6 @@ export class ChatRoomsService {
     if (action != "kick" && fromMember.userStatus == "banned")
       throw new NotAcceptableException(`You are banned from this chat.`);
     if (fromMember.userStatus == "muted") {
-      //console.log(fromMember);
       const timeNow = new Date();
       if (timeNow.getMinutes() < fromMember.mutedTill.getMinutes())
         throw new NotAcceptableException(

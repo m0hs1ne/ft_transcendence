@@ -83,7 +83,7 @@ export default {
   },
   mounted() {
     this.openPopup();
-    // //console.log("Probs",this.memberProp)
+    //console.log("Probs",this.memberProp)
    // this.fetchData();
   },
 

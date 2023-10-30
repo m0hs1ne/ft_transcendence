@@ -6,7 +6,7 @@
     <div class="flex w-fit items-center">
       <Icon
         v-if="this.userStore.screenWidth < 768"
-        class=" w-8 h-8 cursor-pointer mr-5"
+        class="w-8 h-8 cursor-pointer mr-5"
         icon="ion:arrow-back"
         @click="this.userStore.viewMode = 'List'"
       />
@@ -30,44 +30,54 @@
       icon="mingcute:settings-3-fill"
     />
   </div>
-  <hr class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white" />
+  <hr
+    class="w-full h-px bg-gray-200 border-0 dark:bg-gray-700 dark:text-white"
+  />
 
   <div
     class="flex flex-col w-full h-full overflow-y-scroll gap-5 px-5 py-10"
     ref="scrollContainer1"
   >
     <div v-for="message in this.messages" class="w-full">
-      <div
-        v-if="message.type == 'notification'"
-        class="flex flex-row justify-center rounded text-blue-900"
-      >
-        <span>{{ message.message }}</span>
-      </div>
-
-      <div v-if="message.type == 'message'" class="flex mb-4">
+      <div v-if="message.from && this.showMessage(message.from.id)" class="w-full">
         <div
-          v-if="message.from.id == this.userStore.MyId"
-          class="flex w-full justify-end"
+          v-if="message.type == 'notification'"
+          class="flex flex-row justify-center rounded text-blue-900"
         >
-          <div class="flex flex-col items-end">
-            <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
-              <span>{{ message.message }}</span>
-            </div>
-            <div class="flex gap-3">
-              <p class="text-gray-500 text-sm mt-1"> You </p>
-              <div class="h-3 w-3 bg-blue-400 rounded-full" />
-            </div>
-          </div>
+          <span>{{ message.message }}</span>
         </div>
 
-        <div v-else class="flex w-full">
-          <div class="flex flex-col">
-            <div class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md">
-              <span>{{ message.message }}</span>
+        <div v-if="message.type == 'message'" class="flex mb-4">
+          <div
+            v-if="message.from.id == this.userStore.MyId"
+            class="flex w-full justify-end"
+          >
+            <div class="flex flex-col items-end">
+              <div
+                class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md"
+              >
+                <span>{{ message.message }}</span>
+              </div>
+              <div class="flex gap-3">
+                <p class="text-gray-500 text-sm mt-1">You</p>
+                <div class="h-3 w-3 bg-blue-400 rounded-full" />
+              </div>
             </div>
-            <div class="flex gap-3">
-              <div class="h-3 w-3 bg-blue-400 rounded-full" />
-              <p class="text-gray-500 text-sm mt-1">{{ message.from.username }}</p>
+          </div>
+
+          <div v-else class="flex w-full">
+            <div class="flex flex-col">
+              <div
+                class="mr-2 py-3 px-4 bg-blue-400 rounded-3xl text-white w-fit max-w-md"
+              >
+                <span>{{ message.message }}</span>
+              </div>
+              <div class="flex gap-3">
+                <div class="h-3 w-3 bg-blue-400 rounded-full" />
+                <p class="text-gray-500 text-sm mt-1">
+                  {{ message.from.username }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -95,7 +105,7 @@
 
 <script>
 import axios from "axios";
-import { useUserStore } from "./../../stores/state.ts";
+import { useUserStore, SharedData } from "./../../stores/state.ts";
 import { Icon } from "@iconify/vue";
 
 export default {
@@ -110,8 +120,8 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
-
-    return { userStore };
+    const state = SharedData();
+    return { userStore, state };
   },
 
   data() {
@@ -125,6 +135,11 @@ export default {
     };
   },
   methods: {
+    showMessage(id)
+    {
+      return (!this.state.blocked.some((user) => user.id === id) &&
+          !this.state.blockedBy.some((user) => user.id === id));
+    },
     sendMessage() {
       //console.log("I AM SENDmessage channel");
       if (this.newMessage != "") {
@@ -137,7 +152,8 @@ export default {
 
       this.$nextTick(() => {
         const scrollContainer = this.$refs.scrollContainer1;
-        if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        if (scrollContainer)
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
       });
       this.newMessage = "";
     },
@@ -148,17 +164,25 @@ export default {
 
     await this.userStore.fetchChannelById();
     this.messages = this.userStore.ActiveMessageChannelId;
-    
+
+    this.$socket.on("Notification", async (data) => {
+      if (data.type === "updated") {
+        try {
+          await this.state.updateData();
+        } catch (error) {}
+      }
+    });
+
     this.$socket.on("receiveMessage", (data) => {
-      // //console.log( " merwan ",data.chatRoomId)
+      //console.log( " merwan ",data.chatRoomId)
       //console.log("Helllo this is my ", this.userStore.ActiveChannelId, data.chatRoomId);
       if (
         (this.userStore.ActiveChannelId == data.chatRoomId &&
           data.type == "notification" &&
           data.action == "joined") ||
         (data.type == "notification" && data.action == "status") ||
-        (data.type == "message" && data.action == "message" || 
-         (data.type == "notification" && data.action == "role" ))
+        (data.type == "message" && data.action == "message") ||
+        (data.type == "notification" && data.action == "role")
       ) {
         this.messages.push(data);
       }

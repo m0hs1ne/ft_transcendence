@@ -114,7 +114,8 @@ export default {
       this.achievements.sort((a, b) => b.status - a.status);
     },
   },
-  mounted() {
+  async mounted() {
+    await this.state.updateData();
     this.setData();
     this.$socket.on("Notification", async (data) => {
       if (data.type === "updated") {

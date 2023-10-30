@@ -5,6 +5,8 @@ import { config } from "dotenv";
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt'
 import { ColdObservable } from "rxjs/internal/testing/ColdObservable";
+import { clients } from "src/chat_rooms/chat_rooms.gateway";
+import { UsersService } from "src/users/users.service";
 
 config()
 @Injectable()
@@ -58,11 +60,13 @@ export class AuthMiddleware implements NestMiddleware {
 }
 
 export function verifyToken(cookie: string): any {
-  // //console.log(cookie);
+  //console.log(cookie);
   if (!cookie) {
     throw new Error('Cookie is undefined');
   }
   try {
+    if (!cookie)
+      throw new Error('Invalid token');
     const jwtToken = cookie.split(';').find((cookie) => cookie.includes('jwt')).split('=')[1];
     const payload = jwt.verify(jwtToken, process.env.SESSION_SECRET);
     return payload;
@@ -119,3 +123,4 @@ function getFileExtension(filename: string): string {
   const extension = filename.split('.').pop();
   return extension ? `.${extension}` : '';
 }
+

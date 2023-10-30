@@ -36,7 +36,7 @@ export class userAuthGuard implements CanActivate {
             const jwt = cookies.split(';').find(c => c.trim().startsWith('jwt=')).split('=')[1];
             const payload = this.jwtService.verify(jwt);
             if (!payload) return false;
-            //console.log(payload);
+            (payload);
             // if(payload.is2faV === false) return false;
             return true;
         } catch (e) {

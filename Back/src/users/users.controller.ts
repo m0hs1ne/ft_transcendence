@@ -155,7 +155,6 @@ export class UsersController {
   async addgame(@MessageBody() body, @Req() req, @Res() res) {
     const { user1Id, user2Id, winner, leftSCore, rightSCore, mode } = body;
 
-    //console.log(body);
     this.gameservice.create(
       user1Id,
       user2Id,
@@ -175,7 +174,10 @@ export class UsersController {
       {
         const message =  await this.usersService.addfriends(id, req);
         const client = clients.get(payload.sub)
+       // console.log("client+====== ", client.handshake)
         const friend = clients.get(id)
+       // console.log("frinend+====== ", friend.handshake)
+
         if (friend)
         {
           const me = await this.usersService.findOne(payload.sub)

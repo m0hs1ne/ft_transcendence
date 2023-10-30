@@ -33,12 +33,18 @@ export class ChatRoomsController {
       try
       {
         const payload = verifyToken(req.headers.cookie)
+        const invitations = await this.chatroomservice.getInvitationOfUser(
+          payload.sub,
+        );
         const chatrooms = await this.chatroomservice.findMyChatRooms(payload.sub);
         const friends = await this.userservice.getfriends(payload.sub)
         let result = [];
         result = result.concat(friends)
         result = result.concat(chatrooms)
-        res.send(result);
+        if (result.length == 1 && !result[0])
+          res.send({result:[], invitations})
+        else
+          res.send({result, invitations});
       }
       catch(e){
         res.send({message: e.message, result: "error"})

@@ -83,7 +83,7 @@ export default {
 			}
 			// this.displayChatboxChannel = false;
 			if (object.id != this.displayTargetComponent) {
-				// //console.log(" =========================== ", this.displayChatboxChannel);
+				//console.log(" =========================== ", this.displayChatboxChannel);
 				if (this.displayChatboxChannel) this.displayChatboxChannel = 0;
 				if (this.displayTargetComponent != 0 || this.displayChatboxChannel) {
 					this.displayTargetComponent = false;
@@ -96,8 +96,8 @@ export default {
 		},
 
 		IsChannel(object) {
-			////console.log("This is an channel ", this.userStore.ActiveChannelId );
-			////console.log(" I am -----------------------------------222-----------------------------------", this.userStore.DmChatroomsList.length)
+			//console.log("This is an channel ", this.userStore.ActiveChannelId );
+			//console.log(" I am -----------------------------------222-----------------------------------", this.userStore.DmChatroomsList.length)
 
 			this.displayTargetComponent = false;
 			if (this.userStore.ActiveChannelId == -1) {
@@ -119,7 +119,7 @@ export default {
 		},
 
 		handleObject(object) {
-			// //console.log(this.userStore.ItemClicked)
+			//console.log(this.userStore.ItemClicked)
 			if (!object.id && this.userStore.ItemClicked) {
 				//console.log(" I am her ")
 				object = this.userStore.ItemClicked;

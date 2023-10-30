@@ -8,7 +8,7 @@
         {{
           this.message
         }}
-        <li v-for="friend in friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
+        <li v-for="friend in this.friends" :key="friend.id" class="flex items-center p-2 space-x-4 border-b">
           <div class="flex-shrink-0">
             <img referrerpolicy="no-referrer" :src="friend.fromUser.avatar" alt="Avatar" class="h-12 rounded-full" />
           </div>
@@ -56,7 +56,7 @@ export default {
     Icon
   },
   methods: {
-    async fetchData() { },
+  
     openPopup() {
       if (this.friends.length == 0) this.message = "You don't have any invitation";
       this.isOpend = true;
@@ -77,7 +77,7 @@ export default {
         id: frien.id,
       });
       
-     // //console.log("This is the active: " ,this.userStore.ActiveChannelId);
+     //console.log("This is the active: " ,this.userStore.ActiveChannelId);
       this.isOpend = false;
       this.DeleteFromArray(frien);
       //this.userStore.UpdateChannelId(frien.chatRoom.id, frien.chatRoom.title)
@@ -90,13 +90,15 @@ export default {
       this.isOpend = false;
     },
   },
-  mounted() {
+  async mounted() {
    
-    this.fetchData();
+    await this.userStore.fetchDataForDmChatRooms()
+    this.friends = this.userStore.invitations;
+    console.log("Friend +++++++++++++++++", this.userStore.invitations ,this.friends)
     this.$socket.on("Notification", (messages) => {
-      // //console.log(" This is friends: befor ", this.friends)
+      //console.log(" This is friends: befor ", this.friends)
       if (messages.type == "invitation") {
-       // //console.log("The problem of the form of json ");
+       //console.log("The problem of the form of json ");
         this.message = "";
         this.friends.push(messages.invitation);
 

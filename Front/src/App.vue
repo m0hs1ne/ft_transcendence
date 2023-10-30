@@ -87,7 +87,7 @@ export default {
                 withCredentials: true,
               }
             );
-            this.$router.replace("/setting");
+            await this.$router.replace("/setting");
           }
         }
       } catch (error) {
