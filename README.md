@@ -41,11 +41,13 @@ Welcome to the `خليها على الله ` Website! This project aims to provi
 
 ## Team
 
-- [Mabenchi](https://github.com/MarouaneBenchiekh): Worked on APIs,websocket endpoints and database integration.
-- [Abouchfa](https://github.com/Abdeljalil-Bouchfar): Frontend development of the website.
-- [Sultan](https://github.com/abdessamadalami): Implemented the chat interface and functionality.
-- [Zakaria2](https://github.com/Zakaria2ee): Worked on the frontend and backend of the game.
-- [m0hs1ne](https://github.com/m0hs1ne): Implemented the oauth system and security features.
+We did this project as it the final project of our school common core. It was a fun experience, we learned a lot and we are proud of what we achieved, you can meet the team members below:
+
+- [Mabenchi](https://github.com/MarouaneBenchiekh) aka `databize`: Worked on APIs,websocket endpoints and database integration.
+- [Abouchfa](https://github.com/Abdeljalil-Bouchfar) aka `lfanan`: Frontend development of the website.
+- [Abdessamad](https://github.com/abdessamadalami) aka `lbarid`: Implemented the chat interface and functionality.
+- [Zakaria2](https://github.com/Zakaria2ee) aka `lmochkile man 3andak`: Worked on the frontend and backend of the game.
+- [m0hs1ne](https://github.com/m0hs1ne) aka `chorti`: Implemented the oauth system and security features.
 
 ## Docs
 
