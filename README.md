@@ -1,6 +1,6 @@
 # خليها على الله  Website
 
-Welcome to the خليها على الله  Website! This project aims to provide users with a platform to play Pong with others in real-time, featuring a user-friendly interface, chat functionality, and multiplayer online games.
+Welcome to the `خليها على الله ` Website! This project aims to provide users with a platform to play Pong with others in real-time, featuring a user-friendly interface, chat functionality, and multiplayer online games.
 
 ## Technologies Used
 
@@ -41,7 +41,7 @@ Welcome to the خليها على الله  Website! This project aims to provide
 
 ## Team
 
-- [Mabenchi](https://github.com/MarouaneBenchiekh): Worked on APIs and database integration.
+- [Mabenchi](https://github.com/MarouaneBenchiekh): Worked on APIs,websocket endpoints and database integration.
 - [Abouchfa](https://github.com/Abdeljalil-Bouchfar): Frontend development of the website.
 - [Sultan](https://github.com/abdessamadalami): Implemented the chat interface and functionality.
 - [Zakaria2](https://github.com/Zakaria2ee): Worked on the frontend and backend of the game.
