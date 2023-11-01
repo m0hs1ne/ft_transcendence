@@ -4,6 +4,7 @@ Welcome to the `خليها على الله ` Website! This project aims to provi
 
 ## Technologies Used
 
+- Interface Design: Figma
 - Backend Framework: NestJS
 - Frontend Framework: Vue.js (TypeScript)
 - Database: PostgreSQL
