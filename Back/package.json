@@ -48,7 +48,7 @@
     "random": "^4.1.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.17",
+    "typeorm": "^0.3.18",
     "typeorm-extension": "^2.8.1",
     "uuid": "^9.0.0"
   },
