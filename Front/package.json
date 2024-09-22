@@ -10,21 +10,21 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
-    "@types/p5": "^1.7.0",
-    "@vueuse/core": "^10.5.0",
-    "axios": "^1.6.0",
-    "p5": "^1.7.0",
-    "pinia": "^2.1.6",
+    "@types/p5": "^1.7.6",
+    "@vueuse/core": "^10.11.1",
+    "axios": "^1.7.7",
+    "p5": "^1.10.0",
+    "pinia": "^2.2.2",
     "socket.io-client": "^4.7.2",
-    "vue": "^3.3.4",
-    "vue-router": "^4.2.4",
-    "vue3-otp-input": "^0.4.1"
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.3",
+    "vue3-otp-input": "^0.5.21"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^18.17.17",
-    "@types/p5": "latest",
+    "@types/p5": "1.7.6",
     "@vitejs/plugin-vue": "^4.3.4",
     "@vue/tsconfig": "^0.4.0",
     "autoprefixer": "^10.4.16",
